@@ -11,11 +11,14 @@ var awsAmplify = require('aws-amplify');
 var core = require('@rjsf/core');
 var materialUi = require('@rjsf/material-ui');
 var core$1 = require('@material-ui/core');
+var Button = require('@material-ui/core/Button');
+var reactRouter = require('react-router');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
 var React__default = /*#__PURE__*/_interopDefaultLegacy(React);
 var Auth__default = /*#__PURE__*/_interopDefaultLegacy(Auth);
+var Button__default = /*#__PURE__*/_interopDefaultLegacy(Button);
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
   try {
@@ -378,18 +381,17 @@ var dataProvider = (function (baseUrl) {
     "delete": function _delete(resource, params) {
       return fetchJson("".concat(baseUrl, "/").concat(resource, "/").concat(params.id), {
         method: 'DELETE'
-      }).then(function (_ref11) {
-        var json = _ref11.json;
+      }).then(function () {
         return {
-          data: json
+          data: resource
         };
       });
     },
     deleteMany: function deleteMany(resource, params) {
       return fetchJson("".concat(baseUrl, "/").concat(resource, "/").concat(params.ids[0]), {
         method: 'DELETE'
-      }).then(function (_ref12) {
-        var json = _ref12.json;
+      }).then(function (_ref11) {
+        var json = _ref11.json;
         return {
           data: json
         };
@@ -454,124 +456,171 @@ var Admin = function Admin(_ref) {
 
 var Form = core.withTheme(materialUi.Theme);
 
-var RProps = function RProps(props) {
-  return props.render(props);
-};
-
-var LoloCreate = function LoloCreate(props) {
-  var _useState = React.useState(true),
+var Create = function Create(props) {
+  var _useState = React.useState({}),
       _useState2 = _slicedToArray(_useState, 2),
-      formValid = _useState2[0],
-      setFormValid = _useState2[1];
+      formData = _useState2[0],
+      setFormData = _useState2[1];
+
+  var _useState3 = React.useState(true),
+      _useState4 = _slicedToArray(_useState3, 2),
+      hasErrors = _useState4[0],
+      setHasErrors = _useState4[1];
+
+  var _useState5 = React.useState(false),
+      _useState6 = _slicedToArray(_useState5, 2),
+      liveValidate = _useState6[0],
+      setLiveValidate = _useState6[1];
 
   var _useContext = React.useContext(ResourceContext),
       schema = _useContext.schema,
       uiSchema = _useContext.uiSchema;
 
   var form;
+
+  var _useCreateController = ra.useCreateController(_objectSpread2({}, props)),
+      defaultTitle = _useCreateController.defaultTitle,
+      record = _useCreateController.record,
+      save = _useCreateController.save,
+      saving = _useCreateController.saving; //useEffect(() => setFormData(record), [ record ]);
+
+
   if (!schema) return null;
-  return /*#__PURE__*/React__default['default'].createElement(ra.Create, _extends({}, props, {
-    undoable: false
-  }), /*#__PURE__*/React__default['default'].createElement(RProps, {
-    render: function render(formProps) {
-      return /*#__PURE__*/React__default['default'].createElement(core$1.Box, {
-        p: "1em"
-      }, /*#__PURE__*/React__default['default'].createElement(core$1.Box, {
-        display: "flex"
-      }, /*#__PURE__*/React__default['default'].createElement(core$1.Box, {
-        flex: 2,
-        mr: "1em"
-      }, /*#__PURE__*/React__default['default'].createElement(Form, {
-        ref: function ref(f) {
-          form = f;
-        },
-        schema: schema,
-        uiSchema: uiSchema,
-        formData: formProps.record,
-        liveValidate: true,
-        onChange: function onChange(_ref) {
-          var formData = _ref.formData,
-              errors = _ref.errors;
-          Object.assign(formProps.record, form.state.formData);
-          setFormValid(!errors.length);
-        },
-        showErrorList: false
-      }, ' '))), /*#__PURE__*/React__default['default'].createElement(ra.Toolbar, null, /*#__PURE__*/React__default['default'].createElement(core$1.Box, {
-        display: "flex",
-        justifyContent: "space-between",
-        width: "100%"
-      }, /*#__PURE__*/React__default['default'].createElement(ra.SaveButton, {
-        saving: formProps.saving,
-        disabled: !formValid,
-        handleSubmitWithRedirect: function handleSubmitWithRedirect() {
-          return formProps.save(form.state.formData);
-        }
-      }))));
+  return /*#__PURE__*/React__default['default'].createElement(core$1.Box, {
+    p: "1em"
+  }, /*#__PURE__*/React__default['default'].createElement(core$1.Box, {
+    display: "flex"
+  }, /*#__PURE__*/React__default['default'].createElement(core$1.Box, {
+    flex: 2,
+    mr: "1em"
+  }, /*#__PURE__*/React__default['default'].createElement(ra.TitleForRecord, {
+    title: props.title,
+    record: record,
+    defaultTitle: defaultTitle
+  }), /*#__PURE__*/React__default['default'].createElement(Form, {
+    ref: function ref(f) {
+      form = f;
+    },
+    schema: schema,
+    uiSchema: uiSchema,
+    formData: formData,
+    showErrorList: false,
+    liveValidate: liveValidate,
+    onChange: function onChange(_ref) {
+      var formData = _ref.formData,
+          errors = _ref.errors;
+      setLiveValidate(true);
+      setFormData(formData);
+      setHasErrors(!!errors.length);
+    },
+    onSubmit: function onSubmit(_ref2) {
+      var formData = _ref2.formData;
+      return save(formData);
     }
-  }));
+  }, ' '))), /*#__PURE__*/React__default['default'].createElement(ra.Toolbar, null, /*#__PURE__*/React__default['default'].createElement(core$1.Box, {
+    display: "flex",
+    justifyContent: "space-between",
+    width: "100%"
+  }, /*#__PURE__*/React__default['default'].createElement(ra.SaveButton, {
+    saving: saving,
+    disabled: hasErrors,
+    handleSubmitWithRedirect: function handleSubmitWithRedirect() {
+      return form.submit();
+    }
+  }))));
 };
+
+var BackButton = function BackButton(_ref) {
+  var goBack = _ref.history.goBack,
+      children = _ref.children,
+      props = _objectWithoutProperties(_ref, ["history", "children"]);
+
+  return /*#__PURE__*/React__default['default'].createElement(Button__default['default'], _extends({}, props, {
+    onClick: goBack
+  }), children);
+};
+
+reactRouter.withRouter(BackButton);
 
 var Form$1 = core.withTheme(materialUi.Theme);
 
-var RProps$1 = function RProps(props) {
-  return props.render(props);
-};
-
 var LoloEdit = function LoloEdit(props) {
-  var _useState = React.useState(true),
+  var _useState = React.useState({}),
       _useState2 = _slicedToArray(_useState, 2),
-      formValid = _useState2[0],
-      setFormValid = _useState2[1];
+      formData = _useState2[0],
+      setFormData = _useState2[1];
+
+  var _useState3 = React.useState(true),
+      _useState4 = _slicedToArray(_useState3, 2),
+      hasErrors = _useState4[0],
+      setHasErrors = _useState4[1];
 
   var _useContext = React.useContext(ResourceContext),
       schema = _useContext.schema,
       uiSchema = _useContext.uiSchema;
 
   var form;
-  if (!schema) return null;
-  return /*#__PURE__*/React__default['default'].createElement(ra.Edit, _extends({}, props, {
+
+  var _useEditController = ra.useEditController(_objectSpread2(_objectSpread2({}, props), {}, {
     undoable: false
-  }), /*#__PURE__*/React__default['default'].createElement(RProps$1, {
-    render: function render(formProps) {
-      return /*#__PURE__*/React__default['default'].createElement(core$1.Box, {
-        p: "1em"
-      }, /*#__PURE__*/React__default['default'].createElement(core$1.Box, {
-        display: "flex"
-      }, /*#__PURE__*/React__default['default'].createElement(core$1.Box, {
-        flex: 2,
-        mr: "1em"
-      }, /*#__PURE__*/React__default['default'].createElement(Form$1, {
-        ref: function ref(f) {
-          form = f;
-        },
-        schema: schema,
-        uiSchema: uiSchema,
-        formData: formProps.record,
-        liveValidate: true,
-        onChange: function onChange(_ref) {
-          var formData = _ref.formData,
-              errors = _ref.errors;
-          Object.assign(formProps.record, form.state.formData);
-          setFormValid(!errors.length);
-        },
-        showErrorList: false
-      }, ' '))), /*#__PURE__*/React__default['default'].createElement(ra.Toolbar, null, /*#__PURE__*/React__default['default'].createElement(core$1.Box, {
-        display: "flex",
-        justifyContent: "space-between",
-        width: "100%"
-      }, /*#__PURE__*/React__default['default'].createElement(ra.SaveButton, {
-        saving: formProps.saving,
-        disabled: !formValid,
-        handleSubmitWithRedirect: function handleSubmitWithRedirect() {
-          return formProps.save(form.state.formData);
-        }
-      }), /*#__PURE__*/React__default['default'].createElement(ra.DeleteButton, {
-        record: formProps.record,
-        basePath: formProps.basePath,
-        resource: formProps.resource
-      }))));
+  })),
+      basePath = _useEditController.basePath,
+      defaultTitle = _useEditController.defaultTitle,
+      record = _useEditController.record,
+      resource = _useEditController.resource,
+      save = _useEditController.save,
+      saving = _useEditController.saving;
+
+  React.useEffect(function () {
+    return setFormData(record);
+  }, [record]);
+  if (!schema) return null;
+  return /*#__PURE__*/React__default['default'].createElement(core$1.Box, {
+    p: "1em"
+  }, /*#__PURE__*/React__default['default'].createElement(core$1.Box, {
+    display: "flex"
+  }, /*#__PURE__*/React__default['default'].createElement(core$1.Box, {
+    flex: 2,
+    mr: "1em"
+  }, /*#__PURE__*/React__default['default'].createElement(ra.TitleForRecord, {
+    title: props.title,
+    record: record,
+    defaultTitle: defaultTitle
+  }), /*#__PURE__*/React__default['default'].createElement(Form$1, {
+    ref: function ref(f) {
+      form = f;
+    },
+    schema: schema,
+    uiSchema: uiSchema,
+    formData: formData,
+    showErrorList: false,
+    liveValidate: true,
+    onChange: function onChange(_ref) {
+      var formData = _ref.formData,
+          errors = _ref.errors;
+      setFormData(formData);
+      setHasErrors(!!errors.length);
+    },
+    onSubmit: function onSubmit(_ref2) {
+      var formData = _ref2.formData;
+      return save(formData);
     }
-  }));
+  }, ' '))), /*#__PURE__*/React__default['default'].createElement(ra.Toolbar, null, /*#__PURE__*/React__default['default'].createElement(core$1.Box, {
+    display: "flex",
+    justifyContent: "space-between",
+    width: "100%"
+  }, /*#__PURE__*/React__default['default'].createElement(ra.SaveButton, {
+    saving: saving,
+    disabled: hasErrors,
+    handleSubmitWithRedirect: function handleSubmitWithRedirect() {
+      return form.submit();
+    }
+  }), /*#__PURE__*/React__default['default'].createElement(ra.DeleteButton, {
+    record: record,
+    basePath: basePath,
+    resource: resource,
+    undoable: false
+  }))));
 };
 
 var Filter = function Filter(props) {
@@ -716,7 +765,7 @@ var Resource = function Resource(props) {
     }
   }, /*#__PURE__*/React__default['default'].createElement(ra.Resource, _extends({
     list: List,
-    create: LoloCreate,
+    create: Create,
     edit: LoloEdit
   }, props)));
 };
