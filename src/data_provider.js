@@ -98,7 +98,7 @@ export default baseUrl => {
     delete: (resource, params) => {
       return fetchJson(`${baseUrl}/${resource}/${params.id}`, {
         method: 'DELETE',
-      }).then(({ json }) => ({ data: json }));
+      }).then(() => ({ data: resource }));
     },
 
     deleteMany: (resource, params) => {
