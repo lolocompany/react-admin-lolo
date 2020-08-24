@@ -12,7 +12,8 @@
     "@aws-amplify/ui-react": "^0.2.15",
     "@rjsf/core": "^2.3.0",
     "@rjsf/material-ui": "^2.3.0",
-    "aws-amplify": "^3.0.24"
+    "aws-amplify": "^3.0.24",
+    "react-admin": "^3.8.2"
   },
   "peerDependencies": {
   }
