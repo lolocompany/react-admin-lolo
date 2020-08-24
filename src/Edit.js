@@ -10,7 +10,7 @@ import BackButton from './BackButton';
 
 const Form = withTheme(MaterialUITheme);
 
-const LoloEdit = props => {
+const Edit = props => {
   const [ formData, setFormData ] = useState({});
 	const [ hasErrors, setHasErrors ] = useState(true);
 	const { schema, uiSchema } = useContext(ResourceContext);
@@ -75,4 +75,4 @@ const LoloEdit = props => {
 	);
 };
 
-export default LoloEdit
+export default Edit

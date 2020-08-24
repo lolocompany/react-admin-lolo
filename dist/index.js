@@ -544,7 +544,7 @@ reactRouter.withRouter(BackButton);
 
 var Form$1 = core.withTheme(materialUi.Theme);
 
-var LoloEdit = function LoloEdit(props) {
+var Edit = function Edit(props) {
   var _useState = React.useState({}),
       _useState2 = _slicedToArray(_useState, 2),
       formData = _useState2[0],
@@ -766,7 +766,7 @@ var Resource = function Resource(props) {
   }, /*#__PURE__*/React__default['default'].createElement(ra.Resource, _extends({
     list: List,
     create: Create,
-    edit: LoloEdit
+    edit: Edit
   }, props)));
 };
 
