@@ -5,6 +5,7 @@ import * as ra from 'react-admin';
 import Create from './Create';
 import Edit from './Edit';
 import List from './List';
+import * as rjsf from './rjsf';
 import { AdminContext } from './Admin';
 
 const ResourceContext = React.createContext();
@@ -21,6 +22,8 @@ const Resource = props => {
 
 		ra.fetchUtils.fetchJson(schemaUrl).then(({ json }) => {
 			const { uiSchema = {}, ...schema } = json;
+			enableWidgets(uiSchema, schema);
+
 			setSchema(schema);
 			setUiSchema(uiSchema);
 		});
@@ -37,6 +40,14 @@ const Resource = props => {
 		</ResourceContext.Provider>
 	);
 };
+
+const enableWidgets = (uiSchema, schema) => {
+	Object.keys(schema.properties)
+		.filter(k => k.endsWith('Id'))
+		.forEach(k => {
+			uiSchema[k] = { 'ui:widget': rjsf.ReferenceInputWidget }
+		});
+}
 
 export {
 	Resource,

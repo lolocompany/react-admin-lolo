@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import * as ra from 'react-admin';
+import { titleize } from 'inflection';
 import { ResourceContext }  from './Resource';
 import Filter from './Filter';
 
@@ -46,7 +47,12 @@ const refField = key => {
 	const name = key.replace(/Id$/, '');
 
 	return (
-    <ra.ReferenceField label={name} source='id' reference={name + 's'}>
+    <ra.ReferenceField
+    	label={titleize(name)} 
+    	source={key} 
+    	reference={name + 's'}
+    	key={key}
+    	>
     	<ra.TextField source='name' />
     </ra.ReferenceField>
 	);

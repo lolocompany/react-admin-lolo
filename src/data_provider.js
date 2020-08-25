@@ -13,15 +13,19 @@ export default baseUrl => {
     return fetchUtils.fetchJson(url, options);
   };
 
-  const buildQs = filter => Object.entries(filter).reduce((memo, [k, v]) => {
+  const buildQs = (filter = {}) => Object.entries(filter).reduce((memo, [k, v]) => {
     memo[`q[${k}]`] = v;
     return memo;
   }, {});
 
   return {
+    /**
+     * getList 
+     */
+
     getList: (resource, params) => {
-      const { page = 0, perPage = 10 } = params.pagination;
-      const { field = 'id', order = 'ASC' } = params.sort;
+      const { page = 1, perPage = 10 } = params.pagination || {};
+      const { field = 'id', order = 'ASC' } = params.sort || {};
 
       const query = {
         limit: perPage,
@@ -38,20 +42,38 @@ export default baseUrl => {
       }));
     },
 
+    /**
+     * getOne 
+     */
+
     getOne: (resource, params) =>
     fetchJson(`${baseUrl}/${resource}/${params.id}`).then(({ json }) => ({
       data: json
     })),
 
+    /**
+     * getMany 
+     */
+
     getMany: (resource, params) => {
-      const query = {
-        filter: JSON.stringify({ id: params.ids }),
-      };
-      const url = `${baseUrl}/${resource}?${stringify(query)}`;
-      return fetchJson(url).then(({ json }) => ({ data: json }));
+      const query = params.ids.reduce((memo, id) => {
+        return memo += `&q[id]=${id}`
+      }, `qor=1&_=${Math.random()}`);
+
+      const url = `${baseUrl}/${resource}?${query}`;
+
+      return fetchJson(url).then(({ headers, json }) => ({
+        data: json[kebabToCamel(resource)],
+        total: json.total
+      }));
     },
 
+    /**
+     * getManyReference 
+     */
+
     getManyReference: (resource, params) => {
+      console.log('getManyReference', resource, params);
       const { page, perPage } = params.pagination;
       const { field, order } = params.sort;
       const query = {
@@ -70,11 +92,19 @@ export default baseUrl => {
       }));
     },
 
+    /**
+     * update 
+     */
+
     update: (resource, params) =>
     fetchJson(`${baseUrl}/${resource}/${params.id}`, {
       method: 'PUT',
       body: JSON.stringify(params.data),
     }).then(({ json }) => ({ data: json })),
+
+    /**
+     * updateMany 
+     */
 
     updateMany: (resource, params) => {
       const query = {
@@ -86,6 +116,10 @@ export default baseUrl => {
       }).then(({ json }) => ({ data: json }));
     },
 
+    /**
+     * create 
+     */
+
     create: (resource, params) =>{
       return fetchJson(`${baseUrl}/${resource}`, {
         method: 'POST',
@@ -95,11 +129,19 @@ export default baseUrl => {
       }))
     },
 
+    /**
+     * delete 
+     */
+
     delete: (resource, params) => {
       return fetchJson(`${baseUrl}/${resource}/${params.id}`, {
         method: 'DELETE',
       }).then(() => ({ data: resource }));
     },
+
+    /**
+     * deleteMany 
+     */
 
     deleteMany: (resource, params) => {
       return fetchJson(`${baseUrl}/${resource}/${params.ids[0]}`, {

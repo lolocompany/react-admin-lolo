@@ -1,5 +1,5 @@
 import React from 'react';
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState } from 'react';
 import { withTheme } from '@rjsf/core';
 import { Toolbar, SaveButton } from 'react-admin';
 import { useCreateController, TitleForRecord } from 'react-admin';
@@ -22,8 +22,6 @@ const Create = props => {
     save,
     saving,
   } = useCreateController({ ...props });
-
-  //useEffect(() => setFormData(record), [ record ]);
 
   if (!schema) return null;
 

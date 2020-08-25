@@ -6,7 +6,6 @@ import { useEditController, TitleForRecord } from 'react-admin';
 import { Theme as MaterialUITheme } from '@rjsf/material-ui';
 import { Box } from '@material-ui/core';
 import { ResourceContext }  from './Resource';
-import BackButton from './BackButton';
 
 const Form = withTheme(MaterialUITheme);
 

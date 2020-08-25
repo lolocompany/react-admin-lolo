@@ -1,17 +1,18 @@
 import React from 'react';
 import * as ra from 'react-admin';
 import { withAuthenticator } from '@aws-amplify/ui-react';
-import dataProvider from './data_provider';
+import _dataProvider from './data_provider';
 import authProvider from './auth_provider';
 
 const AdminContext = React.createContext({});
 
 const Admin = ({ appId, env = 'dev', ...props }) => {
 	const baseUrl = `https://${env}.lolo.company/${appId}`;
+	const dataProvider = _dataProvider(baseUrl);
 
 	const RAdmin = withAuthenticator(() => (
 		<ra.Admin
-			dataProvider={dataProvider(baseUrl)}
+			dataProvider={dataProvider}
 			authProvider={authProvider}
 			title='Lolo Admin'
 			{...props}
@@ -21,7 +22,7 @@ const Admin = ({ appId, env = 'dev', ...props }) => {
 	));
 
 	return (
-		<AdminContext.Provider value={{ baseUrl }}>
+		<AdminContext.Provider value={{ baseUrl, dataProvider }}>
 			<RAdmin />
 		</AdminContext.Provider>
 	);
