@@ -18,12 +18,25 @@ export default baseUrl => {
     return memo;
   }, {});
 
+  const create = (resource, params) => {
+    console.log('dataProvider.create', resource, params);
+
+    return fetchJson(`${baseUrl}/${resource}`, {
+      method: 'POST',
+      body: JSON.stringify(params.data),
+    })
+    
+    .then(res => {
+      return { data: res.json };
+    });
+  };
+
   return {
     /**
      * getList 
      */
 
-    getList: (resource, params) => {
+    getList: async (resource, params) => {
       const { page = 1, perPage = 10 } = params.pagination || {};
       const { field = 'id', order = 'ASC' } = params.sort || {};
 
@@ -35,21 +48,22 @@ export default baseUrl => {
       };
 
       const url = `${baseUrl}/${resource}?${stringify(query)}`;
+      const res = await fetchJson(url);
 
-      return fetchJson(url).then(({ headers, json }) => ({
-        data: json[kebabToCamel(resource)],
-        total: json.total
-      }));
+      return {
+        data: res.json[kebabToCamel(resource)],
+        total: res.json.total
+      };
     },
 
     /**
      * getOne 
      */
 
-    getOne: (resource, params) =>
-    fetchJson(`${baseUrl}/${resource}/${params.id}`).then(({ json }) => ({
-      data: json
-    })),
+    getOne: async (resource, params) => {
+      const res = await fetchJson(`${baseUrl}/${resource}/${params.id}`)
+      return { data: res.json };
+    },
 
     /**
      * getMany 
@@ -96,12 +110,24 @@ export default baseUrl => {
      * update 
      */
 
-    update: (resource, params) =>
-    fetchJson(`${baseUrl}/${resource}/${params.id}`, {
-      method: 'PUT',
-      body: JSON.stringify(params.data),
-    }).then(({ json }) => ({ data: json })),
+    update: (resource, params) => {
+      console.log('dataProvider.update', resource, params);
 
+      return fetchJson(`${baseUrl}/${resource}/${params.id}`, {
+        method: 'PUT',
+        body: JSON.stringify(params.data)
+      
+      }).then(res => {
+        return { data: res.json };
+      
+      }).catch(err => {
+        // Ugly hack for import overwrite
+        if (err.status === 404) return create(resource, params);
+        throw err;
+      })
+    },
+
+    
     /**
      * updateMany 
      */
@@ -120,14 +146,7 @@ export default baseUrl => {
      * create 
      */
 
-    create: (resource, params) =>{
-      return fetchJson(`${baseUrl}/${resource}`, {
-        method: 'POST',
-        body: JSON.stringify(params.data),
-      }).then(({ json }) => ({
-        data: { ...params.data, id: json.id },
-      }))
-    },
+    create,
 
     /**
      * delete 
@@ -143,10 +162,19 @@ export default baseUrl => {
      * deleteMany 
      */
 
-    deleteMany: (resource, params) => {
-      return fetchJson(`${baseUrl}/${resource}/${params.ids[0]}`, {
-        method: 'DELETE',
-      }).then(({ json }) => ({ data: json }));
+    deleteMany: async (resource, params) => {
+      const deletedIds = [];
+
+      for (const id of params.ids) {
+        const url = `${baseUrl}/${resource}/${id}`
+        try {
+          await fetchJson(url, { method: 'DELETE' });
+          deletedIds.push(id);
+        } catch (err) {
+          console.log('delete error', err);
+        }
+      }
+      return { data: deletedIds };
     }
   };
 };

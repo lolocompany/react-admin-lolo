@@ -2,6 +2,8 @@ import React, { useContext } from 'react';
 import * as ra from 'react-admin';
 import { titleize } from 'inflection';
 import { ResourceContext }  from './Resource';
+import ListActions from './ListActions';
+import ListEmpty from './ListEmpty';
 import Filter from './Filter';
 
 const List = props => {
@@ -13,7 +15,12 @@ const List = props => {
 	const name = schema.properties.name ? 'name' : 'id';
 
 	return (
-    <ra.List {...props} filters={<Filter schema={schema} />}>
+    <ra.List
+    	{...props} 
+    	filters={<Filter schema={schema} />}
+    	actions={<ListActions />}
+    	empty={<ListEmpty />}
+    	>
       <ra.Datagrid rowClick='edit'>
       	<ra.TextField source={name} key={name} />
       	{ Object.entries(schema.properties).map(toField) }
