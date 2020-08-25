@@ -14,7 +14,8 @@
     "@rjsf/core": "^2.3.0",
     "@rjsf/material-ui": "^2.3.0",
     "aws-amplify": "^3.0.24",
-    "react-admin": "^3.8.2"
+    "react-admin": "^3.8.2",
+    "react-admin-import-csv": "^0.2.18"
   },
   "peerDependencies": {
     "react": "^16.x",
