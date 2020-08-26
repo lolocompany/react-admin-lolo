@@ -1,5 +1,5 @@
 # react-admin-lolo
-Lolo wrapper for https://github.com/marmelab/react-admin
+A library for schema-driven web apps using [Lolo](https://lolo.company) and [React Admin](https://github.com/marmelab/react-admin)
 
 ## Usage
 ````
@@ -15,10 +15,21 @@ import { LoloAdmin, LoloResource } from 'react-admin-lolo';
 
 const App = () => (
   <LoloAdmin appId='APP_ID'>
-    <LoloResource name='posts' />
-    <LoloResource name='comments' />
+    <LoloResource name='movies' />
+    <LoloResource name='directors' />
   </LoloAdmin>
 );
 
 export default App;
+````
+
+## Customizing
+
+LoloResource supports the same override props as react-admin [Resource](https://marmelab.com/react-admin/Resource.html#the-resource-component). So for example, to customize the side menu icon and list view for directors:
+
+````javascript
+import UserIcon from '@material-ui/icons/People';
+import MyList from './MyList';
+
+<LoloResource name='directors' icon={UserIcon} list={MyList} />
 ````
