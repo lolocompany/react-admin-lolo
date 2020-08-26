@@ -3,9 +3,10 @@ A library for building schema-driven web apps using [Lolo](https://lolo.company)
 
 ## Usage
 ````
-npx create-react-app movie-app
-cd movie-app
-npm i lolocompany/react-admin-lolo
+npx create-react-app movie-app && \
+  cd movie-app && \
+  npm install lolocompany/react-admin-lolo && \
+  npm start
 ````
 
 ````javascript
