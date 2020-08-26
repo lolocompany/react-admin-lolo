@@ -1,14 +1,12 @@
 import React, { useContext } from 'react';
 import * as ra from 'react-admin';
-import { titleize } from 'inflection';
 import { ResourceContext }  from './Resource';
 import ListActions from './ListActions';
 import ListEmpty from './ListEmpty';
 import Filter from './Filter';
 
 const List = props => {
-	const { schema } = useContext(ResourceContext);
-	const { timestamps = [ 'createdAt', 'updatedAt' ] } = props;
+	const { schema, timestamps } = useContext(ResourceContext);
 
 	if (!schema) return null;
 
@@ -33,36 +31,53 @@ const List = props => {
 const toField = ([ key, fieldSchema ]) => {
 	if (key === 'name') return null;
 
+	const fieldProps = {
+		source: key,
+		label: fieldSchema.title,
+		key
+	}
+
 	switch(fieldSchema.type) {
 		case 'string':
-			if (key.endsWith('Id')) return refField(key);
-			return <ra.TextField source={key} key={key}/>;
+			if (key.endsWith('Id')) return refField(fieldProps);
+			if (fieldSchema.enum) return enumField(fieldProps, fieldSchema);
+			return <ra.TextField {...fieldProps}/>;
 
 		case 'boolean':
-			return <ra.BooleanField source={key} key={key}/>
+			return <ra.BooleanField {...fieldProps}/>
 
 		case 'integer':
 		case 'number':
-			return <ra.NumberField source={key} key={key}/>
+			return <ra.NumberField {...fieldProps}/>
 			
 		default:
 			return null;
 	}
 };
 
-const refField = key => {
-	const name = key.replace(/Id$/, '');
-
+const refField = ({ key, ...props }) => {
 	return (
     <ra.ReferenceField
-    	label={titleize(name)} 
-    	source={key} 
-    	reference={name + 's'}
+    	reference={key.replace(/Id$/, '') + 's'}
     	key={key}
+    	{...props}
     	>
     	<ra.TextField source='name' />
     </ra.ReferenceField>
 	);
 };
+
+const enumField = (fieldProps, fieldSchema) => {
+	const { enum: _enum, enumNames = []} = fieldSchema;
+	return (
+		<ra.SelectField
+			{...fieldProps} 
+			choices={_enum.map((id, i) => ({
+				id, name: enumNames[i] || id
+			}))}
+			translateChoice={false}
+			/>
+	);
+}
 
 export default List

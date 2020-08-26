@@ -11,7 +11,7 @@ import { AdminContext } from './Admin';
 const ResourceContext = React.createContext();
 
 const Resource = props => {
-	const { name } = props;
+	const { name, timestamps = ['createdAt'] } = props;
 
 	const [ schema, setSchema ] = useState();
 	const [ uiSchema, setUiSchema] = useState();
@@ -30,7 +30,7 @@ const Resource = props => {
 	}, [ baseUrl, name ]);
 
 	return (
-		<ResourceContext.Provider value={{ schema, uiSchema }}>
+		<ResourceContext.Provider value={{ schema, uiSchema, timestamps }}>
 			<ra.Resource
 				list={List}
 				create={Create}

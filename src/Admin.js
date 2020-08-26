@@ -3,6 +3,7 @@ import * as ra from 'react-admin';
 import { withAuthenticator } from '@aws-amplify/ui-react';
 import _dataProvider from './data_provider';
 import authProvider from './auth_provider';
+import './Admin.css';
 
 const AdminContext = React.createContext({});
 

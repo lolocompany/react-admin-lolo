@@ -28,6 +28,7 @@
     "babel-loader": "^8.1.0",
     "rollup": "^2.26.5",
     "rollup-plugin-babel": "^4.4.0",
-    "rollup-plugin-commonjs": "^10.1.0"
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-css-only": "^2.1.0"
   }
 }

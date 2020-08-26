@@ -1,5 +1,6 @@
 import babel from "rollup-plugin-babel";
 import commonjs from "rollup-plugin-commonjs";
+import css from 'rollup-plugin-css-only'
 
 import packageJSON from "./package.json";
 const input = "./src/index.js";
@@ -16,7 +17,8 @@ export default [
       babel({
         exclude: "node_modules/**"
       }),
-      commonjs()
+      commonjs(),
+      css({ output: 'dist/bundle.css' })
     ]
   }
 ];

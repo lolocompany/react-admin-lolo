@@ -1,11 +1,12 @@
 import React from 'react';
 import { useContext, useState, useEffect } from 'react';
 import { withTheme } from '@rjsf/core';
-import { Toolbar, SaveButton, DeleteButton } from 'react-admin';
-import { useEditController, TitleForRecord } from 'react-admin';
 import { Theme as MaterialUITheme } from '@rjsf/material-ui';
-import { Box } from '@material-ui/core';
+import { Box, Card } from '@material-ui/core';
 import { ResourceContext }  from './Resource';
+import { titleize, singularize } from 'inflection';
+import * as ra from 'react-admin';
+import EditActions from './EditActions';
 
 const Form = withTheme(MaterialUITheme);
 
@@ -17,61 +18,64 @@ const Edit = props => {
 
   const {
     basePath,
-    defaultTitle,
     record,
     resource,
     save,
     saving,
-  } = useEditController({ ...props, undoable: false });
+  } = ra.useEditController({ ...props, undoable: false });
 
   useEffect(() => setFormData(record), [ record ]);
 
   if (!schema) return null;
 
 	return (
-		<Box p="1em">
-			<Box display="flex">
-				<Box flex={2} mr="1em">
-          <TitleForRecord
-            title={props.title}
-            record={record}
-            defaultTitle={defaultTitle}
-          />
-					<Form
-						ref={f => { form = f; }}
-						schema={schema}
-						uiSchema={uiSchema}
-						formData={formData}
+    <div>
+      <EditActions {...props}/>
+      <ra.TitleForRecord
+        title={props.title}
+        record={record}
+        defaultTitle={getTitle(resource)}
+      />
+      <Card>
+        <Box px={2} pb={1}>
+  				<Form
+  					ref={f => { form = f; }}
+  					schema={schema}
+  					uiSchema={uiSchema}
+  					formData={formData}
             showErrorList={false}
             liveValidate={true}
-						onChange={({ formData, errors }) => {
+  					onChange={({ formData, errors }) => {
               setFormData(formData);
-							setHasErrors(!!errors.length);
-							}}
+  						setHasErrors(!!errors.length);
+  						}}
             onSubmit={({ formData })=> save(formData)}
             >
-						{' '}
-					</Form>
-				</Box>
-			</Box>
-  		<Toolbar>
+  					{' '}
+  				</Form>
+        </Box>
+      </Card>
+  		<ra.Toolbar>
   			<Box display="flex" justifyContent="space-between" width="100%">
-  				<SaveButton
+  				<ra.SaveButton
   					saving={saving}
   					disabled={hasErrors}
   					handleSubmitWithRedirect={() => form.submit()}
-  				/>
-
-  				<DeleteButton
+  				  />
+  				<ra.DeleteButton
   					record={record}
   					basePath={basePath}
   					resource={resource}
             undoable={false}
   					/>
   			</Box>
-  		</Toolbar>
-		</Box>
+  		</ra.Toolbar>
+    </div>
 	);
 };
+
+const getTitle = (resource, record) => {
+  return 'Edit ' + titleize(singularize(resource));
+}
 
 export default Edit

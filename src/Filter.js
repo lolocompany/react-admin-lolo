@@ -1,6 +1,5 @@
 import React from 'react';
 import * as ra from 'react-admin';
-import { humanize } from 'inflection';
 
 const Filter = props => {
 	return (
@@ -12,15 +11,18 @@ const Filter = props => {
 
 const toInput = ([ key, fieldSchema ]) => {
 	const { enum: _enum, enumNames = [] } = fieldSchema;
+	const fieldProps = {
+		label: fieldSchema.title,
+		source: key,
+		key
+	};
 
 	if (key.endsWith('Id')) {
 		const resource = key.replace(/Id$/, '');
 		return (
 			<ra.ReferenceInput
-				label={humanize(resource)}
-				source={key}
+				{...fieldProps}
 				reference={resource + 's'}
-				key={key}
 				>
     		<ra.SelectInput optionText="name" />
 			</ra.ReferenceInput>
@@ -29,25 +31,15 @@ const toInput = ([ key, fieldSchema ]) => {
 
 	if (_enum) {
 		const choices = _enum.map((id, i) => ({ id, name: enumNames[i] || id }));	
-		return <ra.SelectInput source={key} choices={choices} key={key}/>
+		return <ra.SelectInput {...fieldProps} choices={choices}/>
 	}
 
 	if (fieldSchema.type === 'boolean') {
-		return (
-			<ra.BooleanInput
-				label={humanize(key)} 
-				source={key}
-				key={key}
-			/>
-		);
+		return <ra.BooleanInput {...fieldProps} />
 	}
 	
 	return (
-		<ra.TextInput
-			label={humanize(key)}
-			source={key}
-			key={key}
-		/>
+		<ra.TextInput {...fieldProps} />
 	);
 };
 
