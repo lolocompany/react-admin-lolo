@@ -1,5 +1,5 @@
 # react-admin-lolo
-A library for building schema-driven web apps using [Lolo](https://lolo.company) and [React Admin](https://github.com/marmelab/react-admin)
+A library for schema-driven web apps using [Lolo](https://lolo.company), [React Admin](https://github.com/marmelab/react-admin) and [RJSF](https://github.com/rjsf-team/react-jsonschema-form)
 
 ## Usage
 ````
