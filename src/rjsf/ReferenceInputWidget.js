@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
-import { singularize, humanize } from 'inflection';
+import { transform} from 'inflection';
 import { AdminContext } from '../Admin';
 
 const ReferenceInputWidget = props => {
@@ -33,7 +33,14 @@ const ReferenceInputWidget = props => {
 	) : null;
 };
 
-const toResource = id => id.split('_').pop().replace(/Id$/, '') + 's';
-const toLabel = id => humanize(singularize(toResource(id)));
+const toResource = id => transform(
+	id.split('_').pop().replace(/Id$/, '') + 's', 
+	[ 'underscore', 'dasherize' ]
+);
+
+const toLabel = id => transform(
+	toResource(id),
+	[ 'humanize', 'singularize' ]
+);
 
 export default ReferenceInputWidget

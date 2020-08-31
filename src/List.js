@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import * as ra from 'react-admin';
+import { transform } from 'inflection';
 import { ResourceContext }  from './Resource';
 import ListActions from './ListActions';
 import ListEmpty from './ListEmpty';
@@ -10,8 +11,6 @@ const List = props => {
 
 	if (!schema) return null;
 
-	const name = schema.properties.name ? 'name' : 'id';
-
 	return (
     <ra.List
     	{...props} 
@@ -19,8 +18,7 @@ const List = props => {
     	actions={<ListActions />}
     	empty={<ListEmpty />}
     	>
-      <ra.Datagrid rowClick='edit'>
-      	<ra.TextField source={name} key={name} />
+      <ra.Datagrid rowClick={props.hasShow ? 'show' : 'edit'}>
       	{ Object.entries(schema.properties).map(toField) }
       	{ timestamps.map(key => <ra.DateField source={key} key={key}/>)}
       </ra.Datagrid>
@@ -29,8 +27,6 @@ const List = props => {
 }
 
 const toField = ([ key, fieldSchema ]) => {
-	if (key === 'name') return null;
-
 	const fieldProps = {
 		source: key,
 		label: fieldSchema.title,
@@ -56,9 +52,10 @@ const toField = ([ key, fieldSchema ]) => {
 };
 
 const refField = ({ key, ...props }) => {
+	const ref = transform(key.replace(/Id$/, '') + 's', [ 'underscore', 'dasherize' ])
 	return (
     <ra.ReferenceField
-    	reference={key.replace(/Id$/, '') + 's'}
+    	reference={ref}
     	key={key}
     	{...props}
     	>

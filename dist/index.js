@@ -662,175 +662,9 @@ var Admin = function Admin(_ref) {
   }, /*#__PURE__*/React__default['default'].createElement(RAdmin, null));
 };
 
-var CreateActions = function CreateActions(_ref) {
-  var basePath = _ref.basePath,
-      resource = _ref.resource;
-  return /*#__PURE__*/React__default['default'].createElement(ra.TopToolbar, null, /*#__PURE__*/React__default['default'].createElement(ra.ListButton, {
-    basePath: basePath,
-    resource: resource
-  }));
-};
-
 var Form = core.withTheme(materialUi.Theme);
 
-var Create = function Create(props) {
-  var _useState = React.useState({}),
-      _useState2 = _slicedToArray(_useState, 2),
-      formData = _useState2[0],
-      setFormData = _useState2[1];
-
-  var _useState3 = React.useState(true),
-      _useState4 = _slicedToArray(_useState3, 2),
-      hasErrors = _useState4[0],
-      setHasErrors = _useState4[1];
-
-  var _useState5 = React.useState(false),
-      _useState6 = _slicedToArray(_useState5, 2),
-      liveValidate = _useState6[0],
-      setLiveValidate = _useState6[1];
-
-  var _useContext = React.useContext(ResourceContext),
-      schema = _useContext.schema,
-      uiSchema = _useContext.uiSchema;
-
-  var form;
-
-  var _ra$useCreateControll = ra.useCreateController(_objectSpread2({}, props)),
-      defaultTitle = _ra$useCreateControll.defaultTitle,
-      record = _ra$useCreateControll.record,
-      save = _ra$useCreateControll.save,
-      saving = _ra$useCreateControll.saving;
-
-  if (!schema) return null;
-  return /*#__PURE__*/React__default['default'].createElement("div", null, /*#__PURE__*/React__default['default'].createElement(CreateActions, props), /*#__PURE__*/React__default['default'].createElement(ra.TitleForRecord, {
-    title: props.title,
-    record: record,
-    defaultTitle: defaultTitle
-  }), /*#__PURE__*/React__default['default'].createElement(core$1.Card, null, /*#__PURE__*/React__default['default'].createElement(core$1.Box, {
-    px: 2,
-    pb: 1
-  }, /*#__PURE__*/React__default['default'].createElement(Form, {
-    ref: function ref(f) {
-      form = f;
-    },
-    schema: schema,
-    uiSchema: uiSchema,
-    formData: formData,
-    showErrorList: false,
-    liveValidate: liveValidate,
-    onChange: function onChange(_ref) {
-      var formData = _ref.formData,
-          errors = _ref.errors;
-      console.log('onChange', form && form.state);
-      if (!liveValidate) setLiveValidate(true);
-      setFormData(formData);
-      setHasErrors(!!errors.length);
-    },
-    onSubmit: function onSubmit(_ref2) {
-      var formData = _ref2.formData;
-      return save(formData);
-    }
-  }, ' '))), /*#__PURE__*/React__default['default'].createElement(ra.Toolbar, null, /*#__PURE__*/React__default['default'].createElement(core$1.Box, {
-    display: "flex",
-    justifyContent: "space-between",
-    width: "100%"
-  }, /*#__PURE__*/React__default['default'].createElement(ra.SaveButton, {
-    saving: saving,
-    disabled: hasErrors,
-    handleSubmitWithRedirect: function handleSubmitWithRedirect() {
-      return form.submit();
-    }
-  }))));
-};
-
-var EditActions = function EditActions(_ref) {
-  var basePath = _ref.basePath,
-      resource = _ref.resource;
-  return /*#__PURE__*/React__default['default'].createElement(ra.TopToolbar, null, /*#__PURE__*/React__default['default'].createElement(ra.ListButton, {
-    basePath: basePath,
-    resource: resource
-  }));
-};
-
 var Form$1 = core.withTheme(materialUi.Theme);
-
-var Edit = function Edit(props) {
-  var _useState = React.useState({}),
-      _useState2 = _slicedToArray(_useState, 2),
-      formData = _useState2[0],
-      setFormData = _useState2[1];
-
-  var _useState3 = React.useState(true),
-      _useState4 = _slicedToArray(_useState3, 2),
-      hasErrors = _useState4[0],
-      setHasErrors = _useState4[1];
-
-  var _useContext = React.useContext(ResourceContext),
-      schema = _useContext.schema,
-      uiSchema = _useContext.uiSchema;
-
-  var form;
-
-  var _ra$useEditController = ra.useEditController(_objectSpread2(_objectSpread2({}, props), {}, {
-    undoable: false
-  })),
-      basePath = _ra$useEditController.basePath,
-      record = _ra$useEditController.record,
-      resource = _ra$useEditController.resource,
-      save = _ra$useEditController.save,
-      saving = _ra$useEditController.saving;
-
-  React.useEffect(function () {
-    return setFormData(record);
-  }, [record]);
-  if (!schema) return null;
-  return /*#__PURE__*/React__default['default'].createElement("div", null, /*#__PURE__*/React__default['default'].createElement(EditActions, props), /*#__PURE__*/React__default['default'].createElement(ra.TitleForRecord, {
-    title: props.title,
-    record: record,
-    defaultTitle: getTitle(resource)
-  }), /*#__PURE__*/React__default['default'].createElement(core$1.Card, null, /*#__PURE__*/React__default['default'].createElement(core$1.Box, {
-    px: 2,
-    pb: 1
-  }, /*#__PURE__*/React__default['default'].createElement(Form$1, {
-    ref: function ref(f) {
-      form = f;
-    },
-    schema: schema,
-    uiSchema: uiSchema,
-    formData: formData,
-    showErrorList: false,
-    liveValidate: true,
-    onChange: function onChange(_ref) {
-      var formData = _ref.formData,
-          errors = _ref.errors;
-      setFormData(formData);
-      setHasErrors(!!errors.length);
-    },
-    onSubmit: function onSubmit(_ref2) {
-      var formData = _ref2.formData;
-      return save(formData);
-    }
-  }, ' '))), /*#__PURE__*/React__default['default'].createElement(ra.Toolbar, null, /*#__PURE__*/React__default['default'].createElement(core$1.Box, {
-    display: "flex",
-    justifyContent: "space-between",
-    width: "100%"
-  }, /*#__PURE__*/React__default['default'].createElement(ra.SaveButton, {
-    saving: saving,
-    disabled: hasErrors,
-    handleSubmitWithRedirect: function handleSubmitWithRedirect() {
-      return form.submit();
-    }
-  }), /*#__PURE__*/React__default['default'].createElement(ra.DeleteButton, {
-    record: record,
-    basePath: basePath,
-    resource: resource,
-    undoable: false
-  }))));
-};
-
-var getTitle = function getTitle(resource, record) {
-  return 'Edit ' + inflection.titleize(inflection.singularize(resource));
-};
 
 var ImportButton = (function (props) {
   var _useContext = React.useContext(ResourceContext),
@@ -1028,37 +862,34 @@ var toInput = function toInput(_ref) {
 };
 
 var List = function List(props) {
-  var _useContext = React.useContext(ResourceContext),
-      schema = _useContext.schema,
-      timestamps = _useContext.timestamps;
-
-  if (!schema) return null;
-  var name = schema.properties.name ? 'name' : 'id';
-  return /*#__PURE__*/React__default['default'].createElement(ra.List, _extends({}, props, {
-    filters: /*#__PURE__*/React__default['default'].createElement(Filter, {
-      schema: schema
-    }),
-    actions: /*#__PURE__*/React__default['default'].createElement(ListActions, null),
-    empty: /*#__PURE__*/React__default['default'].createElement(Empty, null)
-  }), /*#__PURE__*/React__default['default'].createElement(ra.Datagrid, {
-    rowClick: "edit"
-  }, /*#__PURE__*/React__default['default'].createElement(ra.TextField, {
-    source: name,
-    key: name
-  }), Object.entries(schema.properties).map(toField), timestamps.map(function (key) {
-    return /*#__PURE__*/React__default['default'].createElement(ra.DateField, {
-      source: key,
-      key: key
-    });
-  })));
+  //const { schema, timestamps } = useContext(ResourceContext);
+  //if (!schema) return null;
+  //const name = schema.properties.name ? 'name' : 'id';
+  return /*#__PURE__*/React__default['default'].createElement(ResourceContext.Consumer, null, function (_ref) {
+    var schema = _ref.schema,
+        timestamps = _ref.timestamps;
+    return schema ? /*#__PURE__*/React__default['default'].createElement(ra.List, _extends({}, props, {
+      filters: /*#__PURE__*/React__default['default'].createElement(Filter, {
+        schema: schema
+      }),
+      actions: /*#__PURE__*/React__default['default'].createElement(ListActions, null),
+      empty: /*#__PURE__*/React__default['default'].createElement(Empty, null)
+    }), /*#__PURE__*/React__default['default'].createElement(ra.Datagrid, {
+      rowClick: props.hasShow ? 'show' : 'edit'
+    }, Object.entries(schema.properties).map(toField), timestamps.map(function (key) {
+      return /*#__PURE__*/React__default['default'].createElement(ra.DateField, {
+        source: key,
+        key: key
+      });
+    }))) : null;
+  });
 };
 
-var toField = function toField(_ref) {
-  var _ref2 = _slicedToArray(_ref, 2),
-      key = _ref2[0],
-      fieldSchema = _ref2[1];
+var toField = function toField(_ref2) {
+  var _ref3 = _slicedToArray(_ref2, 2),
+      key = _ref3[0],
+      fieldSchema = _ref3[1];
 
-  if (key === 'name') return null;
   var fieldProps = {
     source: key,
     label: fieldSchema.title,
@@ -1083,12 +914,13 @@ var toField = function toField(_ref) {
   }
 };
 
-var refField = function refField(_ref3) {
-  var key = _ref3.key,
-      props = _objectWithoutProperties(_ref3, ["key"]);
+var refField = function refField(_ref4) {
+  var key = _ref4.key,
+      props = _objectWithoutProperties(_ref4, ["key"]);
 
+  var ref = inflection.transform(key.replace(/Id$/, '') + 's', ['underscore', 'dasherize']);
   return /*#__PURE__*/React__default['default'].createElement(ra.ReferenceField, _extends({
-    reference: key.replace(/Id$/, '') + 's',
+    reference: ref,
     key: key
   }, props), /*#__PURE__*/React__default['default'].createElement(ra.TextField, {
     source: "name"
@@ -1144,11 +976,11 @@ var ReferenceInputWidget = function ReferenceInputWidget(props) {
 };
 
 var toResource = function toResource(id) {
-  return id.split('_').pop().replace(/Id$/, '') + 's';
+  return inflection.transform(id.split('_').pop().replace(/Id$/, '') + 's', ['underscore', 'dasherize']);
 };
 
 var toLabel = function toLabel(id) {
-  return inflection.humanize(inflection.singularize(toResource(id)));
+  return inflection.transform(toResource(id), ['humanize', 'singularize']);
 };
 
 var ResourceContext = /*#__PURE__*/React__default['default'].createContext();
@@ -1192,9 +1024,7 @@ var Resource = function Resource(props) {
       timestamps: timestamps
     }
   }, /*#__PURE__*/React__default['default'].createElement(ra.Resource, _extends({
-    list: List,
-    create: Create,
-    edit: Edit
+    list: List
   }, props)));
 };
 
@@ -1210,3 +1040,4 @@ var enableWidgets = function enableWidgets(uiSchema, schema) {
 
 exports.LoloAdmin = Admin;
 exports.LoloResource = Resource;
+exports.dataProvider = _dataProvider;

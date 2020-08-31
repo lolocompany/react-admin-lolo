@@ -41,7 +41,10 @@ const Edit = props => {
   				<Form
   					ref={f => { form = f; }}
   					schema={schema}
-  					uiSchema={uiSchema}
+  					uiSchema={{
+              id: { 'ui:readonly': true },
+              ...uiSchema
+            }}
   					formData={formData}
             showErrorList={false}
             liveValidate={true}
