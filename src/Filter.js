@@ -1,5 +1,6 @@
 import React from 'react';
 import * as ra from 'react-admin';
+import { keyToRef } from './utils';
 
 const Filter = props => {
 	return (
@@ -18,11 +19,10 @@ const toInput = ([ key, fieldSchema ]) => {
 	};
 
 	if (key.endsWith('Id')) {
-		const resource = key.replace(/Id$/, '');
 		return (
 			<ra.ReferenceInput
 				{...fieldProps}
-				reference={resource + 's'}
+				reference={keyToRef(key)}
 				>
     		<ra.SelectInput optionText="name" />
 			</ra.ReferenceInput>

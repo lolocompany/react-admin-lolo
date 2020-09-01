@@ -1,14 +1,12 @@
 import React from 'react';
 import { useContext, useState, useEffect } from 'react';
-import { withTheme } from '@rjsf/core';
-import { Theme as MaterialUITheme } from '@rjsf/material-ui';
 import { Box, Card } from '@material-ui/core';
 import { ResourceContext }  from './Resource';
 import { titleize, singularize } from 'inflection';
 import * as ra from 'react-admin';
 import EditActions from './EditActions';
 
-const Form = withTheme(MaterialUITheme);
+import Form from "@rjsf/material-ui";
 
 const Edit = props => {
   const [ formData, setFormData ] = useState({});

@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import * as ra from 'react-admin';
-import { transform } from 'inflection';
 import { ResourceContext }  from './Resource';
+import { keyToRef } from './utils';
 import ListActions from './ListActions';
 import ListEmpty from './ListEmpty';
 import Filter from './Filter';
@@ -52,10 +52,9 @@ const toField = ([ key, fieldSchema ]) => {
 };
 
 const refField = ({ key, ...props }) => {
-	const ref = transform(key.replace(/Id$/, '') + 's', [ 'underscore', 'dasherize' ])
 	return (
     <ra.ReferenceField
-    	reference={ref}
+    	reference={keyToRef(key)}
     	key={key}
     	{...props}
     	>

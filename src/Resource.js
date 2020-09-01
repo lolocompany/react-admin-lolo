@@ -1,6 +1,7 @@
 import React from 'react';
 import { useState, useEffect, useContext } from 'react';
 import * as ra from 'react-admin';
+import traverse from 'traverse';
 
 import Create from './Create';
 import Edit from './Edit';
@@ -19,6 +20,17 @@ const Resource = props => {
 
 	useEffect(() => {
 		const schemaUrl = baseUrl + '/schemas/' + name.replace(/s$/, '');
+
+		/*
+		if (name === 'devices') {
+			const _schema = JSON.parse(JSON.stringify(cannedSchema));
+			const _uiSchema = {};
+			enableWidgets(_uiSchema, _schema);
+			setSchema(_schema);
+			setUiSchema(_uiSchema);
+			return;
+		}
+		*/
 
 		ra.fetchUtils.fetchJson(schemaUrl).then(({ json }) => {
 			const { uiSchema = {}, ...schema } = json;
@@ -42,11 +54,12 @@ const Resource = props => {
 };
 
 const enableWidgets = (uiSchema, schema) => {
-	Object.keys(schema.properties)
-		.filter(k => k.endsWith('Id'))
-		.forEach(k => {
-			uiSchema[k] = { 'ui:widget': rjsf.ReferenceInputWidget }
-		});
+	traverse(schema).forEach(function() {
+		if (/Id$/.test(this.key)) {
+			const path = this.path.filter(item => item !== 'properties');
+			traverse(uiSchema).set(path, { 'ui:widget': rjsf.ReferenceInputWidget });
+		}
+	});
 }
 
 export {

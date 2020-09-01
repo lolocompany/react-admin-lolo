@@ -9,9 +9,9 @@ var _react = _interopRequireWildcard(require("react"));
 
 var ra = _interopRequireWildcard(require("react-admin"));
 
-var _inflection = require("inflection");
-
 var _Resource = require("./Resource");
+
+var _utils = require("./utils");
 
 var _ListActions = _interopRequireDefault(require("./ListActions"));
 
@@ -76,9 +76,8 @@ const refField = ({
   key,
   ...props
 }) => {
-  const ref = (0, _inflection.transform)(key.replace(/Id$/, '') + 's', ['underscore', 'dasherize']);
   return /*#__PURE__*/_react.default.createElement(ra.ReferenceField, _extends({
-    reference: ref,
+    reference: (0, _utils.keyToRef)(key),
     key: key
   }, props), /*#__PURE__*/_react.default.createElement(ra.TextField, {
     source: "name"

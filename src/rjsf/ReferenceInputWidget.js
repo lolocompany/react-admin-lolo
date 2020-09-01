@@ -1,20 +1,21 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
-import { transform} from 'inflection';
 import { AdminContext } from '../Admin';
+import { keyToRef } from '../utils';
 
 const ReferenceInputWidget = props => {
 	const { dataProvider } = useContext(AdminContext);
-	const { id, value, onChange } = props;
+	const { id, value, onChange, schema } = props;
 	const [ data, setData ] = useState();
 
 	useEffect(() => {
-		dataProvider.getList(toResource(id), {}).then(res => setData(res.data));
+		const reference = keyToRef(id.split('_').pop()); // root_...
+		dataProvider.getList(reference, {}).then(res => setData(res.data));
 	}, [ dataProvider, id ]);
 
 	return data ? (
     <FormControl>
-      <InputLabel>{toLabel(id)}</InputLabel>
+      <InputLabel>{schema.title || id}</InputLabel>
 		  <Select
 		    labelId={id}
 		    id={id}
@@ -32,15 +33,5 @@ const ReferenceInputWidget = props => {
 		</FormControl>
 	) : null;
 };
-
-const toResource = id => transform(
-	id.split('_').pop().replace(/Id$/, '') + 's', 
-	[ 'underscore', 'dasherize' ]
-);
-
-const toLabel = id => transform(
-	toResource(id),
-	[ 'humanize', 'singularize' ]
-);
 
 export default ReferenceInputWidget

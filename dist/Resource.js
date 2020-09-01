@@ -9,6 +9,8 @@ var _react = _interopRequireWildcard(require("react"));
 
 var ra = _interopRequireWildcard(require("react-admin"));
 
+var _traverse = _interopRequireDefault(require("traverse"));
+
 var _Create = _interopRequireDefault(require("./Create"));
 
 var _Edit = _interopRequireDefault(require("./Edit"));
@@ -43,6 +45,17 @@ const Resource = props => {
   } = (0, _react.useContext)(_Admin.AdminContext);
   (0, _react.useEffect)(() => {
     const schemaUrl = baseUrl + '/schemas/' + name.replace(/s$/, '');
+    /*
+    if (name === 'devices') {
+    	const _schema = JSON.parse(JSON.stringify(cannedSchema));
+    	const _uiSchema = {};
+    	enableWidgets(_uiSchema, _schema);
+    	setSchema(_schema);
+    	setUiSchema(_uiSchema);
+    	return;
+    }
+    */
+
     ra.fetchUtils.fetchJson(schemaUrl).then(({
       json
     }) => {
@@ -71,9 +84,12 @@ const Resource = props => {
 exports.Resource = Resource;
 
 const enableWidgets = (uiSchema, schema) => {
-  Object.keys(schema.properties).filter(k => k.endsWith('Id')).forEach(k => {
-    uiSchema[k] = {
-      'ui:widget': rjsf.ReferenceInputWidget
-    };
+  (0, _traverse.default)(schema).forEach(function () {
+    if (/Id$/.test(this.key)) {
+      const path = this.path.filter(item => item !== 'properties');
+      (0, _traverse.default)(uiSchema).set(path, {
+        'ui:widget': rjsf.ReferenceInputWidget
+      });
+    }
   });
 };

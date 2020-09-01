@@ -9,9 +9,9 @@ var _react = _interopRequireWildcard(require("react"));
 
 var _core = require("@material-ui/core");
 
-var _inflection = require("inflection");
-
 var _Admin = require("../Admin");
+
+var _utils = require("../utils");
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
 
@@ -24,13 +24,16 @@ const ReferenceInputWidget = props => {
   const {
     id,
     value,
-    onChange
+    onChange,
+    schema
   } = props;
   const [data, setData] = (0, _react.useState)();
   (0, _react.useEffect)(() => {
-    dataProvider.getList(toResource(id), {}).then(res => setData(res.data));
+    const reference = (0, _utils.keyToRef)(id.split('_').pop()); // root_...
+
+    dataProvider.getList(reference, {}).then(res => setData(res.data));
   }, [dataProvider, id]);
-  return data ? /*#__PURE__*/_react.default.createElement(_core.FormControl, null, /*#__PURE__*/_react.default.createElement(_core.InputLabel, null, toLabel(id)), /*#__PURE__*/_react.default.createElement(_core.Select, {
+  return data ? /*#__PURE__*/_react.default.createElement(_core.FormControl, null, /*#__PURE__*/_react.default.createElement(_core.InputLabel, null, schema.title || id), /*#__PURE__*/_react.default.createElement(_core.Select, {
     labelId: id,
     id: id,
     value: value,
@@ -40,10 +43,6 @@ const ReferenceInputWidget = props => {
     key: item.id
   }, item.name)))) : null;
 };
-
-const toResource = id => (0, _inflection.transform)(id.split('_').pop().replace(/Id$/, '') + 's', ['underscore', 'dasherize']);
-
-const toLabel = id => (0, _inflection.transform)(toResource(id), ['humanize', 'singularize']);
 
 var _default = ReferenceInputWidget;
 exports.default = _default;
