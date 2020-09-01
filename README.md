@@ -3,10 +3,11 @@ A library for schema-driven web apps using [Lolo](https://lolo.company), [React 
 
 ## Usage
 ````
-npx create-react-app movie-app && \
-  cd movie-app && \
-  npm install lolocompany/react-admin-lolo && \
-  npm start
+npx create-react-app movie-app
+cd movie-app
+npm install react-admin react-admin-import-csv \
+	@rjsf/core @rjsf/material-ui aws-amplify @aws-amplify/ui-react \
+	lolocompany/react-admin-lolo
 ````
 
 ````javascript
