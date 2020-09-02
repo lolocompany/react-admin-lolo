@@ -53,11 +53,12 @@ const toField = ([key, fieldSchema]) => {
     label: fieldSchema.title,
     key
   };
+  console.log(key, fieldSchema);
+  if (key.endsWith('Id')) return refField(fieldProps);
+  if (fieldSchema.enum) return enumField(fieldProps, fieldSchema);
 
   switch (fieldSchema.type) {
     case 'string':
-      if (key.endsWith('Id')) return refField(fieldProps);
-      if (fieldSchema.enum) return enumField(fieldProps, fieldSchema);
       return /*#__PURE__*/_react.default.createElement(ra.TextField, fieldProps);
 
     case 'boolean':
@@ -89,11 +90,14 @@ const enumField = (fieldProps, fieldSchema) => {
     enum: _enum,
     enumNames = []
   } = fieldSchema;
+
+  const choices = _enum.map((id, i) => ({
+    id,
+    name: enumNames[i] || id
+  }));
+
   return /*#__PURE__*/_react.default.createElement(ra.SelectField, _extends({}, fieldProps, {
-    choices: _enum.map((id, i) => ({
-      id,
-      name: enumNames[i] || id
-    })),
+    choices: choices,
     translateChoice: false
   }));
 };

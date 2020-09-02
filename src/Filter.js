@@ -10,37 +10,54 @@ const Filter = props => {
 	);
 };
 
-const toInput = ([ key, fieldSchema ]) => {
-	const { enum: _enum, enumNames = [] } = fieldSchema;
+const toInput = ([ key, fieldSchema ]) => {	
 	const fieldProps = {
 		label: fieldSchema.title,
 		source: key,
 		key
 	};
 
-	if (key.endsWith('Id')) {
-		return (
-			<ra.ReferenceInput
-				{...fieldProps}
-				reference={keyToRef(key)}
-				>
-    		<ra.SelectInput optionText="name" />
-			</ra.ReferenceInput>
-		);
-	}
+	if (key.endsWith('Id')) return refInput(fieldProps);
+	if (fieldSchema.enum) return enumInput(fieldProps, fieldSchema);
 
-	if (_enum) {
-		const choices = _enum.map((id, i) => ({ id, name: enumNames[i] || id }));	
-		return <ra.SelectInput {...fieldProps} choices={choices}/>
-	}
+	switch(fieldSchema.type) {
+		case 'string':
+			return <ra.TextInput {...fieldProps}/>;
 
-	if (fieldSchema.type === 'boolean') {
-		return <ra.BooleanInput {...fieldProps} />
+		case 'boolean':
+			return <ra.BooleanInput {...fieldProps} />
+
+		case 'integer':
+		case 'number':
+			return <ra.NumberInput {...fieldProps}/>
+			
+		default:
+			return null;
 	}
-	
+};
+
+const refInput = ({ key, ...props }) => {
 	return (
-		<ra.TextInput {...fieldProps} />
+		<ra.ReferenceInput
+			{...props}
+			reference={keyToRef(key)}
+			>
+  		<ra.SelectInput optionText="name" />
+		</ra.ReferenceInput>
 	);
 };
+
+const enumInput = (fieldProps, fieldSchema) => {
+	const { enum: _enum, enumNames = []} = fieldSchema;
+	const choices = _enum.map((id, i) => ({ id, name: enumNames[i] || id }));
+
+	return (
+		<ra.SelectInput
+			{...fieldProps} 
+			choices={choices}
+		/>
+	);
+}
+
 
 export default Filter;

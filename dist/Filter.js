@@ -24,40 +24,55 @@ const Filter = props => {
 };
 
 const toInput = ([key, fieldSchema]) => {
-  const {
-    enum: _enum,
-    enumNames = []
-  } = fieldSchema;
   const fieldProps = {
     label: fieldSchema.title,
     source: key,
     key
   };
+  if (key.endsWith('Id')) return refInput(fieldProps);
+  if (fieldSchema.enum) return enumInput(fieldProps, fieldSchema);
 
-  if (key.endsWith('Id')) {
-    return /*#__PURE__*/_react.default.createElement(ra.ReferenceInput, _extends({}, fieldProps, {
-      reference: (0, _utils.keyToRef)(key)
-    }), /*#__PURE__*/_react.default.createElement(ra.SelectInput, {
-      optionText: "name"
-    }));
+  switch (fieldSchema.type) {
+    case 'string':
+      return /*#__PURE__*/_react.default.createElement(ra.TextInput, fieldProps);
+
+    case 'boolean':
+      return /*#__PURE__*/_react.default.createElement(ra.BooleanInput, fieldProps);
+
+    case 'integer':
+    case 'number':
+      return /*#__PURE__*/_react.default.createElement(ra.NumberInput, fieldProps);
+
+    default:
+      return null;
   }
+};
 
-  if (_enum) {
-    const choices = _enum.map((id, i) => ({
-      id,
-      name: enumNames[i] || id
-    }));
+const refInput = ({
+  key,
+  ...props
+}) => {
+  return /*#__PURE__*/_react.default.createElement(ra.ReferenceInput, _extends({}, props, {
+    reference: (0, _utils.keyToRef)(key)
+  }), /*#__PURE__*/_react.default.createElement(ra.SelectInput, {
+    optionText: "name"
+  }));
+};
 
-    return /*#__PURE__*/_react.default.createElement(ra.SelectInput, _extends({}, fieldProps, {
-      choices: choices
-    }));
-  }
+const enumInput = (fieldProps, fieldSchema) => {
+  const {
+    enum: _enum,
+    enumNames = []
+  } = fieldSchema;
 
-  if (fieldSchema.type === 'boolean') {
-    return /*#__PURE__*/_react.default.createElement(ra.BooleanInput, fieldProps);
-  }
+  const choices = _enum.map((id, i) => ({
+    id,
+    name: enumNames[i] || id
+  }));
 
-  return /*#__PURE__*/_react.default.createElement(ra.TextInput, fieldProps);
+  return /*#__PURE__*/_react.default.createElement(ra.SelectInput, _extends({}, fieldProps, {
+    choices: choices
+  }));
 };
 
 var _default = Filter;
