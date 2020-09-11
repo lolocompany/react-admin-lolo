@@ -39,8 +39,7 @@ const Edit = props => {
     resource,
     save,
     saving
-  } = ra.useEditController({ ...props,
-    undoable: false
+  } = ra.useEditController({ ...props
   });
   (0, _react.useEffect)(() => setFormData(record), [record]);
   if (!schema) return null;

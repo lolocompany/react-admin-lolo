@@ -26,7 +26,7 @@ const ReferenceInputWidget = props => {
 		  		<MenuItem
 		  			value={item.id} 
 		  			key={item.id}>
-		  			{item.name}
+		  			{item.name || item.id}
 		  		</MenuItem>
 		  	))}
 		  </Select>

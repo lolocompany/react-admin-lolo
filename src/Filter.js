@@ -1,6 +1,6 @@
 import React from 'react';
 import * as ra from 'react-admin';
-import { keyToRef } from './utils';
+import { keyToRef, SelectInput } from './utils';
 
 const Filter = props => {
 	return (
@@ -42,7 +42,7 @@ const refInput = ({ key, ...props }) => {
 			{...props}
 			reference={keyToRef(key)}
 			>
-  		<ra.SelectInput optionText="name" />
+  		<SelectInput/>
 		</ra.ReferenceInput>
 	);
 };

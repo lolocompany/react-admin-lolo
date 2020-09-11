@@ -20,7 +20,7 @@ const Edit = props => {
     resource,
     save,
     saving,
-  } = ra.useEditController({ ...props, undoable: false });
+  } = ra.useEditController({ ...props });
 
   useEffect(() => setFormData(record), [ record ]);
 

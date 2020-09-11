@@ -41,7 +41,7 @@ const ReferenceInputWidget = props => {
   }, data.map(item => /*#__PURE__*/_react.default.createElement(_core.MenuItem, {
     value: item.id,
     key: item.id
-  }, item.name)))) : null;
+  }, item.name || item.id)))) : null;
 };
 
 var _default = ReferenceInputWidget;

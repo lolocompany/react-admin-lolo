@@ -53,7 +53,6 @@ const toField = ([key, fieldSchema]) => {
     label: fieldSchema.title,
     key
   };
-  console.log(key, fieldSchema);
   if (key.endsWith('Id')) return refField(fieldProps);
   if (fieldSchema.enum) return enumField(fieldProps, fieldSchema);
 
@@ -80,9 +79,7 @@ const refField = ({
   return /*#__PURE__*/_react.default.createElement(ra.ReferenceField, _extends({
     reference: (0, _utils.keyToRef)(key),
     key: key
-  }, props), /*#__PURE__*/_react.default.createElement(ra.TextField, {
-    source: "name"
-  }));
+  }, props), /*#__PURE__*/_react.default.createElement(_utils.TextField, null));
 };
 
 const enumField = (fieldProps, fieldSchema) => {

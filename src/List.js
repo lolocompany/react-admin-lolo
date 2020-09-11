@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import * as ra from 'react-admin';
 import { ResourceContext }  from './Resource';
-import { keyToRef } from './utils';
+import { keyToRef, TextField } from './utils';
 import ListActions from './ListActions';
 import ListEmpty from './ListEmpty';
 import Filter from './Filter';
@@ -33,8 +33,6 @@ const toField = ([ key, fieldSchema ]) => {
 		key
 	}
 
-	console.log(key, fieldSchema);
-
 	if (key.endsWith('Id')) return refField(fieldProps);
 	if (fieldSchema.enum) return enumField(fieldProps, fieldSchema);
 
@@ -61,7 +59,7 @@ const refField = ({ key, ...props }) => {
     	key={key}
     	{...props}
     	>
-    	<ra.TextField source='name' />
+    	<TextField/>
     </ra.ReferenceField>
 	);
 };

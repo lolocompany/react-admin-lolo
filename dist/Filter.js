@@ -54,9 +54,7 @@ const refInput = ({
 }) => {
   return /*#__PURE__*/_react.default.createElement(ra.ReferenceInput, _extends({}, props, {
     reference: (0, _utils.keyToRef)(key)
-  }), /*#__PURE__*/_react.default.createElement(ra.SelectInput, {
-    optionText: "name"
-  }));
+  }), /*#__PURE__*/_react.default.createElement(_utils.SelectInput, null));
 };
 
 const enumInput = (fieldProps, fieldSchema) => {
