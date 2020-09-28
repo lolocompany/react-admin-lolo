@@ -16,10 +16,10 @@ const Resource = props => {
 
 	const [ schema, setSchema ] = useState();
 	const [ uiSchema, setUiSchema] = useState();
-	const { baseUrl } = useContext(AdminContext);
+	const { apiUrl } = useContext(AdminContext);
 
 	useEffect(() => {
-		const schemaUrl = baseUrl + '/schemas/' + name.replace(/s$/, '');
+		const schemaUrl = apiUrl + '/schemas/' + name.replace(/s$/, '');
 
 		/*
 		if (name === 'devices') {
@@ -39,7 +39,7 @@ const Resource = props => {
 			setSchema(schema);
 			setUiSchema(uiSchema);
 		});
-	}, [ baseUrl, name ]);
+	}, [ apiUrl, name ]);
 
 	return (
 		<ResourceContext.Provider value={{ schema, uiSchema, timestamps }}>

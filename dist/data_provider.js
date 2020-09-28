@@ -13,7 +13,7 @@ var _auth = _interopRequireDefault(require("@aws-amplify/auth"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var _default = baseUrl => {
+var _default = apiUrl => {
   const fetchJson = async (url, options = {}) => {
     if (!options.headers) {
       options.headers = new Headers({
@@ -33,7 +33,7 @@ var _default = baseUrl => {
 
   const create = (resource, params) => {
     console.log('dataProvider.create', resource, params);
-    return fetchJson(`${baseUrl}/${resource}`, {
+    return fetchJson(`${apiUrl}/${resource}`, {
       method: 'POST',
       body: JSON.stringify(params.data)
     }).then(res => {
@@ -62,7 +62,7 @@ var _default = baseUrl => {
         offset: (page - 1) * perPage,
         ...buildQs(params.filter)
       };
-      const url = `${baseUrl}/${resource}?${(0, _queryString.stringify)(query)}`;
+      const url = `${apiUrl}/${resource}?${(0, _queryString.stringify)(query)}`;
       const res = await fetchJson(url);
       return {
         data: res.json[kebabToCamel(resource)],
@@ -74,7 +74,7 @@ var _default = baseUrl => {
      * getOne 
      */
     getOne: async (resource, params) => {
-      const res = await fetchJson(`${baseUrl}/${resource}/${params.id}`);
+      const res = await fetchJson(`${apiUrl}/${resource}/${params.id}`);
       return {
         data: res.json
       };
@@ -88,7 +88,7 @@ var _default = baseUrl => {
       const query = params.ids.reduce((memo, id) => {
         return memo += `&q[id]=${id}`;
       }, `qor=1`);
-      const url = `${baseUrl}/${resource}?${query}`;
+      const url = `${apiUrl}/${resource}?${query}`;
       return fetchJson(url).then(({
         headers,
         json
@@ -118,7 +118,7 @@ var _default = baseUrl => {
           [params.target]: params.id
         })
       };
-      const url = `${baseUrl}/${resource}?${(0, _queryString.stringify)(query)}`;
+      const url = `${apiUrl}/${resource}?${(0, _queryString.stringify)(query)}`;
       return fetchJson(url).then(({
         headers,
         json
@@ -133,7 +133,7 @@ var _default = baseUrl => {
      */
     update: (resource, params) => {
       console.log('dataProvider.update', resource, params);
-      return fetchJson(`${baseUrl}/${resource}/${params.id}`, {
+      return fetchJson(`${apiUrl}/${resource}/${params.id}`, {
         method: 'PUT',
         body: JSON.stringify(params.data)
       }).then(res => {
@@ -156,7 +156,7 @@ var _default = baseUrl => {
           id: params.ids
         })
       };
-      return fetchJson(`${baseUrl}/${resource}?${(0, _queryString.stringify)(query)}`, {
+      return fetchJson(`${apiUrl}/${resource}?${(0, _queryString.stringify)(query)}`, {
         method: 'PUT',
         body: JSON.stringify(params.data)
       }).then(({
@@ -175,7 +175,7 @@ var _default = baseUrl => {
      * delete 
      */
     delete: (resource, params) => {
-      return fetchJson(`${baseUrl}/${resource}/${params.id}`, {
+      return fetchJson(`${apiUrl}/${resource}/${params.id}`, {
         method: 'DELETE'
       }).then(() => ({
         data: resource
@@ -189,7 +189,7 @@ var _default = baseUrl => {
       const deletedIds = [];
 
       for (const id of params.ids) {
-        const url = `${baseUrl}/${resource}/${id}`;
+        const url = `${apiUrl}/${resource}/${id}`;
 
         try {
           await fetchJson(url, {

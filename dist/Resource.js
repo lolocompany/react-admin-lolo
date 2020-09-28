@@ -41,10 +41,10 @@ const Resource = props => {
   const [schema, setSchema] = (0, _react.useState)();
   const [uiSchema, setUiSchema] = (0, _react.useState)();
   const {
-    baseUrl
+    apiUrl
   } = (0, _react.useContext)(_Admin.AdminContext);
   (0, _react.useEffect)(() => {
-    const schemaUrl = baseUrl + '/schemas/' + name.replace(/s$/, '');
+    const schemaUrl = apiUrl + '/schemas/' + name.replace(/s$/, '');
     /*
     if (name === 'devices') {
     	const _schema = JSON.parse(JSON.stringify(cannedSchema));
@@ -67,7 +67,7 @@ const Resource = props => {
       setSchema(schema);
       setUiSchema(uiSchema);
     });
-  }, [baseUrl, name]);
+  }, [apiUrl, name]);
   return /*#__PURE__*/_react.default.createElement(ResourceContext.Provider, {
     value: {
       schema,

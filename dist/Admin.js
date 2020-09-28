@@ -41,7 +41,7 @@ const Admin = ({
   }, props), props.children));
   return /*#__PURE__*/_react.default.createElement(AdminContext.Provider, {
     value: {
-      baseUrl,
+      apiUrl,
       dataProvider
     }
   }, /*#__PURE__*/_react.default.createElement(RAdmin, null));

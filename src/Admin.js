@@ -22,7 +22,7 @@ const Admin = ({ apiUrl, ...props }) => {
 	));
 
 	return (
-		<AdminContext.Provider value={{ baseUrl, dataProvider }}>
+		<AdminContext.Provider value={{ apiUrl, dataProvider }}>
 			<RAdmin />
 		</AdminContext.Provider>
 	);
