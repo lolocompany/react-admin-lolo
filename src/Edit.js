@@ -9,7 +9,7 @@ import EditActions from './EditActions';
 import Form from "@rjsf/material-ui";
 
 const Edit = props => {
-  const [ formData, setFormData ] = useState({});
+  const [ formData, setFormData ] = useState();
 	const [ hasErrors, setHasErrors ] = useState(true);
 	const { schema, uiSchema } = useContext(ResourceContext);
 	let form;
@@ -24,7 +24,7 @@ const Edit = props => {
 
   useEffect(() => setFormData(record), [ record ]);
 
-  if (!schema) return null;
+  if (!schema || !formData) return null;
 
 	return (
     <div>

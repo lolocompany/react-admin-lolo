@@ -30,12 +30,10 @@ const AdminContext = /*#__PURE__*/_react.default.createContext({});
 exports.AdminContext = AdminContext;
 
 const Admin = ({
-  appId,
-  env = 'dev',
+  apiUrl,
   ...props
 }) => {
-  const baseUrl = `https://${env}.lolo.company/${appId}`;
-  const dataProvider = (0, _data_provider.default)(baseUrl);
+  const dataProvider = (0, _data_provider.default)(apiUrl);
   const RAdmin = (0, _uiReact.withAuthenticator)(() => /*#__PURE__*/_react.default.createElement(ra.Admin, _extends({
     dataProvider: dataProvider,
     authProvider: _auth_provider.default,

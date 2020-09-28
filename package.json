@@ -3,13 +3,21 @@
   "version": "1.0.1",
   "description": "",
   "main": "dist/index.js",
+  "watch": {
+    "build": {
+      "patterns": [ "src" ]
+    }
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "babel src -d dist --copy-files"
+    "build": "babel src -d dist --copy-files",
+    "watch": "npm-watch"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@material-ui/lab": "^4.0.0-alpha.56",
+    "throttle-debounce": "^2.3.0",
     "traverse": "^0.6.6"
   },
   "peerDependencies": {
@@ -21,6 +29,7 @@
     "@babel/core": "^7.2.2",
     "@babel/plugin-proposal-export-default-from": "^7.2.0",
     "@babel/preset-env": "^7.2.3",
-    "@babel/preset-react": "^7.0.0"
+    "@babel/preset-react": "^7.0.0",
+    "npm-watch": "^0.7.0"
   }
 }

@@ -11,6 +11,8 @@ var ra = _interopRequireWildcard(require("react-admin"));
 
 var _utils = require("./utils");
 
+var _rjsf = require("./rjsf");
+
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
@@ -29,7 +31,7 @@ const toInput = ([key, fieldSchema]) => {
     source: key,
     key
   };
-  if (key.endsWith('Id')) return refInput(fieldProps);
+  if (key.endsWith('Id')) return /*#__PURE__*/_react.default.createElement(RefInput, fieldProps);
   if (fieldSchema.enum) return enumInput(fieldProps, fieldSchema);
 
   switch (fieldSchema.type) {
@@ -48,13 +50,25 @@ const toInput = ([key, fieldSchema]) => {
   }
 };
 
-const refInput = ({
-  key,
-  ...props
+const RefInput = ({
+  source,
+  label
 }) => {
-  return /*#__PURE__*/_react.default.createElement(ra.ReferenceInput, _extends({}, props, {
-    reference: (0, _utils.keyToRef)(key)
-  }), /*#__PURE__*/_react.default.createElement(_utils.SelectInput, null));
+  const {
+    setFilters
+  } = ra.useListContext();
+  return /*#__PURE__*/_react.default.createElement(_rjsf.ReferenceInputWidget, {
+    id: source,
+    schema: {
+      title: label
+    },
+    onChange: value => {
+      setFilters({
+        [source]: value
+      });
+    },
+    variant: "filled"
+  });
 };
 
 const enumInput = (fieldProps, fieldSchema) => {

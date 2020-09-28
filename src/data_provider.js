@@ -70,9 +70,10 @@ export default baseUrl => {
      */
 
     getMany: (resource, params) => {
+      console.log('getMany', resource, params);
       const query = params.ids.reduce((memo, id) => {
         return memo += `&q[id]=${id}`
-      }, `qor=1&_=${Math.random()}`);
+      }, `qor=1`);
 
       const url = `${baseUrl}/${resource}?${query}`;
 

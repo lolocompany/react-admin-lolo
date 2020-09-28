@@ -17,6 +17,7 @@ const List = props => {
     	filters={<Filter schema={schema} />}
     	actions={<ListActions />}
     	empty={<ListEmpty />}
+    	sort={{ field: 'createdAt', order: 'ASC' }}
     	>
       <ra.Datagrid rowClick={props.hasShow ? 'show' : 'edit'}>
       	{ Object.entries(schema.properties).map(toField) }

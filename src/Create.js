@@ -43,11 +43,10 @@ const Create = props => {
             showErrorList={false}
             liveValidate={liveValidate}
 						onChange={({ formData, errors }) => {
-              console.log('onChange', form && form.state);
               if (!liveValidate) setLiveValidate(true);
               setFormData(formData);
 							setHasErrors(!!errors.length);
-							}}
+						}}
             onSubmit={({ formData })=> save(formData)}
             >
 						{' '}

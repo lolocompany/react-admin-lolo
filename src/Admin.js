@@ -7,9 +7,8 @@ import './Admin.css';
 
 const AdminContext = React.createContext({});
 
-const Admin = ({ appId, env = 'dev', ...props }) => {
-	const baseUrl = `https://${env}.lolo.company/${appId}`;
-	const dataProvider = _dataProvider(baseUrl);
+const Admin = ({ apiUrl, ...props }) => {
+	const dataProvider = _dataProvider(apiUrl);
 
 	const RAdmin = withAuthenticator(() => (
 		<ra.Admin

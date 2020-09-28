@@ -64,7 +64,6 @@ const Create = props => {
       formData,
       errors
     }) => {
-      console.log('onChange', form && form.state);
       if (!liveValidate) setLiveValidate(true);
       setFormData(formData);
       setHasErrors(!!errors.length);

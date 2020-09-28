@@ -38,7 +38,11 @@ const List = props => {
       schema: schema
     }),
     actions: /*#__PURE__*/_react.default.createElement(_ListActions.default, null),
-    empty: /*#__PURE__*/_react.default.createElement(_ListEmpty.default, null)
+    empty: /*#__PURE__*/_react.default.createElement(_ListEmpty.default, null),
+    sort: {
+      field: 'createdAt',
+      order: 'ASC'
+    }
   }), /*#__PURE__*/_react.default.createElement(ra.Datagrid, {
     rowClick: props.hasShow ? 'show' : 'edit'
   }, Object.entries(schema.properties).map(toField), timestamps.map(key => /*#__PURE__*/_react.default.createElement(ra.DateField, {

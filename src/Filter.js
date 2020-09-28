@@ -2,6 +2,8 @@ import React from 'react';
 import * as ra from 'react-admin';
 import { keyToRef, SelectInput } from './utils';
 
+import { ReferenceInputWidget}  from './rjsf';
+
 const Filter = props => {
 	return (
 	  <ra.Filter {...props}>
@@ -17,7 +19,7 @@ const toInput = ([ key, fieldSchema ]) => {
 		key
 	};
 
-	if (key.endsWith('Id')) return refInput(fieldProps);
+	if (key.endsWith('Id')) return <RefInput {...fieldProps}/>
 	if (fieldSchema.enum) return enumInput(fieldProps, fieldSchema);
 
 	switch(fieldSchema.type) {
@@ -36,14 +38,22 @@ const toInput = ([ key, fieldSchema ]) => {
 	}
 };
 
-const refInput = ({ key, ...props }) => {
+const RefInput = ({ source, label }) => {
+	const { setFilters } = ra.useListContext();
+
 	return (
-		<ra.ReferenceInput
-			{...props}
-			reference={keyToRef(key)}
-			>
-  		<SelectInput/>
-		</ra.ReferenceInput>
+		<ReferenceInputWidget
+			id={source}
+			schema={{
+				title: label
+			}}
+			onChange={value => {
+				setFilters({
+					[source]: value
+				})
+			}}
+			variant='filled'
+		/>
 	);
 };
 
