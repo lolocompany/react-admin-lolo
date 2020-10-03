@@ -6,6 +6,12 @@ import ListActions from './ListActions';
 import ListEmpty from './ListEmpty';
 import Filter from './Filter';
 
+const ExpandPanel = ({ id, record, resource }) => (
+	<pre style={{fontSize: '1.1rem'}}>
+		{JSON.stringify(record, null, 2)}
+	</pre>
+);
+
 const List = props => {
 	const { schema, timestamps } = useContext(ResourceContext);
 
@@ -14,12 +20,16 @@ const List = props => {
 	return (
     <ra.List
     	{...props} 
+    	bulkActionButtons={props.hasEdit}
     	filters={<Filter schema={schema} />}
     	actions={<ListActions />}
     	empty={<ListEmpty />}
     	sort={{ field: 'createdAt', order: 'ASC' }}
     	>
-      <ra.Datagrid rowClick={props.hasShow ? 'show' : 'edit'}>
+      <ra.Datagrid
+      	rowClick={props.hasShow ? 'show' : props.hasEdit ? 'edit' : null}
+      	expand={<ExpandPanel />}
+      	>
       	{ Object.entries(schema.properties).map(toField) }
       	{ timestamps.map(key => <ra.DateField source={key} key={key}/>)}
       </ra.Datagrid>

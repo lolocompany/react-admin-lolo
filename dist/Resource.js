@@ -64,6 +64,7 @@ const Resource = props => {
         ...schema
       } = json;
       enableWidgets(uiSchema, schema);
+      delete schema.additionalProperties;
       setSchema(schema);
       setUiSchema(uiSchema);
     });

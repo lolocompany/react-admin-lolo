@@ -20,7 +20,7 @@ const Edit = props => {
     resource,
     save,
     saving,
-  } = ra.useEditController({ ...props });
+  } = ra.useEditController({ ...props, undoable: false });
 
   useEffect(() => setFormData(record), [ record ]);
 
@@ -49,6 +49,7 @@ const Edit = props => {
   					onChange={({ formData, errors }) => {
               setFormData(formData);
   						setHasErrors(!!errors.length);
+              console.log('onChange', formData, errors);
   						}}
             onSubmit={({ formData })=> save(formData)}
             >

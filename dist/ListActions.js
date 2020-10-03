@@ -25,6 +25,7 @@ const ListActions = props => {
     exporter,
     filters,
     maxResults,
+    hasCreate,
     ...rest
   } = props;
   const {
@@ -44,15 +45,15 @@ const ListActions = props => {
     displayedFilters,
     filterValues,
     context: 'button'
-  }), /*#__PURE__*/_react.default.createElement(ra.CreateButton, {
+  }), hasCreate ? /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement(ra.CreateButton, {
     basePath: basePath
-  }), /*#__PURE__*/_react.default.createElement(ra.ExportButton, {
+  }), /*#__PURE__*/_react.default.createElement(_ImportButton.default, props)) : null, /*#__PURE__*/_react.default.createElement(ra.ExportButton, {
     disabled: total === 0,
     resource: resource,
     sort: currentSort,
     filterValues: filterValues,
     maxResults: maxResults
-  }), /*#__PURE__*/_react.default.createElement(_ImportButton.default, props));
+  }));
 };
 
 var _default = ListActions;

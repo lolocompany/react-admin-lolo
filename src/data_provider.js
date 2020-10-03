@@ -87,24 +87,25 @@ export default apiUrl => {
      * getManyReference 
      */
 
-    getManyReference: (resource, params) => {
+    getManyReference: async (resource, params) => {
       console.log('getManyReference', resource, params);
-      const { page, perPage } = params.pagination;
-      const { field, order } = params.sort;
-      const query = {
-        sort: JSON.stringify([field, order]),
-        range: JSON.stringify([(page - 1) * perPage, page * perPage - 1]),
-        filter: JSON.stringify({
-          ...params.filter,
-          [params.target]: params.id,
-        }),
-      };
-      const url = `${apiUrl}/${resource}?${stringify(query)}`;
+      const { page = 1, perPage = 10 } = params.pagination || {};
+      const { field = 'id', order = 'ASC' } = params.sort || {};
 
-      return fetchJson(url).then(({ headers, json }) => ({
-        data: json,
-        total: parseInt(headers.get('content-range').split('/').pop(), 10),
-      }));
+      const query = {
+        limit: perPage,
+        sort: `${field} ${order.toLowerCase()}`,
+        offset: (page - 1) * perPage,
+        ...buildQs({ [params.target]: params.id })
+      };
+
+      const url = `${apiUrl}/${resource}?${stringify(query)}`;
+      const res = await fetchJson(url);
+
+      return {
+        data: res.json[kebabToCamel(resource)],
+        total: res.json.total
+      };
     },
 
     /**

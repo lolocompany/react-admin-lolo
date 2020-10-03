@@ -9,6 +9,7 @@ const ListActions = (props) => {
     exporter,
     filters,
     maxResults,
+    hasCreate,
     ...rest
   } = props;
 
@@ -29,9 +30,14 @@ const ListActions = (props) => {
         showFilter,
         displayedFilters,
         filterValues,
-        context: 'button',
+        context: 'button'
         })}
-      <ra.CreateButton basePath={basePath} />
+      {hasCreate ? (
+        <>
+        <ra.CreateButton basePath={basePath} />
+        <ImportButton {...props} />
+        </>
+      ) : null}
       <ra.ExportButton
         disabled={total === 0}
         resource={resource}
@@ -39,7 +45,6 @@ const ListActions = (props) => {
         filterValues={filterValues}
         maxResults={maxResults}
       />
-      <ImportButton {...props} />
     </ra.TopToolbar>
   );
 };

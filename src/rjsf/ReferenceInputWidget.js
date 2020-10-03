@@ -75,7 +75,8 @@ function ReferenceInputWidget({ id, value, onChange, schema, variant }) {
       id={id}
       autoComplete={true}
       blurOnSelect={true}
-      getOptionLabel={option => options ? option.name : ''}
+      getOptionLabel={option => option ? (option.name || option.id || '') : ''}
+      getOptionSelected={option => option && option.id === value}
       filterOptions={x => x}
       options={options}
       autoComplete

@@ -27,6 +27,16 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
+const ExpandPanel = ({
+  id,
+  record,
+  resource
+}) => /*#__PURE__*/_react.default.createElement("pre", {
+  style: {
+    fontSize: '1.1rem'
+  }
+}, JSON.stringify(record, null, 2));
+
 const List = props => {
   const {
     schema,
@@ -34,6 +44,7 @@ const List = props => {
   } = (0, _react.useContext)(_Resource.ResourceContext);
   if (!schema) return null;
   return /*#__PURE__*/_react.default.createElement(ra.List, _extends({}, props, {
+    bulkActionButtons: props.hasEdit,
     filters: /*#__PURE__*/_react.default.createElement(_Filter.default, {
       schema: schema
     }),
@@ -44,7 +55,8 @@ const List = props => {
       order: 'ASC'
     }
   }), /*#__PURE__*/_react.default.createElement(ra.Datagrid, {
-    rowClick: props.hasShow ? 'show' : 'edit'
+    rowClick: props.hasShow ? 'show' : props.hasEdit ? 'edit' : null,
+    expand: /*#__PURE__*/_react.default.createElement(ExpandPanel, null)
   }, Object.entries(schema.properties).map(toField), timestamps.map(key => /*#__PURE__*/_react.default.createElement(ra.DateField, {
     source: key,
     key: key
