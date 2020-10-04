@@ -14,7 +14,7 @@ var _auth = _interopRequireDefault(require("@aws-amplify/auth"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var _default = apiUrl => {
-  const fetchJson = async (url, options = {}) => {
+  const fetchJson = async (path, options = {}) => {
     if (!options.headers) {
       options.headers = new Headers({
         Accept: 'application/json'
@@ -23,7 +23,7 @@ var _default = apiUrl => {
 
     const session = await _auth.default.currentSession();
     options.headers.set('Authorization', session.idToken.jwtToken);
-    return _reactAdmin.fetchUtils.fetchJson(url, options);
+    return _reactAdmin.fetchUtils.fetchJson(apiUrl + path, options);
   };
 
   const buildQs = (filter = {}) => Object.entries(filter).reduce((memo, [k, v]) => {
@@ -31,19 +31,27 @@ var _default = apiUrl => {
     return memo;
   }, {});
 
-  const create = (resource, params) => {
-    console.log('dataProvider.create', resource, params);
-    return fetchJson(`${apiUrl}/${resource}`, {
+  const create = async (resource, params) => {
+    const res = fetchJson(`/${resource}`, {
       method: 'POST',
       body: JSON.stringify(params.data)
-    }).then(res => {
-      return {
-        data: res.json
-      };
     });
+    return {
+      data: res.json
+    };
   };
 
   return {
+    /**
+     * Custom request
+     */
+    sendRequest: async (path, options) => {
+      const res = await fetchJson(path, options);
+      return {
+        data: res.json
+      };
+    },
+
     /**
      * getList 
      */
@@ -62,7 +70,7 @@ var _default = apiUrl => {
         offset: (page - 1) * perPage,
         ...buildQs(params.filter)
       };
-      const url = `${apiUrl}/${resource}?${(0, _queryString.stringify)(query)}`;
+      const url = `/${resource}?${(0, _queryString.stringify)(query)}`;
       const res = await fetchJson(url);
       return {
         data: res.json[kebabToCamel(resource)],
@@ -74,7 +82,7 @@ var _default = apiUrl => {
      * getOne 
      */
     getOne: async (resource, params) => {
-      const res = await fetchJson(`${apiUrl}/${resource}/${params.id}`);
+      const res = await fetchJson(`/${resource}/${params.id}`);
       return {
         data: res.json
       };
@@ -88,7 +96,7 @@ var _default = apiUrl => {
       const query = params.ids.reduce((memo, id) => {
         return memo += `&q[id]=${id}`;
       }, `qor=1`);
-      const url = `${apiUrl}/${resource}?${query}`;
+      const url = `/${resource}?${query}`;
       return fetchJson(url).then(({
         headers,
         json
@@ -102,7 +110,6 @@ var _default = apiUrl => {
      * getManyReference 
      */
     getManyReference: async (resource, params) => {
-      console.log('getManyReference', resource, params);
       const {
         page = 1,
         perPage = 10
@@ -119,7 +126,7 @@ var _default = apiUrl => {
           [params.target]: params.id
         })
       };
-      const url = `${apiUrl}/${resource}?${(0, _queryString.stringify)(query)}`;
+      const url = `/${resource}?${(0, _queryString.stringify)(query)}`;
       const res = await fetchJson(url);
       return {
         data: res.json[kebabToCamel(resource)],
@@ -131,8 +138,7 @@ var _default = apiUrl => {
      * update 
      */
     update: (resource, params) => {
-      console.log('dataProvider.update', resource, params);
-      return fetchJson(`${apiUrl}/${resource}/${params.id}`, {
+      return fetchJson(`/${resource}/${params.id}`, {
         method: 'PUT',
         body: JSON.stringify(params.data)
       }).then(res => {
@@ -150,19 +156,7 @@ var _default = apiUrl => {
      * updateMany 
      */
     updateMany: (resource, params) => {
-      const query = {
-        filter: JSON.stringify({
-          id: params.ids
-        })
-      };
-      return fetchJson(`${apiUrl}/${resource}?${(0, _queryString.stringify)(query)}`, {
-        method: 'PUT',
-        body: JSON.stringify(params.data)
-      }).then(({
-        json
-      }) => ({
-        data: json
-      }));
+      throw new Error('Not implemented');
     },
 
     /**
@@ -174,7 +168,7 @@ var _default = apiUrl => {
      * delete 
      */
     delete: (resource, params) => {
-      return fetchJson(`${apiUrl}/${resource}/${params.id}`, {
+      return fetchJson(`/${resource}/${params.id}`, {
         method: 'DELETE'
       }).then(() => ({
         data: resource
@@ -188,7 +182,7 @@ var _default = apiUrl => {
       const deletedIds = [];
 
       for (const id of params.ids) {
-        const url = `${apiUrl}/${resource}/${id}`;
+        const url = `/${resource}/${id}`;
 
         try {
           await fetchJson(url, {

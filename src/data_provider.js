@@ -3,35 +3,42 @@ import { stringify } from 'query-string';
 import Auth from '@aws-amplify/auth';
 
 export default apiUrl => {
-  const fetchJson = async (url, options = {}) => {
+  const fetchJson = async (path, options = {}) => {
     if (!options.headers) {
       options.headers = new Headers({ Accept: 'application/json' });
     }
 
     const session = await Auth.currentSession();
     options.headers.set('Authorization', session.idToken.jwtToken);
-    return fetchUtils.fetchJson(url, options);
+    return fetchUtils.fetchJson(apiUrl + path, options);
   };
 
-  const buildQs = (filter = {}) => Object.entries(filter).reduce((memo, [k, v]) => {
-    memo[`q[${k}]`] = v;
-    return memo;
-  }, {});
+  const buildQs = (filter = {}) => Object.entries(filter).reduce(
+    (memo, [k, v]) => {
+      memo[`q[${k}]`] = v;
+      return memo;
+    }, 
+    {});
 
-  const create = (resource, params) => {
-    console.log('dataProvider.create', resource, params);
-
-    return fetchJson(`${apiUrl}/${resource}`, {
+  const create = async (resource, params) => {
+    const res = fetchJson(`/${resource}`, {
       method: 'POST',
       body: JSON.stringify(params.data),
-    })
-    
-    .then(res => {
-      return { data: res.json };
     });
+
+    return { data: res.json };
   };
 
   return {
+    /**
+     * Custom request
+     */
+
+    sendRequest: async (path, options) => {
+      const res = await fetchJson(path, options);
+      return { data: res.json }
+    },
+
     /**
      * getList 
      */
@@ -47,7 +54,7 @@ export default apiUrl => {
         ...buildQs(params.filter)
       };
 
-      const url = `${apiUrl}/${resource}?${stringify(query)}`;
+      const url = `/${resource}?${stringify(query)}`;
       const res = await fetchJson(url);
 
       return {
@@ -61,7 +68,7 @@ export default apiUrl => {
      */
 
     getOne: async (resource, params) => {
-      const res = await fetchJson(`${apiUrl}/${resource}/${params.id}`)
+      const res = await fetchJson(`/${resource}/${params.id}`)
       return { data: res.json };
     },
 
@@ -75,7 +82,7 @@ export default apiUrl => {
         return memo += `&q[id]=${id}`
       }, `qor=1`);
 
-      const url = `${apiUrl}/${resource}?${query}`;
+      const url = `/${resource}?${query}`;
 
       return fetchJson(url).then(({ headers, json }) => ({
         data: json[kebabToCamel(resource)],
@@ -88,7 +95,6 @@ export default apiUrl => {
      */
 
     getManyReference: async (resource, params) => {
-      console.log('getManyReference', resource, params);
       const { page = 1, perPage = 10 } = params.pagination || {};
       const { field = 'id', order = 'ASC' } = params.sort || {};
 
@@ -99,7 +105,7 @@ export default apiUrl => {
         ...buildQs({ [params.target]: params.id })
       };
 
-      const url = `${apiUrl}/${resource}?${stringify(query)}`;
+      const url = `/${resource}?${stringify(query)}`;
       const res = await fetchJson(url);
 
       return {
@@ -113,9 +119,7 @@ export default apiUrl => {
      */
 
     update: (resource, params) => {
-      console.log('dataProvider.update', resource, params);
-
-      return fetchJson(`${apiUrl}/${resource}/${params.id}`, {
+      return fetchJson(`/${resource}/${params.id}`, {
         method: 'PUT',
         body: JSON.stringify(params.data)
       
@@ -135,13 +139,7 @@ export default apiUrl => {
      */
 
     updateMany: (resource, params) => {
-      const query = {
-        filter: JSON.stringify({ id: params.ids}),
-      };
-      return fetchJson(`${apiUrl}/${resource}?${stringify(query)}`, {
-        method: 'PUT',
-        body: JSON.stringify(params.data),
-      }).then(({ json }) => ({ data: json }));
+      throw new Error('Not implemented');
     },
 
     /**
@@ -155,7 +153,7 @@ export default apiUrl => {
      */
 
     delete: (resource, params) => {
-      return fetchJson(`${apiUrl}/${resource}/${params.id}`, {
+      return fetchJson(`/${resource}/${params.id}`, {
         method: 'DELETE',
       }).then(() => ({ data: resource }));
     },
@@ -168,7 +166,7 @@ export default apiUrl => {
       const deletedIds = [];
 
       for (const id of params.ids) {
-        const url = `${apiUrl}/${resource}/${id}`
+        const url = `/${resource}/${id}`
         try {
           await fetchJson(url, { method: 'DELETE' });
           deletedIds.push(id);
