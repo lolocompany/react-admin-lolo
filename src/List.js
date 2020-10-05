@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, Fragment } from 'react';
 import * as ra from 'react-admin';
 import { ResourceContext }  from './Resource';
 import { keyToRef, TextField } from './utils';
@@ -12,6 +12,12 @@ const ExpandPanel = ({ id, record, resource }) => (
 	</pre>
 );
 
+const BulkActionButtons = props => (
+  <Fragment>
+    <ra.BulkDeleteButton {...props} />
+  </Fragment>
+);
+
 const List = props => {
 	const { schema, timestamps } = useContext(ResourceContext);
 
@@ -20,7 +26,7 @@ const List = props => {
 	return (
     <ra.List
     	{...props} 
-    	bulkActionButtons={props.hasEdit}
+    	bulkActionButtons={props.hasEdit ? <BulkActionButtons /> : false}
     	filters={<Filter schema={schema} />}
     	actions={<ListActions />}
     	empty={<ListEmpty />}

@@ -32,7 +32,7 @@ var _default = apiUrl => {
   }, {});
 
   const create = async (resource, params) => {
-    const res = fetchJson(`/${resource}`, {
+    const res = await fetchJson(`/${resource}`, {
       method: 'POST',
       body: JSON.stringify(params.data)
     });
@@ -92,7 +92,6 @@ var _default = apiUrl => {
      * getMany 
      */
     getMany: (resource, params) => {
-      console.log('getMany', resource, params);
       const query = params.ids.reduce((memo, id) => {
         return memo += `&q[id]=${id}`;
       }, `qor=1`);

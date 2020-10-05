@@ -15,6 +15,8 @@ var _data_provider = _interopRequireDefault(require("./data_provider"));
 
 var _auth_provider = _interopRequireDefault(require("./auth_provider"));
 
+var _i18n_provider = _interopRequireDefault(require("./i18n_provider"));
+
 require("./Admin.css");
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
@@ -37,6 +39,7 @@ const Admin = ({
   const RAdmin = (0, _uiReact.withAuthenticator)(() => /*#__PURE__*/_react.default.createElement(ra.Admin, _extends({
     dataProvider: dataProvider,
     authProvider: _auth_provider.default,
+    i18nProvider: _i18n_provider.default,
     title: "Lolo Admin"
   }, props), props.children));
   return /*#__PURE__*/_react.default.createElement(AdminContext.Provider, {
