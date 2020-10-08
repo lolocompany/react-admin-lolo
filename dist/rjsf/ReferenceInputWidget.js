@@ -44,13 +44,16 @@ const useStyles = (0, _styles.makeStyles)(theme => ({
   }
 }));
 
-function ReferenceInputWidget({
-  id,
-  value,
-  onChange,
-  schema,
-  variant
-}) {
+function ReferenceInputWidget(props) {
+  const {
+    id,
+    value,
+    onChange,
+    schema,
+    variant,
+    uiSchema
+  } = props;
+
   const [inputValue, setInputValue] = _react.default.useState('');
 
   const [options, setOptions] = _react.default.useState([]);
@@ -62,7 +65,7 @@ function ReferenceInputWidget({
   } = _react.default.useContext(_Admin.AdminContext);
 
   const classes = useStyles();
-  const typePlural = (0, _utils.keyToRef)(id.split('_').pop());
+  const typePlural = (0, _utils.keyToRef)(id.split('_').pop()); // TODO: handle readOnly
 
   const search = _react.default.useMemo(() => (0, _throttleDebounce.debounce)(500, async (filter, cb) => {
     setLoading(true);
