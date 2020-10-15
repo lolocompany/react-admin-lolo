@@ -5,6 +5,7 @@ import { keyToRef, TextField } from './utils';
 import ListActions from './ListActions';
 import ListEmpty from './ListEmpty';
 import Filter from './Filter';
+import { pluralize } from 'inflection';
 
 const ExpandPanel = ({ id, record, resource }) => (
 	<pre style={{fontSize: '1.1rem'}}>
@@ -31,6 +32,7 @@ const List = props => {
     	actions={<ListActions />}
     	empty={<ListEmpty />}
     	sort={{ field: 'createdAt', order: 'ASC' }}
+    	title={schema.title ? pluralize(schema.title) : undefined}
     	>
       <ra.Datagrid
       	rowClick={props.hasShow ? 'show' : props.hasEdit ? 'edit' : null}

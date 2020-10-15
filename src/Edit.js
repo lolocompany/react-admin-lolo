@@ -11,7 +11,7 @@ import Form from "@rjsf/material-ui";
 const Edit = props => {
   const [ formData, setFormData ] = useState();
 	const [ hasErrors, setHasErrors ] = useState(true);
-	const { schema, uiSchema } = useContext(ResourceContext);
+	const { editSchema: schema, uiSchema } = useContext(ResourceContext);
 	let form;
 
   const {
@@ -19,7 +19,7 @@ const Edit = props => {
     record,
     resource,
     save,
-    saving,
+    saving
   } = ra.useEditController({ ...props, undoable: false });
 
   useEffect(() => setFormData(record), [ record ]);
@@ -32,17 +32,14 @@ const Edit = props => {
       <ra.TitleForRecord
         title={props.title}
         record={record}
-        defaultTitle={getTitle(resource)}
+        defaultTitle={getTitle(schema.title || resource)}
       />
       <Card>
         <Box px={2} pb={1}>
   				<Form
   					ref={f => { form = f; }}
   					schema={schema}
-  					uiSchema={{
-              id: { 'ui:readonly': true },
-              ...uiSchema
-            }}
+  					uiSchema={uiSchema}
   					formData={formData}
             showErrorList={false}
             liveValidate={true}

@@ -90,15 +90,20 @@ function ReferenceInputWidget(props) {
       } else {
         (async () => {
           setLoading(true);
-          const res = await dataProvider.getOne(typePlural, {
-            id: value
-          });
 
-          if (res && res.data) {
-            setInputValue(res.data.name);
-            setOptions([res.data]);
-          } else {
-            setValue(undefined);
+          try {
+            const res = await dataProvider.getOne(typePlural, {
+              id: value
+            });
+
+            if (res && res.data) {
+              setInputValue(res.data.name);
+              setOptions([res.data]);
+            } else {
+              setValue(undefined);
+            }
+          } catch (err) {
+            console.error('getOne', typePlural, value, err.message);
           }
 
           setLoading(false);

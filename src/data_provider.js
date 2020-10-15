@@ -1,5 +1,6 @@
 import { fetchUtils } from 'react-admin';
 import { stringify } from 'query-string';
+import { humanize } from 'inflection';
 import Auth from '@aws-amplify/auth';
 
 export default apiUrl => {
@@ -10,12 +11,21 @@ export default apiUrl => {
 
     const session = await Auth.currentSession();
     options.headers.set('Authorization', session.idToken.jwtToken);
-    return fetchUtils.fetchJson(apiUrl + path, options);
+    return fetchUtils.fetchJson(apiUrl + path, options)
+      .catch(err => {
+        if (err.body && err.body.errors) {
+          err.message = err.body.errors.map(item => {
+            const field = humanize(item.dataPath.replace('.body.', ''));
+            return `${field} ${item.message}`;
+          }).join(', ');
+        }
+        throw err;
+      });
   };
 
   const buildQs = (filter = {}) => Object.entries(filter).reduce(
     (memo, [k, v]) => {
-      memo[`q[${k}]`] = v;
+      memo[`q[${k}]`] = `*${v}*`;
       return memo;
     }, 
     {});

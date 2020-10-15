@@ -29,7 +29,7 @@ const Edit = props => {
   const [formData, setFormData] = (0, _react.useState)();
   const [hasErrors, setHasErrors] = (0, _react.useState)(true);
   const {
-    schema,
+    editSchema: schema,
     uiSchema
   } = (0, _react.useContext)(_Resource.ResourceContext);
   let form;
@@ -47,7 +47,7 @@ const Edit = props => {
   return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement(_EditActions.default, props), /*#__PURE__*/_react.default.createElement(ra.TitleForRecord, {
     title: props.title,
     record: record,
-    defaultTitle: getTitle(resource)
+    defaultTitle: getTitle(schema.title || resource)
   }), /*#__PURE__*/_react.default.createElement(_core.Card, null, /*#__PURE__*/_react.default.createElement(_core.Box, {
     px: 2,
     pb: 1
@@ -56,12 +56,7 @@ const Edit = props => {
       form = f;
     },
     schema: schema,
-    uiSchema: {
-      id: {
-        'ui:readonly': true
-      },
-      ...uiSchema
-    },
+    uiSchema: uiSchema,
     formData: formData,
     showErrorList: false,
     liveValidate: true,

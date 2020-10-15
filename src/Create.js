@@ -13,7 +13,7 @@ const Create = props => {
   const [ formData, setFormData ] = useState({});
 	const [ hasErrors, setHasErrors ] = useState(true);
   const [ liveValidate, setLiveValidate ] = useState(false);
-	const { schema, uiSchema } = useContext(ResourceContext);
+	const { createSchema: schema, uiSchema } = useContext(ResourceContext);
 	let form;
 
   const {

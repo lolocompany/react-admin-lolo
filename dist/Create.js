@@ -32,7 +32,7 @@ const Create = props => {
   const [hasErrors, setHasErrors] = (0, _react.useState)(true);
   const [liveValidate, setLiveValidate] = (0, _react.useState)(false);
   const {
-    schema,
+    createSchema: schema,
     uiSchema
   } = (0, _react.useContext)(_Resource.ResourceContext);
   let form;

@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { ImportButton } from "react-admin-import-csv";
+import { ImportButton } from 'react-admin-import-csv';
 import { ResourceContext } from './Resource';
 
 export default props => {

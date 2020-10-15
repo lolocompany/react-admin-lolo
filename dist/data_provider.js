@@ -9,6 +9,8 @@ var _reactAdmin = require("react-admin");
 
 var _queryString = require("query-string");
 
+var _inflection = require("inflection");
+
 var _auth = _interopRequireDefault(require("@aws-amplify/auth"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -23,11 +25,20 @@ var _default = apiUrl => {
 
     const session = await _auth.default.currentSession();
     options.headers.set('Authorization', session.idToken.jwtToken);
-    return _reactAdmin.fetchUtils.fetchJson(apiUrl + path, options);
+    return _reactAdmin.fetchUtils.fetchJson(apiUrl + path, options).catch(err => {
+      if (err.body && err.body.errors) {
+        err.message = err.body.errors.map(item => {
+          const field = (0, _inflection.humanize)(item.dataPath.replace('.body.', ''));
+          return `${field} ${item.message}`;
+        }).join(', ');
+      }
+
+      throw err;
+    });
   };
 
   const buildQs = (filter = {}) => Object.entries(filter).reduce((memo, [k, v]) => {
-    memo[`q[${k}]`] = v;
+    memo[`q[${k}]`] = `*${v}*`;
     return memo;
   }, {});
 

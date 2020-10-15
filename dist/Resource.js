@@ -36,26 +36,18 @@ exports.ResourceContext = ResourceContext;
 const Resource = props => {
   const {
     name,
-    timestamps = ['createdAt']
+    timestamps = ['createdAt'],
+    createWithId
   } = props;
   const [schema, setSchema] = (0, _react.useState)();
+  const [editSchema, setEditSchema] = (0, _react.useState)();
+  const [createSchema, setCreateSchema] = (0, _react.useState)();
   const [uiSchema, setUiSchema] = (0, _react.useState)();
   const {
     apiUrl
   } = (0, _react.useContext)(_Admin.AdminContext);
   (0, _react.useEffect)(() => {
     const schemaUrl = apiUrl + '/schemas/' + name.replace(/s$/, '');
-    /*
-    if (name === 'devices') {
-    	const _schema = JSON.parse(JSON.stringify(cannedSchema));
-    	const _uiSchema = {};
-    	enableWidgets(_uiSchema, _schema);
-    	setSchema(_schema);
-    	setUiSchema(_uiSchema);
-    	return;
-    }
-    */
-
     ra.fetchUtils.fetchJson(schemaUrl).then(({
       json
     }) => {
@@ -67,11 +59,23 @@ const Resource = props => {
       delete schema.additionalProperties;
       setSchema(schema);
       setUiSchema(uiSchema);
+      const except = createWithId ? ['properties.id'] : [];
+      const editSchema = removeReadonly(schema, except);
+      const createSchema = removeReadonly(schema, except);
+
+      if (createWithId) {
+        createSchema.properties.id.readOnly = false;
+      }
+
+      setEditSchema(editSchema);
+      setCreateSchema(createSchema);
     });
   }, [apiUrl, name]);
   return /*#__PURE__*/_react.default.createElement(ResourceContext.Provider, {
     value: {
       schema,
+      editSchema,
+      createSchema,
       uiSchema,
       timestamps
     }
@@ -93,4 +97,16 @@ const enableWidgets = (uiSchema, schema) => {
       });
     }
   });
+};
+
+const removeReadonly = (schema, except = []) => {
+  const copy = JSON.parse(JSON.stringify(schema));
+  (0, _traverse.default)(copy).forEach(function () {
+    const path = this.parent ? this.parent.path.join('.') : '';
+
+    if (this.key === 'readOnly' && !except.includes(path)) {
+      this.parent.remove();
+    }
+  });
+  return copy;
 };

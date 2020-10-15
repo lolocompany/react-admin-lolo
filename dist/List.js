@@ -19,6 +19,8 @@ var _ListEmpty = _interopRequireDefault(require("./ListEmpty"));
 
 var _Filter = _interopRequireDefault(require("./Filter"));
 
+var _inflection = require("inflection");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
@@ -55,7 +57,8 @@ const List = props => {
     sort: {
       field: 'createdAt',
       order: 'ASC'
-    }
+    },
+    title: schema.title ? (0, _inflection.pluralize)(schema.title) : undefined
   }), /*#__PURE__*/_react.default.createElement(ra.Datagrid, {
     rowClick: props.hasShow ? 'show' : props.hasEdit ? 'edit' : null,
     expand: /*#__PURE__*/_react.default.createElement(ExpandPanel, null)

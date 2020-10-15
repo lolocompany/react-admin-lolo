@@ -12,25 +12,16 @@ import { AdminContext } from './Admin';
 const ResourceContext = React.createContext();
 
 const Resource = props => {
-	const { name, timestamps = ['createdAt'] } = props;
+	const { name, timestamps = ['createdAt'], createWithId } = props;
 
 	const [ schema, setSchema ] = useState();
+	const [ editSchema, setEditSchema ] = useState();
+	const [ createSchema, setCreateSchema ] = useState();
 	const [ uiSchema, setUiSchema] = useState();
 	const { apiUrl } = useContext(AdminContext);
 
 	useEffect(() => {
 		const schemaUrl = apiUrl + '/schemas/' + name.replace(/s$/, '');
-
-		/*
-		if (name === 'devices') {
-			const _schema = JSON.parse(JSON.stringify(cannedSchema));
-			const _uiSchema = {};
-			enableWidgets(_uiSchema, _schema);
-			setSchema(_schema);
-			setUiSchema(_uiSchema);
-			return;
-		}
-		*/
 
 		ra.fetchUtils.fetchJson(schemaUrl).then(({ json }) => {
 			const { uiSchema = {}, ...schema } = json;
@@ -39,11 +30,22 @@ const Resource = props => {
 			delete schema.additionalProperties;
 			setSchema(schema);
 			setUiSchema(uiSchema);
+		
+			const except = createWithId ? [ 'properties.id' ] : [];
+			const editSchema = removeReadonly(schema, except);
+			const createSchema = removeReadonly(schema, except);
+
+			if (createWithId) {
+				createSchema.properties.id.readOnly = false;
+			}
+
+			setEditSchema(editSchema);
+			setCreateSchema(createSchema);
 		});
 	}, [ apiUrl, name ]);
 
 	return (
-		<ResourceContext.Provider value={{ schema, uiSchema, timestamps }}>
+		<ResourceContext.Provider value={{ schema, editSchema, createSchema, uiSchema, timestamps }}>
 			<ra.Resource
 				list={List}
 				create={Create}
@@ -62,6 +64,20 @@ const enableWidgets = (uiSchema, schema) => {
 		}
 	});
 }
+
+const removeReadonly = (schema, except = []) => {
+	const copy = JSON.parse(JSON.stringify(schema));
+
+	traverse(copy).forEach(function() {
+		const path = this.parent ? this.parent.path.join('.') : '';
+		if (this.key === 'readOnly' && !except.includes(path)) {
+			this.parent.remove();
+		}
+	});
+
+	return copy;
+}
+
 
 export {
 	Resource,

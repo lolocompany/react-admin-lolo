@@ -5,7 +5,9 @@
   "main": "dist/index.js",
   "watch": {
     "build": {
-      "patterns": [ "src" ]
+      "patterns": [
+        "src"
+      ]
     }
   },
   "scripts": {
