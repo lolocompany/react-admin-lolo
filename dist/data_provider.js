@@ -149,7 +149,7 @@ var _default = apiUrl => {
      */
     update: (resource, params) => {
       return fetchJson(`/${resource}/${params.id}`, {
-        method: 'PUT',
+        method: 'PATCH',
         body: JSON.stringify(params.data)
       }).then(res => {
         return {
