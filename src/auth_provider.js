@@ -11,7 +11,7 @@ Auth.configure({
 export default {
   login: params => Promise.resolve(),
   logout: params => Auth.signOut(),
-  checkAuth: params => Promise.resolve(),
+  checkAuth: params => Auth.currentSession(),
   checkError: error => Promise.resolve(),
   getPermissions: params => Promise.resolve()
 };

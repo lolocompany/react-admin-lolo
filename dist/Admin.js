@@ -9,13 +9,13 @@ var _react = _interopRequireDefault(require("react"));
 
 var ra = _interopRequireWildcard(require("react-admin"));
 
-var _uiReact = require("@aws-amplify/ui-react");
-
 var _data_provider = _interopRequireDefault(require("./data_provider"));
 
 var _auth_provider = _interopRequireDefault(require("./auth_provider"));
 
 var _i18n_provider = _interopRequireDefault(require("./i18n_provider"));
+
+var _LoginPage = _interopRequireDefault(require("./LoginPage.js"));
 
 require("./Admin.css");
 
@@ -36,12 +36,15 @@ const Admin = ({
   ...props
 }) => {
   const dataProvider = (0, _data_provider.default)(apiUrl);
-  const RAdmin = (0, _uiReact.withAuthenticator)(() => /*#__PURE__*/_react.default.createElement(ra.Admin, _extends({
+
+  const RAdmin = () => /*#__PURE__*/_react.default.createElement(ra.Admin, _extends({
     dataProvider: dataProvider,
     authProvider: _auth_provider.default,
     i18nProvider: _i18n_provider.default,
+    loginPage: _LoginPage.default,
     title: "Lolo Admin"
-  }, props), props.children));
+  }, props), props.children);
+
   return /*#__PURE__*/_react.default.createElement(AdminContext.Provider, {
     value: {
       apiUrl,

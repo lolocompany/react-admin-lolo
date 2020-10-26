@@ -18,7 +18,7 @@ _awsAmplify.Auth.configure({
 var _default = {
   login: params => Promise.resolve(),
   logout: params => _awsAmplify.Auth.signOut(),
-  checkAuth: params => Promise.resolve(),
+  checkAuth: params => _awsAmplify.Auth.currentSession(),
   checkError: error => Promise.resolve(),
   getPermissions: params => Promise.resolve()
 };

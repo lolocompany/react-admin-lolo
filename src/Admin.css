@@ -2,3 +2,9 @@
 .rjsf .MuiInputBase-input {
 	font-size: 0.875rem !important;
 }
+.amplify-form-wrapper{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding-top: 100px;
+}
