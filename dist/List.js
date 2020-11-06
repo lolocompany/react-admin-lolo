@@ -44,7 +44,7 @@ const BulkActionButtons = props => /*#__PURE__*/_react.default.createElement(_re
 const List = props => {
   const {
     schema,
-    timestamps
+    skipColumns = ['id', 'accountId', 'version', 'updatedAt']
   } = (0, _react.useContext)(_Resource.ResourceContext);
   if (!schema) return null;
   return /*#__PURE__*/_react.default.createElement(ra.List, _extends({}, props, {
@@ -62,10 +62,7 @@ const List = props => {
   }), /*#__PURE__*/_react.default.createElement(ra.Datagrid, {
     rowClick: props.hasShow ? 'show' : props.hasEdit ? 'edit' : null,
     expand: /*#__PURE__*/_react.default.createElement(ExpandPanel, null)
-  }, Object.entries(schema.properties).map(toField), timestamps.map(key => /*#__PURE__*/_react.default.createElement(ra.DateField, {
-    source: key,
-    key: key
-  }))));
+  }, Object.entries(schema.properties).filter(([key]) => !skipColumns.includes(key)).map(toField)));
 };
 
 const toField = ([key, fieldSchema]) => {
@@ -79,7 +76,9 @@ const toField = ([key, fieldSchema]) => {
 
   switch (fieldSchema.type) {
     case 'string':
-      return /*#__PURE__*/_react.default.createElement(ra.TextField, fieldProps);
+      return fieldSchema.format === 'date-time' ? /*#__PURE__*/_react.default.createElement(ra.DateField, _extends({}, fieldProps, {
+        showTime: true
+      })) : /*#__PURE__*/_react.default.createElement(ra.TextField, fieldProps);
 
     case 'boolean':
       return /*#__PURE__*/_react.default.createElement(ra.BooleanField, fieldProps);

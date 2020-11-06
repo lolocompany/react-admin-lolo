@@ -59,12 +59,13 @@ const Resource = props => {
       delete schema.additionalProperties;
       setSchema(schema);
       setUiSchema(uiSchema);
-      const except = createWithId ? ['properties.id'] : [];
-      const editSchema = removeReadonly(schema, except);
-      const createSchema = removeReadonly(schema, except);
+      const editSchema = removeReadonly(schema);
+      const createSchema = removeReadonly(schema);
 
       if (createWithId) {
-        createSchema.properties.id.readOnly = false;
+        createSchema.properties.id = {
+          type: 'string'
+        };
       }
 
       setEditSchema(editSchema);
@@ -91,7 +92,7 @@ exports.Resource = Resource;
 const enableWidgets = (uiSchema, schema) => {
   (0, _traverse.default)(schema).forEach(function () {
     if (/Id$/.test(this.key)) {
-      const path = this.path.filter(item => item !== 'properties');
+      const path = this.path.indexOf('dependencies') >= 0 ? this.path.slice(-1) : this.path.filter(item => item !== 'properties');
       (0, _traverse.default)(uiSchema).set(path, {
         'ui:widget': rjsf.ReferenceInputWidget
       });
@@ -99,12 +100,10 @@ const enableWidgets = (uiSchema, schema) => {
   });
 };
 
-const removeReadonly = (schema, except = []) => {
+const removeReadonly = schema => {
   const copy = JSON.parse(JSON.stringify(schema));
   (0, _traverse.default)(copy).forEach(function () {
-    const path = this.parent ? this.parent.path.join('.') : '';
-
-    if (this.key === 'readOnly' && !except.includes(path)) {
+    if (this.key === 'readOnly') {
       this.parent.remove();
     }
   });

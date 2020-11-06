@@ -31,12 +31,13 @@ const Resource = props => {
 			setSchema(schema);
 			setUiSchema(uiSchema);
 		
-			const except = createWithId ? [ 'properties.id' ] : [];
-			const editSchema = removeReadonly(schema, except);
-			const createSchema = removeReadonly(schema, except);
+			const editSchema = removeReadonly(schema);
+			const createSchema = removeReadonly(schema);
 
 			if (createWithId) {
-				createSchema.properties.id.readOnly = false;
+				createSchema.properties.id = {
+					type: 'string'
+				};
 			}
 
 			setEditSchema(editSchema);
@@ -59,18 +60,20 @@ const Resource = props => {
 const enableWidgets = (uiSchema, schema) => {
 	traverse(schema).forEach(function() {
 		if (/Id$/.test(this.key)) {
-			const path = this.path.filter(item => item !== 'properties');
+			const path = this.path.indexOf('dependencies') >= 0 ?
+				this.path.slice(-1) :
+				this.path.filter(item => item !== 'properties');
+
 			traverse(uiSchema).set(path, { 'ui:widget': rjsf.ReferenceInputWidget });
 		}
 	});
 }
 
-const removeReadonly = (schema, except = []) => {
+const removeReadonly = schema => {
 	const copy = JSON.parse(JSON.stringify(schema));
 
 	traverse(copy).forEach(function() {
-		const path = this.parent ? this.parent.path.join('.') : '';
-		if (this.key === 'readOnly' && !except.includes(path)) {
+		if (this.key === 'readOnly') {
 			this.parent.remove();
 		}
 	});

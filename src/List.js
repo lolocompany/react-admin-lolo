@@ -20,7 +20,10 @@ const BulkActionButtons = props => (
 );
 
 const List = props => {
-	const { schema, timestamps } = useContext(ResourceContext);
+	const {
+		schema,
+		skipColumns = ['id', 'accountId', 'version', 'updatedAt']
+	} = useContext(ResourceContext);
 
 	if (!schema) return null;
 
@@ -38,8 +41,10 @@ const List = props => {
       	rowClick={props.hasShow ? 'show' : props.hasEdit ? 'edit' : null}
       	expand={<ExpandPanel />}
       	>
-      	{ Object.entries(schema.properties).map(toField) }
-      	{ timestamps.map(key => <ra.DateField source={key} key={key}/>)}
+      	{ Object.entries(schema.properties)
+      		.filter(([ key ]) => !skipColumns.includes(key))
+      		.map(toField)
+      	}
       </ra.Datagrid>
     </ra.List>
 	);
@@ -57,7 +62,9 @@ const toField = ([ key, fieldSchema ]) => {
 
 	switch(fieldSchema.type) {
 		case 'string':
-			return <ra.TextField {...fieldProps}/>;
+			return fieldSchema.format === 'date-time' ?
+				<ra.DateField {...fieldProps} showTime={true} /> :
+				<ra.TextField {...fieldProps}/>;
 
 		case 'boolean':
 			return <ra.BooleanField {...fieldProps}/>
