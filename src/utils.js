@@ -17,3 +17,7 @@ export const SelectInput = props => {
 	const optionText = props.choices[0].name ? 'name' : 'id';
 	return <ra.SelectInput {...props} optionText={optionText} />
 }
+
+export const isEqual = (a, b) => {
+  return JSON.stringify(a) === JSON.stringify(b);
+}

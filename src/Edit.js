@@ -5,11 +5,11 @@ import { ResourceContext }  from './Resource';
 import { titleize, singularize } from 'inflection';
 import * as ra from 'react-admin';
 import EditActions from './EditActions';
-
 import Form from "@rjsf/material-ui";
 
 const Edit = props => {
-  const [ formData, setFormData ] = useState();
+  const [ formData, setFormData ] = useState({});
+  const [schemaState, setSchemaState] = useState({})
 	const [ hasErrors, setHasErrors ] = useState(true);
 	const { editSchema: schema, uiSchema } = useContext(ResourceContext);
 	let form;
@@ -24,7 +24,12 @@ const Edit = props => {
 
   useEffect(() => setFormData(record), [ record ]);
 
-  if (!schema || !formData) return null;
+  useEffect(() => {
+    if(schema) {
+      const {$id, ...restSchema} = schema
+      setSchemaState(restSchema)
+    }
+  }, [schema])
 
 	return (
     <div>
@@ -32,13 +37,13 @@ const Edit = props => {
       <ra.TitleForRecord
         title={props.title}
         record={record}
-        defaultTitle={getTitle(schema.title || resource)}
+        defaultTitle={getTitle(schemaState.title || resource)}
       />
       <Card>
         <Box px={2} pb={1}>
   				<Form
   					ref={f => { form = f; }}
-  					schema={schema}
+  					schema={schemaState || {}}
   					uiSchema={uiSchema}
   					formData={formData}
             showErrorList={false}
@@ -46,8 +51,7 @@ const Edit = props => {
   					onChange={({ formData, errors }) => {
               setFormData(formData);
   						setHasErrors(!!errors.length);
-              console.log('onChange', formData, errors);
-  						}}
+  					}}
             onSubmit={({ formData })=> save(formData)}
             >
   					{' '}

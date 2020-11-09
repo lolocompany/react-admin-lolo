@@ -1,19 +1,17 @@
 import React from 'react';
-import { useContext, useState } from 'react';
-import { withTheme } from '@rjsf/core';
-import { Theme as MaterialUITheme } from '@rjsf/material-ui';
+import { useContext, useState, useEffect } from 'react';
+import Form from "@rjsf/material-ui";
 import { Box, Card } from '@material-ui/core';
 import { ResourceContext }  from './Resource';
 import * as ra from 'react-admin';
 import CreateActions from './CreateActions';
-
-const Form = withTheme(MaterialUITheme);
+import { isEqual } from '../dist/utils';
 
 const Create = props => {
   const [ formData, setFormData ] = useState({});
+  const [schemaState, setSchemaState] = useState({})
 	const [ hasErrors, setHasErrors ] = useState(true);
-  const [ liveValidate, setLiveValidate ] = useState(false);
-	const { createSchema: schema, uiSchema } = useContext(ResourceContext);
+  const { createSchema: schema, uiSchema } = useContext(ResourceContext);
 	let form;
 
   const {
@@ -23,8 +21,27 @@ const Create = props => {
     saving,
   } = ra.useCreateController({ ...props });
 
-  if (!schema) return null;
+  function usePrevious(value) {
+    const ref = React.useRef()
+    if(!isEqual(ref.current, value)){
+      ref.current = value
+    }
+    return ref.current
+  }
 
+  useEffect(() => {
+    if(schema) {
+      const {$id, ...restSchema} = schema
+      setSchemaState(restSchema)
+    }
+  }, [schema])
+  
+  useEffect(() => {
+    if(form) {
+      setHasErrors(!!form.state.errors.length)
+    }
+  }, usePrevious(form))
+  
 	return (
     <div>
       <CreateActions {...props} />
@@ -37,15 +54,13 @@ const Create = props => {
         <Box px={2} pb={1}>
 					<Form
 						ref={f => { form = f; }}
-						schema={schema}
+						schema={schemaState || {}}
 						uiSchema={uiSchema}
 						formData={formData}
             showErrorList={false}
-            liveValidate={liveValidate}
-						onChange={({ formData, errors }) => {
-              if (!liveValidate) setLiveValidate(true);
+            liveValidate={true}
+						onChange={({ formData }) => {
               setFormData(formData);
-							setHasErrors(!!errors.length);
 						}}
             onSubmit={({ formData })=> save(formData)}
             >

@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.SelectInput = exports.TextField = exports.keyToRef = void 0;
+exports.isEqual = exports.SelectInput = exports.TextField = exports.keyToRef = void 0;
 
 var _react = _interopRequireDefault(require("react"));
 
@@ -42,3 +42,9 @@ const SelectInput = props => {
 };
 
 exports.SelectInput = SelectInput;
+
+const isEqual = (a, b) => {
+  return JSON.stringify(a) === JSON.stringify(b);
+};
+
+exports.isEqual = isEqual;
