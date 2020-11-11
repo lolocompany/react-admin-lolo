@@ -136,6 +136,7 @@ function ReferenceInputWidget(props) {
         setInputValue(newValue.name);
         onChange(newValue.id);
       } else {
+        setInputValue('');
         onChange(undefined);
       }
     },

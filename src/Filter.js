@@ -39,8 +39,7 @@ const toInput = ([ key, fieldSchema ]) => {
 };
 
 const RefInput = ({ source, label }) => {
-	const { setFilters } = ra.useListContext();
-
+	const { setFilters, filterValues } = ra.useListContext();
 	return (
 		<ReferenceInputWidget
 			id={source}
@@ -49,10 +48,12 @@ const RefInput = ({ source, label }) => {
 			}}
 			onChange={value => {
 				setFilters({
+					...filterValues,
 					[source]: value
 				})
 			}}
 			variant='filled'
+			value={filterValues[source]}
 		/>
 	);
 };
