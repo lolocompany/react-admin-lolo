@@ -21,8 +21,7 @@ const BulkActionButtons = props => (
 
 const List = props => {
 	const {
-		schema,
-		skipColumns = ['id', 'accountId', 'version', 'updatedAt']
+		createSchema: schema,
 	} = useContext(ResourceContext);
 
 	if (!schema) return null;
@@ -41,8 +40,7 @@ const List = props => {
       	rowClick={props.hasShow ? 'show' : props.hasEdit ? 'edit' : null}
       	expand={<ExpandPanel />}
       	>
-      	{ Object.entries(schema.properties)
-      		.filter(([ key ]) => !skipColumns.includes(key))
+      	{ Object.entries({ ...schema.properties, createdAt: { type: 'string', format: 'date-time' }})
       		.map(toField)
       	}
       </ra.Datagrid>
