@@ -63,8 +63,15 @@ const Resource = props => {
       const createSchema = removeReadonly(schema);
 
       if (createWithId) {
-        createSchema.properties.id = {
-          type: 'string'
+        editSchema.properties = {
+          id: schema.properties.id,
+          ...createSchema.properties
+        };
+        createSchema.properties = {
+          id: { ...schema.properties.id,
+            readOnly: false
+          },
+          ...createSchema.properties
         };
       }
 

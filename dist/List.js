@@ -43,8 +43,7 @@ const BulkActionButtons = props => /*#__PURE__*/_react.default.createElement(_re
 
 const List = props => {
   const {
-    schema,
-    skipColumns = ['id', 'accountId', 'version', 'updatedAt']
+    createSchema: schema
   } = (0, _react.useContext)(_Resource.ResourceContext);
   if (!schema) return null;
   return /*#__PURE__*/_react.default.createElement(ra.List, _extends({}, props, {
@@ -62,7 +61,12 @@ const List = props => {
   }), /*#__PURE__*/_react.default.createElement(ra.Datagrid, {
     rowClick: props.hasShow ? 'show' : props.hasEdit ? 'edit' : null,
     expand: /*#__PURE__*/_react.default.createElement(ExpandPanel, null)
-  }, Object.entries(schema.properties).filter(([key]) => !skipColumns.includes(key)).map(toField)));
+  }, Object.entries({ ...schema.properties,
+    createdAt: {
+      type: 'string',
+      format: 'date-time'
+    }
+  }).map(toField)));
 };
 
 const toField = ([key, fieldSchema]) => {
