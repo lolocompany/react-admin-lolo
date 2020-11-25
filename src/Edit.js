@@ -77,7 +77,7 @@ const Edit = props => {
 	);
 };
 
-const getTitle = (resource, record) => {
+const getTitle = (resource = '') => {
   return 'Edit ' + titleize(singularize(resource));
 }
 

@@ -13,6 +13,8 @@ var _core = require("@material-ui/core");
 
 var _Resource = require("./Resource");
 
+var _inflection = require("inflection");
+
 var ra = _interopRequireWildcard(require("react-admin"));
 
 var _CreateActions = _interopRequireDefault(require("./CreateActions"));
@@ -37,6 +39,7 @@ const Create = props => {
   const {
     defaultTitle,
     record,
+    resource,
     save,
     saving
   } = ra.useCreateController({ ...props
@@ -69,7 +72,7 @@ const Create = props => {
   return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement(_CreateActions.default, props), /*#__PURE__*/_react.default.createElement(ra.TitleForRecord, {
     title: props.title,
     record: record,
-    defaultTitle: defaultTitle
+    defaultTitle: getTitle(schemaState.title || resource)
   }), /*#__PURE__*/_react.default.createElement(_core.Card, null, /*#__PURE__*/_react.default.createElement(_core.Box, {
     px: 2,
     pb: 1
@@ -99,6 +102,10 @@ const Create = props => {
     disabled: hasErrors,
     handleSubmitWithRedirect: () => form.submit()
   }))));
+};
+
+const getTitle = (resource = '') => {
+  return 'Create ' + (0, _inflection.titleize)((0, _inflection.singularize)(resource));
 };
 
 var _default = Create;

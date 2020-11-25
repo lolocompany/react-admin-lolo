@@ -95,7 +95,7 @@ const Edit = props => {
   }))));
 };
 
-const getTitle = (resource, record) => {
+const getTitle = (resource = '') => {
   return 'Edit ' + (0, _inflection.titleize)((0, _inflection.singularize)(resource));
 };
 

@@ -3,6 +3,7 @@ import { useContext, useState, useEffect } from 'react';
 import Form from "@rjsf/material-ui";
 import { Box, Card } from '@material-ui/core';
 import { ResourceContext }  from './Resource';
+import { titleize, singularize } from 'inflection';
 import * as ra from 'react-admin';
 import CreateActions from './CreateActions';
 import { isEqual } from '../dist/utils';
@@ -17,6 +18,7 @@ const Create = props => {
   const {
     defaultTitle,
     record,
+    resource,
     save,
     saving,
   } = ra.useCreateController({ ...props });
@@ -48,7 +50,7 @@ const Create = props => {
       <ra.TitleForRecord
         title={props.title}
         record={record}
-        defaultTitle={defaultTitle}
+        defaultTitle={getTitle(schemaState.title || resource)}
       />
       <Card>
         <Box px={2} pb={1}>
@@ -80,5 +82,9 @@ const Create = props => {
 		</div>
 	);
 };
+
+const getTitle = (resource = '') => {
+  return 'Create ' + titleize(singularize(resource));
+}
 
 export default Create
