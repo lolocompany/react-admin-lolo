@@ -94,10 +94,11 @@ function ReferenceInputWidget(props) {
       inputValue={inputValue}
       onChange={(event, newValue) => {
       	if (newValue) {
-      		setInputValue(newValue.name);
+          setInputValue(newValue.name);
       		onChange(newValue.id);
       	} else {
-      		onChange(undefined);
+          setInputValue('');
+          onChange(undefined);
       	}
       }}
       onInputChange={(event, newInputValue) => {

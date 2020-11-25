@@ -55,7 +55,8 @@ const RefInput = ({
   label
 }) => {
   const {
-    setFilters
+    setFilters,
+    filterValues
   } = ra.useListContext();
   return /*#__PURE__*/_react.default.createElement(_rjsf.ReferenceInputWidget, {
     id: source,
@@ -63,11 +64,12 @@ const RefInput = ({
       title: label
     },
     onChange: value => {
-      setFilters({
+      setFilters({ ...filterValues,
         [source]: value
       });
     },
-    variant: "filled"
+    variant: "filled",
+    value: filterValues[source]
   });
 };
 
