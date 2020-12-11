@@ -31,7 +31,9 @@ const Edit = props => {
   const [hasErrors, setHasErrors] = (0, _react.useState)(true);
   const {
     editSchema: schema,
-    uiSchema
+    uiSchema,
+    fields,
+    widgets
   } = (0, _react.useContext)(_Resource.ResourceContext);
   let form;
   const {
@@ -69,6 +71,8 @@ const Edit = props => {
     formData: formData,
     showErrorList: false,
     liveValidate: true,
+    fields: fields,
+    widgets: widgets,
     onChange: ({
       formData,
       errors

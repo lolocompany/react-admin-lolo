@@ -8,7 +8,7 @@ import './Admin.css';
 
 const AdminContext = React.createContext({});
 
-const Admin = ({ apiUrl, ...props }) => {
+const Admin = ({ apiUrl, fields = {}, widgets = {}, ...props }) => {
 	const dataProvider = _dataProvider(apiUrl);
 
 	const RAdmin = () => (
@@ -25,7 +25,7 @@ const Admin = ({ apiUrl, ...props }) => {
 )
 
 	return (
-		<AdminContext.Provider value={{ apiUrl, dataProvider }}>
+		<AdminContext.Provider value={{ apiUrl, dataProvider, fields, widgets }}>
 			<RAdmin />
 		</AdminContext.Provider>
 	);

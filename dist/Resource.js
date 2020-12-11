@@ -44,7 +44,9 @@ const Resource = props => {
   const [createSchema, setCreateSchema] = (0, _react.useState)();
   const [uiSchema, setUiSchema] = (0, _react.useState)();
   const {
-    apiUrl
+    apiUrl,
+    fields,
+    widgets
   } = (0, _react.useContext)(_Admin.AdminContext);
   (0, _react.useEffect)(() => {
     const schemaUrl = apiUrl + '/schemas/' + name.replace(/s$/, '');
@@ -85,7 +87,9 @@ const Resource = props => {
       editSchema,
       createSchema,
       uiSchema,
-      timestamps
+      timestamps,
+      fields,
+      widgets
     }
   }, /*#__PURE__*/_react.default.createElement(ra.Resource, _extends({
     list: _List.default,

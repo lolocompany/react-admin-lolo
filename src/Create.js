@@ -12,7 +12,7 @@ const Create = props => {
   const [ formData, setFormData ] = useState({});
   const [schemaState, setSchemaState] = useState({})
 	const [ hasErrors, setHasErrors ] = useState(true);
-  const { createSchema: schema, uiSchema } = useContext(ResourceContext);
+  const { createSchema: schema, uiSchema, widgets, fields } = useContext(ResourceContext);
 	let form;
 
   const {
@@ -61,6 +61,8 @@ const Create = props => {
 						formData={formData}
             showErrorList={false}
             liveValidate={true}
+            fields={fields}
+            widgets={widgets}
 						onChange={({ formData }) => {
               setFormData(formData);
 						}}

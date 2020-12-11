@@ -38,7 +38,7 @@ var _default = apiUrl => {
   };
 
   const buildQs = (filter = {}) => Object.entries(filter).reduce((memo, [k, v]) => {
-    memo[`q[${k}]`] = `*${v}*`;
+    memo[`q[${k}]`] = v;
     return memo;
   }, {});
 

@@ -33,7 +33,9 @@ const Create = props => {
   const [hasErrors, setHasErrors] = (0, _react.useState)(true);
   const {
     createSchema: schema,
-    uiSchema
+    uiSchema,
+    widgets,
+    fields
   } = (0, _react.useContext)(_Resource.ResourceContext);
   let form;
   const {
@@ -85,6 +87,8 @@ const Create = props => {
     formData: formData,
     showErrorList: false,
     liveValidate: true,
+    fields: fields,
+    widgets: widgets,
     onChange: ({
       formData
     }) => {

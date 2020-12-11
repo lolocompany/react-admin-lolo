@@ -18,7 +18,7 @@ const Resource = props => {
 	const [ editSchema, setEditSchema ] = useState();
 	const [ createSchema, setCreateSchema ] = useState();
 	const [ uiSchema, setUiSchema] = useState();
-	const { apiUrl } = useContext(AdminContext);
+	const { apiUrl, fields, widgets } = useContext(AdminContext);
 
 	useEffect(() => {
 		const schemaUrl = apiUrl + '/schemas/' + name.replace(/s$/, '');
@@ -51,7 +51,7 @@ const Resource = props => {
 	}, [ apiUrl, name ]);
 
 	return (
-		<ResourceContext.Provider value={{ schema, editSchema, createSchema, uiSchema, timestamps }}>
+		<ResourceContext.Provider value={{ schema, editSchema, createSchema, uiSchema, timestamps, fields, widgets }}>
 			<ra.Resource
 				list={List}
 				create={Create}

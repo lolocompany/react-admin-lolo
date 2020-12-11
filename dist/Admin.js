@@ -33,6 +33,8 @@ exports.AdminContext = AdminContext;
 
 const Admin = ({
   apiUrl,
+  fields = {},
+  widgets = {},
   ...props
 }) => {
   const dataProvider = (0, _data_provider.default)(apiUrl);
@@ -48,7 +50,9 @@ const Admin = ({
   return /*#__PURE__*/_react.default.createElement(AdminContext.Provider, {
     value: {
       apiUrl,
-      dataProvider
+      dataProvider,
+      fields,
+      widgets
     }
   }, /*#__PURE__*/_react.default.createElement(RAdmin, null));
 };
