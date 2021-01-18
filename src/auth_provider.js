@@ -3,8 +3,8 @@ import { Auth } from 'aws-amplify';
 Auth.configure({
   Auth: {
     region: 'eu-west-1',
-    userPoolId: 'eu-west-1_QHFROumrL',
-    userPoolWebClientId: '2fdpo91r8b6ing6f3558kia6rb'
+    userPoolId: 'eu-west-1_lQin10bBN',
+    userPoolWebClientId: '2j7v5uee5qc13p6kncmlrjqq0q'
   }
 });
 
