@@ -17,7 +17,11 @@ const LoginPage = () => {
 	return (
 		<div className="amplify-form-wrapper">
 			<AmplifyAuthenticator>
-				<AmplifySignIn />
+				<AmplifySignIn
+					slot="sign-in" 
+					usernameAlias='email'
+					hideSignUp
+				/>
 			</AmplifyAuthenticator>
 		</div>
 	)

@@ -28,7 +28,11 @@ const LoginPage = () => {
 
   return /*#__PURE__*/_react.default.createElement("div", {
     className: "amplify-form-wrapper"
-  }, /*#__PURE__*/_react.default.createElement(_uiReact.AmplifyAuthenticator, null, /*#__PURE__*/_react.default.createElement(_uiReact.AmplifySignIn, null)));
+  }, /*#__PURE__*/_react.default.createElement(_uiReact.AmplifyAuthenticator, null, /*#__PURE__*/_react.default.createElement(_uiReact.AmplifySignIn, {
+    slot: "sign-in",
+    usernameAlias: "email",
+    hideSignUp: true
+  })));
 };
 
 var _default = LoginPage;
