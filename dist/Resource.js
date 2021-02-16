@@ -7,6 +7,8 @@ exports.ResourceContext = exports.Resource = void 0;
 
 var _react = _interopRequireWildcard(require("react"));
 
+var _reactRouter = require("react-router");
+
 var ra = _interopRequireWildcard(require("react-admin"));
 
 var _traverse = _interopRequireDefault(require("traverse"));
@@ -20,6 +22,8 @@ var _List = _interopRequireDefault(require("./List"));
 var rjsf = _interopRequireWildcard(require("./rjsf"));
 
 var _Admin = require("./Admin");
+
+var _inflection = require("inflection");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -49,7 +53,7 @@ const Resource = props => {
     widgets
   } = (0, _react.useContext)(_Admin.AdminContext);
   (0, _react.useEffect)(() => {
-    const schemaUrl = apiUrl + '/schemas/' + name.replace(/s$/, '');
+    const schemaUrl = apiUrl + '/schemas/' + (0, _inflection.singularize)(name);
     ra.fetchUtils.fetchJson(schemaUrl).then(({
       json
     }) => {
@@ -100,12 +104,19 @@ const Resource = props => {
 
 exports.Resource = Resource;
 
+const oneOf = part => part === 'oneOf';
+
 const enableWidgets = (uiSchema, schema) => {
   (0, _traverse.default)(schema).forEach(function () {
     if (/Id$/.test(this.key)) {
-      const path = this.path.indexOf('dependencies') >= 0 ? this.path.slice(-1) : this.path.filter(item => item !== 'properties');
+      let path = this.path.filter(part => !['properties', 'dependencies'].includes(part));
+
+      while (path.find(oneOf)) {
+        path.splice(path.findIndex(oneOf) - 1, 3);
+      }
+
       (0, _traverse.default)(uiSchema).set(path, {
-        'ui:widget': rjsf.ReferenceInputWidget
+        'ui:widget': (0, _reactRouter.withRouter)(rjsf.ReferenceInputWidget)
       });
     }
   });

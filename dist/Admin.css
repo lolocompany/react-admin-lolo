@@ -2,6 +2,11 @@
 .rjsf .MuiInputBase-input {
 	font-size: 0.875rem !important;
 }
+
+.rjsf .MuiGrid-item h5 {
+	font-size: 20px;
+}
+
 .amplify-form-wrapper{
 	display: flex;
 	justify-content: center;

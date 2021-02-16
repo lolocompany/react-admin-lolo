@@ -17,11 +17,17 @@ var _CircularProgress = _interopRequireDefault(require("@material-ui/core/Circul
 
 var _Grid = _interopRequireDefault(require("@material-ui/core/Grid"));
 
+var _Button = _interopRequireDefault(require("@material-ui/core/Button"));
+
+var _CreateOutlined = _interopRequireDefault(require("@material-ui/icons/CreateOutlined"));
+
 var _Typography = _interopRequireDefault(require("@material-ui/core/Typography"));
 
 var _styles = require("@material-ui/core/styles");
 
 var _parse = _interopRequireDefault(require("autosuggest-highlight/parse"));
+
+var _inflection = require("inflection");
 
 var _throttleDebounce = require("throttle-debounce");
 
@@ -65,7 +71,8 @@ function ReferenceInputWidget(props) {
   } = _react.default.useContext(_Admin.AdminContext);
 
   const classes = useStyles();
-  const typePlural = (0, _utils.keyToRef)(id.split('_').pop()); // TODO: handle readOnly
+  const typeCamel = id.split('_').pop().replace(/Id$/, '');
+  const typePlural = (0, _inflection.transform)(typeCamel, ['underscore', 'dasherize', 'pluralize']); // TODO: handle readOnly
 
   const search = _react.default.useMemo(() => (0, _throttleDebounce.debounce)(500, async (filter, cb) => {
     setLoading(true);
@@ -118,7 +125,12 @@ function ReferenceInputWidget(props) {
     }
   }, [value, inputValue, search]);
 
-  return /*#__PURE__*/_react.default.createElement(_Autocomplete.default, {
+  return /*#__PURE__*/_react.default.createElement(_Grid.default, {
+    container: true
+  }, /*#__PURE__*/_react.default.createElement(_Grid.default, {
+    item: true,
+    xs: 11
+  }, /*#__PURE__*/_react.default.createElement(_Autocomplete.default, {
     id: id,
     autoComplete: true,
     blurOnSelect: true,
@@ -160,7 +172,17 @@ function ReferenceInputWidget(props) {
     renderOption: option => {
       return option.name || option.id;
     }
-  });
+  })), /*#__PURE__*/_react.default.createElement(_Grid.default, {
+    item: true,
+    xs: 1,
+    align: "right"
+  }, /*#__PURE__*/_react.default.createElement(_Button.default, {
+    style: {
+      marginTop: 16
+    },
+    title: `Create new ${(0, _inflection.transform)(typeCamel, ['titleize'])}`,
+    onClick: () => props.history.push(`/${typePlural}/create`)
+  }, /*#__PURE__*/_react.default.createElement(_CreateOutlined.default, null))));
 }
 
 var _default = ReferenceInputWidget;

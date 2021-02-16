@@ -60,7 +60,7 @@ const List = props => {
     title: schema.title ? (0, _inflection.pluralize)(schema.title) : undefined
   }), /*#__PURE__*/_react.default.createElement(ra.Datagrid, {
     rowClick: props.hasShow ? 'show' : props.hasEdit ? 'edit' : null,
-    expand: /*#__PURE__*/_react.default.createElement(ExpandPanel, null)
+    expand: props.expand || /*#__PURE__*/_react.default.createElement(ExpandPanel, null)
   }, Object.entries({ ...schema.properties,
     createdAt: {
       type: 'string',

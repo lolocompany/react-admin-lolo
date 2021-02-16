@@ -1,5 +1,6 @@
 import React from 'react';
 import { useState, useEffect, useContext } from 'react';
+import { withRouter } from 'react-router';
 import * as ra from 'react-admin';
 import traverse from 'traverse';
 
@@ -8,6 +9,7 @@ import Edit from './Edit';
 import List from './List';
 import * as rjsf from './rjsf';
 import { AdminContext } from './Admin';
+import { singularize } from 'inflection';
 
 const ResourceContext = React.createContext();
 
@@ -21,7 +23,7 @@ const Resource = props => {
 	const { apiUrl, fields, widgets } = useContext(AdminContext);
 
 	useEffect(() => {
-		const schemaUrl = apiUrl + '/schemas/' + name.replace(/s$/, '');
+		const schemaUrl = apiUrl + '/schemas/' + singularize(name)
 
 		ra.fetchUtils.fetchJson(schemaUrl).then(({ json }) => {
 			const { uiSchema = {}, ...schema } = json;
@@ -62,14 +64,18 @@ const Resource = props => {
 	);
 };
 
+const oneOf = part => part === 'oneOf';
+
 const enableWidgets = (uiSchema, schema) => {
 	traverse(schema).forEach(function() {
 		if (/Id$/.test(this.key)) {
-			const path = this.path.indexOf('dependencies') >= 0 ?
-				this.path.slice(-1) :
-				this.path.filter(item => item !== 'properties');
+			let path = this.path.filter(part => ![ 'properties', 'dependencies' ].includes(part));
 
-			traverse(uiSchema).set(path, { 'ui:widget': rjsf.ReferenceInputWidget });
+			while (path.find(oneOf)) {
+				path.splice(path.findIndex(oneOf) - 1, 3);
+			}
+
+			traverse(uiSchema).set(path, { 'ui:widget': withRouter(rjsf.ReferenceInputWidget) });
 		}
 	});
 }
@@ -85,7 +91,6 @@ const removeReadonly = schema => {
 
 	return copy;
 }
-
 
 export {
 	Resource,

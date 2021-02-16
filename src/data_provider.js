@@ -1,6 +1,6 @@
 import { fetchUtils } from 'react-admin';
 import { stringify } from 'query-string';
-import { humanize } from 'inflection';
+import { humanize, camelize, pluralize } from 'inflection';
 import Auth from '@aws-amplify/auth';
 
 export default apiUrl => {
@@ -66,6 +66,7 @@ export default apiUrl => {
 
       const url = `/${resource}?${stringify(query)}`;
       const res = await fetchJson(url);
+      const cKey = pluralize(camelize(resource.replace(/-/g, ''), true));
 
       return {
         data: res.json[kebabToCamel(resource)],

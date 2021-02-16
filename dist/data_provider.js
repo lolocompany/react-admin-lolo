@@ -83,6 +83,7 @@ var _default = apiUrl => {
       };
       const url = `/${resource}?${(0, _queryString.stringify)(query)}`;
       const res = await fetchJson(url);
+      const cKey = (0, _inflection.pluralize)((0, _inflection.camelize)(resource.replace(/-/g, ''), true));
       return {
         data: res.json[kebabToCamel(resource)],
         total: res.json.total

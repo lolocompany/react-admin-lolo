@@ -38,10 +38,13 @@ const List = props => {
     	>
       <ra.Datagrid
       	rowClick={props.hasShow ? 'show' : props.hasEdit ? 'edit' : null}
-      	expand={<ExpandPanel />}
+        expand={props.expand || <ExpandPanel />}
       	>
-      	{ Object.entries({ ...schema.properties, createdAt: { type: 'string', format: 'date-time' }})
-      		.map(toField)
+        {
+          Object.entries({
+            ...schema.properties,
+            createdAt: { type: 'string', format: 'date-time' }
+          }).map(toField)
       	}
       </ra.Datagrid>
     </ra.List>
