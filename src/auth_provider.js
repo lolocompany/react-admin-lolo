@@ -1,6 +1,6 @@
-import { Auth } from 'aws-amplify';
+import Amplify, { Auth } from 'aws-amplify';
 
-Auth.configure({
+Amplify.configure({
   Auth: {
     region: 'eu-west-1',
     userPoolId: 'eu-west-1_lQin10bBN',
