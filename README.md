@@ -16,7 +16,7 @@ import React from "react";
 import { LoloAdmin, LoloResource } from 'react-admin-lolo';
 
 const App = () => (
-  <LoloAdmin appId='APP_ID'>
+  <LoloAdmin apiUrl={process.env.REACT_APP_API_URL}>
     <LoloResource name='movies' />
     <LoloResource name='directors' />
   </LoloAdmin>
