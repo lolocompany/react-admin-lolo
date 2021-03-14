@@ -69,7 +69,8 @@ const RefInput = ({
       });
     },
     variant: "filled",
-    value: filterValues[source]
+    value: filterValues[source],
+    showCreate: false
   });
 };
 

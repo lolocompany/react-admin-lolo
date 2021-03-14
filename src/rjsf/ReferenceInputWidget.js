@@ -23,11 +23,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function ReferenceInputWidget(props) {
-  const { id, value, onChange, schema, variant, uiSchema } = props;
+  const { id, value, onChange, schema, variant, uiSchema, showCreate = true } = props;
 
  	const [inputValue, setInputValue] = React.useState('');
   const [options, setOptions] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
+  const [findBy, setFindBy] = React.useState('name');
 	const { dataProvider } = React.useContext(AdminContext);
 
 	const classes = useStyles();
@@ -40,12 +41,18 @@ function ReferenceInputWidget(props) {
   const search = React.useMemo(
     () => debounce(500, async (filter, cb) => {
     	setLoading(true);
-			const res = await dataProvider.getList(typePlural, { 
+			const res = await dataProvider.getList(typePlural, {
 				filter,
 				pagination: { perPage: 25 }
 			});
 			setLoading(false);
-			cb(res.data);
+
+      // Ugly hack for resources without a name field (createById)
+      if (res.data.length && res.data.every(item => !item.name)) {
+        setFindBy('id');
+      }
+
+      cb(res.data);
     }), []
   );
 
@@ -56,7 +63,7 @@ function ReferenceInputWidget(props) {
     } else if (value) {
     	const selectedOption = options.find(opt => opt.id === value);
     	if (selectedOption) {
-    		setInputValue(selectedOption.name);
+    		setInputValue(selectedOption.name || selectedOption.id);
 
     	} else {
 	    	(async () => {
@@ -64,7 +71,7 @@ function ReferenceInputWidget(props) {
           try {
   					const res = await dataProvider.getOne(typePlural, { id: value });
   					if (res && res.data) {
-  						setInputValue(res.data.name);
+  						setInputValue(res.data.name || res.data.id);
   						setOptions([ res.data ]);
   					} else {
   						setValue(undefined);
@@ -77,7 +84,7 @@ function ReferenceInputWidget(props) {
 	    }
 
     } else {
-	    search({ name: inputValue }, results => {
+	    search({ [findBy]: inputValue }, results => {
 	    	setOptions(results);
 	    });
 	  }
@@ -101,7 +108,7 @@ function ReferenceInputWidget(props) {
           inputValue={inputValue}
           onChange={(event, newValue) => {
             if (newValue) {
-              setInputValue(newValue.name);
+              setInputValue(newValue.name || newValue.id);
               onChange(newValue.id);
             } else {
               setInputValue('');
@@ -134,12 +141,12 @@ function ReferenceInputWidget(props) {
         />
       </Grid>
       <Grid item xs={1} align='right'>
-        <Button
+        { showCreate ? (<Button
           style={{marginTop: 16}}
           title={`Create new ${transform(typeCamel, [ 'titleize']) }`}
           onClick={() => props.history.push(`/${typePlural}/create`)}>
           <CreateIcon />
-        </Button>
+        </Button>) : null}
       </Grid>
     </Grid>
   );

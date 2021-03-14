@@ -57,7 +57,8 @@ function ReferenceInputWidget(props) {
     onChange,
     schema,
     variant,
-    uiSchema
+    uiSchema,
+    showCreate = true
   } = props;
 
   const [inputValue, setInputValue] = _react.default.useState('');
@@ -65,6 +66,8 @@ function ReferenceInputWidget(props) {
   const [options, setOptions] = _react.default.useState([]);
 
   const [loading, setLoading] = _react.default.useState(false);
+
+  const [findBy, setFindBy] = _react.default.useState('name');
 
   const {
     dataProvider
@@ -82,7 +85,12 @@ function ReferenceInputWidget(props) {
         perPage: 25
       }
     });
-    setLoading(false);
+    setLoading(false); // Ugly hack for resources without a name field (createById)
+
+    if (res.data.length && res.data.every(item => !item.name)) {
+      setFindBy('id');
+    }
+
     cb(res.data);
   }), []);
 
@@ -93,7 +101,7 @@ function ReferenceInputWidget(props) {
       const selectedOption = options.find(opt => opt.id === value);
 
       if (selectedOption) {
-        setInputValue(selectedOption.name);
+        setInputValue(selectedOption.name || selectedOption.id);
       } else {
         (async () => {
           setLoading(true);
@@ -104,7 +112,7 @@ function ReferenceInputWidget(props) {
             });
 
             if (res && res.data) {
-              setInputValue(res.data.name);
+              setInputValue(res.data.name || res.data.id);
               setOptions([res.data]);
             } else {
               setValue(undefined);
@@ -118,7 +126,7 @@ function ReferenceInputWidget(props) {
       }
     } else {
       search({
-        name: inputValue
+        [findBy]: inputValue
       }, results => {
         setOptions(results);
       });
@@ -145,7 +153,7 @@ function ReferenceInputWidget(props) {
     inputValue: inputValue,
     onChange: (event, newValue) => {
       if (newValue) {
-        setInputValue(newValue.name);
+        setInputValue(newValue.name || newValue.id);
         onChange(newValue.id);
       } else {
         setInputValue('');
@@ -176,13 +184,13 @@ function ReferenceInputWidget(props) {
     item: true,
     xs: 1,
     align: "right"
-  }, /*#__PURE__*/_react.default.createElement(_Button.default, {
+  }, showCreate ? /*#__PURE__*/_react.default.createElement(_Button.default, {
     style: {
       marginTop: 16
     },
     title: `Create new ${(0, _inflection.transform)(typeCamel, ['titleize'])}`,
     onClick: () => props.history.push(`/${typePlural}/create`)
-  }, /*#__PURE__*/_react.default.createElement(_CreateOutlined.default, null))));
+  }, /*#__PURE__*/_react.default.createElement(_CreateOutlined.default, null)) : null));
 }
 
 var _default = ReferenceInputWidget;

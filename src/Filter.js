@@ -12,7 +12,7 @@ const Filter = props => {
 	);
 };
 
-const toInput = ([ key, fieldSchema ]) => {	
+const toInput = ([ key, fieldSchema ]) => {
 	const fieldProps = {
 		label: fieldSchema.title,
 		source: key,
@@ -32,7 +32,7 @@ const toInput = ([ key, fieldSchema ]) => {
 		case 'integer':
 		case 'number':
 			return <ra.NumberInput {...fieldProps}/>
-			
+
 		default:
 			return null;
 	}
@@ -54,6 +54,7 @@ const RefInput = ({ source, label }) => {
 			}}
 			variant='filled'
 			value={filterValues[source]}
+			showCreate={false}
 		/>
 	);
 };
@@ -64,7 +65,7 @@ const enumInput = (fieldProps, fieldSchema) => {
 
 	return (
 		<ra.SelectInput
-			{...fieldProps} 
+			{...fieldProps}
 			choices={choices}
 		/>
 	);
