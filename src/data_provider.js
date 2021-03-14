@@ -27,7 +27,7 @@ export default apiUrl => {
     (memo, [k, v]) => {
       memo[`q[${k}]`] = v;
       return memo;
-    }, 
+    },
     {});
 
   const create = async (resource, params) => {
@@ -50,7 +50,7 @@ export default apiUrl => {
     },
 
     /**
-     * getList 
+     * getList
      */
 
     getList: async (resource, params) => {
@@ -75,7 +75,7 @@ export default apiUrl => {
     },
 
     /**
-     * getOne 
+     * getOne
      */
 
     getOne: async (resource, params) => {
@@ -84,7 +84,7 @@ export default apiUrl => {
     },
 
     /**
-     * getMany 
+     * getMany
      */
 
     getMany: (resource, params) => {
@@ -101,7 +101,7 @@ export default apiUrl => {
     },
 
     /**
-     * getManyReference 
+     * getManyReference
      */
 
     getManyReference: async (resource, params) => {
@@ -112,7 +112,7 @@ export default apiUrl => {
         limit: perPage,
         sort: `${field} ${order.toLowerCase()}`,
         offset: (page - 1) * perPage,
-        ...buildQs({ [params.target]: params.id })
+        ...buildQs({ ...params.filter, [params.target]: params.id })
       };
 
       const url = `/${resource}?${stringify(query)}`;
@@ -125,17 +125,17 @@ export default apiUrl => {
     },
 
     /**
-     * update 
+     * update
      */
 
     update: (resource, params) => {
       return fetchJson(`/${resource}/${params.id}`, {
         method: 'PUT',
         body: JSON.stringify(params.data)
-      
+
       }).then(res => {
         return { data: res.json };
-      
+
       }).catch(err => {
         // Ugly hack for import overwrite
         if (err.status === 404) return create(resource, params);
@@ -143,9 +143,9 @@ export default apiUrl => {
       })
     },
 
-    
+
     /**
-     * updateMany 
+     * updateMany
      */
 
     updateMany: (resource, params) => {
@@ -153,13 +153,13 @@ export default apiUrl => {
     },
 
     /**
-     * create 
+     * create
      */
 
     create,
 
     /**
-     * delete 
+     * delete
      */
 
     delete: (resource, params) => {
@@ -169,7 +169,7 @@ export default apiUrl => {
     },
 
     /**
-     * deleteMany 
+     * deleteMany
      */
 
     deleteMany: async (resource, params) => {

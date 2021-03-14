@@ -64,7 +64,7 @@ var _default = apiUrl => {
     },
 
     /**
-     * getList 
+     * getList
      */
     getList: async (resource, params) => {
       const {
@@ -91,7 +91,7 @@ var _default = apiUrl => {
     },
 
     /**
-     * getOne 
+     * getOne
      */
     getOne: async (resource, params) => {
       const res = await fetchJson(`/${resource}/${params.id}`);
@@ -101,7 +101,7 @@ var _default = apiUrl => {
     },
 
     /**
-     * getMany 
+     * getMany
      */
     getMany: (resource, params) => {
       const query = params.ids.reduce((memo, id) => {
@@ -118,7 +118,7 @@ var _default = apiUrl => {
     },
 
     /**
-     * getManyReference 
+     * getManyReference
      */
     getManyReference: async (resource, params) => {
       const {
@@ -133,7 +133,7 @@ var _default = apiUrl => {
         limit: perPage,
         sort: `${field} ${order.toLowerCase()}`,
         offset: (page - 1) * perPage,
-        ...buildQs({
+        ...buildQs({ ...params.filter,
           [params.target]: params.id
         })
       };
@@ -146,7 +146,7 @@ var _default = apiUrl => {
     },
 
     /**
-     * update 
+     * update
      */
     update: (resource, params) => {
       return fetchJson(`/${resource}/${params.id}`, {
@@ -164,19 +164,19 @@ var _default = apiUrl => {
     },
 
     /**
-     * updateMany 
+     * updateMany
      */
     updateMany: (resource, params) => {
       throw new Error('Not implemented');
     },
 
     /**
-     * create 
+     * create
      */
     create,
 
     /**
-     * delete 
+     * delete
      */
     delete: (resource, params) => {
       return fetchJson(`/${resource}/${params.id}`, {
@@ -187,7 +187,7 @@ var _default = apiUrl => {
     },
 
     /**
-     * deleteMany 
+     * deleteMany
      */
     deleteMany: async (resource, params) => {
       const deletedIds = [];
