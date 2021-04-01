@@ -12,7 +12,6 @@ const Edit = props => {
   const [schemaState, setSchemaState] = useState({})
 	const [ hasErrors, setHasErrors ] = useState(true);
 	const { editSchema: schema, uiSchema, fields, widgets } = useContext(ResourceContext);
-	let form;
 
   const {
     basePath,
@@ -42,7 +41,6 @@ const Edit = props => {
       <Card>
         <Box px={2} pb={1}>
   				<Form
-  					ref={f => { form = f; }}
   					schema={schemaState || {}}
   					uiSchema={uiSchema}
   					formData={formData}
@@ -54,7 +52,6 @@ const Edit = props => {
               setFormData(formData);
   						setHasErrors(!!errors.length);
   					}}
-            onSubmit={({ formData })=> save(formData)}
             >
   					{' '}
   				</Form>
@@ -65,7 +62,7 @@ const Edit = props => {
   				<ra.SaveButton
   					saving={saving}
   					disabled={hasErrors}
-  					handleSubmitWithRedirect={() => form.submit()}
+  					handleSubmitWithRedirect={() => save(formData)}
   				  />
   				<ra.DeleteButton
   					record={record}

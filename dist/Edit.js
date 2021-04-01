@@ -35,7 +35,6 @@ const Edit = props => {
     fields,
     widgets
   } = (0, _react.useContext)(_Resource.ResourceContext);
-  let form;
   const {
     basePath,
     record,
@@ -63,9 +62,6 @@ const Edit = props => {
     px: 2,
     pb: 1
   }, /*#__PURE__*/_react.default.createElement(_materialUi.default, {
-    ref: f => {
-      form = f;
-    },
     schema: schemaState || {},
     uiSchema: uiSchema,
     formData: formData,
@@ -79,10 +75,7 @@ const Edit = props => {
     }) => {
       setFormData(formData);
       setHasErrors(!!errors.length);
-    },
-    onSubmit: ({
-      formData
-    }) => save(formData)
+    }
   }, ' '))), /*#__PURE__*/_react.default.createElement(ra.Toolbar, null, /*#__PURE__*/_react.default.createElement(_core.Box, {
     display: "flex",
     justifyContent: "space-between",
@@ -90,7 +83,7 @@ const Edit = props => {
   }, /*#__PURE__*/_react.default.createElement(ra.SaveButton, {
     saving: saving,
     disabled: hasErrors,
-    handleSubmitWithRedirect: () => form.submit()
+    handleSubmitWithRedirect: () => save(formData)
   }), /*#__PURE__*/_react.default.createElement(ra.DeleteButton, {
     record: record,
     basePath: basePath,

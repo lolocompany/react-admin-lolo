@@ -93,10 +93,7 @@ const Create = props => {
       formData
     }) => {
       setFormData(formData);
-    },
-    onSubmit: ({
-      formData
-    }) => save(formData)
+    }
   }, ' '))), /*#__PURE__*/_react.default.createElement(ra.Toolbar, null, /*#__PURE__*/_react.default.createElement(_core.Box, {
     display: "flex",
     justifyContent: "space-between",
@@ -104,7 +101,7 @@ const Create = props => {
   }, /*#__PURE__*/_react.default.createElement(ra.SaveButton, {
     saving: saving,
     disabled: hasErrors,
-    handleSubmitWithRedirect: () => form.submit()
+    handleSubmitWithRedirect: () => save(formData)
   }))));
 };
 

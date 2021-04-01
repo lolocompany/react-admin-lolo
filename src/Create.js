@@ -54,7 +54,7 @@ const Create = props => {
       />
       <Card>
         <Box px={2} pb={1}>
-					<Form
+          <Form
 						ref={f => { form = f; }}
 						schema={schemaState || {}}
 						uiSchema={uiSchema}
@@ -65,21 +65,19 @@ const Create = props => {
             widgets={widgets}
 						onChange={({ formData }) => {
               setFormData(formData);
-						}}
-            onSubmit={({ formData })=> save(formData)}
-            >
-						{' '}
+            }}>
+            {' '}
           </Form>
         </Box>
       </Card>
   		<ra.Toolbar>
-  			<Box display="flex" justifyContent="space-between" width="100%">
-  				<ra.SaveButton
-  					saving={saving}
-  					disabled={hasErrors}
-  					handleSubmitWithRedirect={() => form.submit()}
-  				/>
-  			</Box>
+        <Box display="flex" justifyContent="space-between" width="100%">
+          <ra.SaveButton
+            saving={saving}
+            disabled={hasErrors}
+            handleSubmitWithRedirect={() => save(formData)}
+          />
+        </Box>
   		</ra.Toolbar>
 		</div>
 	);
