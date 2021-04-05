@@ -8,13 +8,21 @@ import Create from './Create';
 import Edit from './Edit';
 import List from './List';
 import * as rjsf from './rjsf';
+import {buildCreateSchema, buildEditSchema} from './utils'
 import { AdminContext } from './Admin';
 import { singularize } from 'inflection';
 
 const ResourceContext = React.createContext();
 
 const Resource = props => {
-	const { name, intent, timestamps = ['createdAt'], createWithId } = props;
+	const { 
+		name,
+		intent,
+		timestamps = ['createdAt'],
+		createWithId, 
+		editSchemaTransform = schema => buildEditSchema(schema),
+		createSchemaTransform = schema => buildCreateSchema(schema)
+	} = props;
 
 	const [ schema, setSchema ] = useState();
 	const [ editSchema, setEditSchema ] = useState();
@@ -34,8 +42,8 @@ const Resource = props => {
 				setSchema(schema);
 				setUiSchema(uiSchema);
 			
-				const editSchema = removeReadonly(schema);
-				const createSchema = removeReadonly(schema);
+				const editSchema = editSchemaTransform(schema)
+				const createSchema = createSchemaTransform(schema);
 
 				if (createWithId) {
 					editSchema.properties = {
@@ -80,18 +88,6 @@ const enableWidgets = (uiSchema, schema) => {
 			traverse(uiSchema).set(path, { 'ui:widget': withRouter(rjsf.ReferenceInputWidget) });
 		}
 	});
-}
-
-const removeReadonly = schema => {
-	const copy = JSON.parse(JSON.stringify(schema));
-
-	traverse(copy).forEach(function() {
-		if (this.key === 'readOnly') {
-			this.parent.remove();
-		}
-	});
-
-	return copy;
 }
 
 export {

@@ -21,6 +21,8 @@ var _List = _interopRequireDefault(require("./List"));
 
 var rjsf = _interopRequireWildcard(require("./rjsf"));
 
+var _utils = require("./utils");
+
 var _Admin = require("./Admin");
 
 var _inflection = require("inflection");
@@ -42,7 +44,9 @@ const Resource = props => {
     name,
     intent,
     timestamps = ['createdAt'],
-    createWithId
+    createWithId,
+    editSchemaTransform = schema => (0, _utils.buildEditSchema)(schema),
+    createSchemaTransform = schema => (0, _utils.buildCreateSchema)(schema)
   } = props;
   const [schema, setSchema] = (0, _react.useState)();
   const [editSchema, setEditSchema] = (0, _react.useState)();
@@ -67,8 +71,8 @@ const Resource = props => {
         delete schema.additionalProperties;
         setSchema(schema);
         setUiSchema(uiSchema);
-        const editSchema = removeReadonly(schema);
-        const createSchema = removeReadonly(schema);
+        const editSchema = editSchemaTransform(schema);
+        const createSchema = createSchemaTransform(schema);
 
         if (createWithId) {
           editSchema.properties = {
@@ -123,14 +127,4 @@ const enableWidgets = (uiSchema, schema) => {
       });
     }
   });
-};
-
-const removeReadonly = schema => {
-  const copy = JSON.parse(JSON.stringify(schema));
-  (0, _traverse.default)(copy).forEach(function () {
-    if (this.key === 'readOnly') {
-      this.parent.remove();
-    }
-  });
-  return copy;
 };
