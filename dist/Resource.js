@@ -40,6 +40,7 @@ exports.ResourceContext = ResourceContext;
 const Resource = props => {
   const {
     name,
+    intent,
     timestamps = ['createdAt'],
     createWithId
   } = props;
@@ -53,37 +54,39 @@ const Resource = props => {
     widgets
   } = (0, _react.useContext)(_Admin.AdminContext);
   (0, _react.useEffect)(() => {
-    const schemaUrl = apiUrl + '/schemas/' + (0, _inflection.singularize)(name);
-    ra.fetchUtils.fetchJson(schemaUrl).then(({
-      json
-    }) => {
-      const {
-        uiSchema = {},
-        ...schema
-      } = json;
-      enableWidgets(uiSchema, schema);
-      delete schema.additionalProperties;
-      setSchema(schema);
-      setUiSchema(uiSchema);
-      const editSchema = removeReadonly(schema);
-      const createSchema = removeReadonly(schema);
+    if (intent === 'route') {
+      const schemaUrl = apiUrl + '/schemas/' + (0, _inflection.singularize)(name);
+      ra.fetchUtils.fetchJson(schemaUrl).then(({
+        json
+      }) => {
+        const {
+          uiSchema = {},
+          ...schema
+        } = json;
+        enableWidgets(uiSchema, schema);
+        delete schema.additionalProperties;
+        setSchema(schema);
+        setUiSchema(uiSchema);
+        const editSchema = removeReadonly(schema);
+        const createSchema = removeReadonly(schema);
 
-      if (createWithId) {
-        editSchema.properties = {
-          id: schema.properties.id,
-          ...createSchema.properties
-        };
-        createSchema.properties = {
-          id: { ...schema.properties.id,
-            readOnly: false
-          },
-          ...createSchema.properties
-        };
-      }
+        if (createWithId) {
+          editSchema.properties = {
+            id: schema.properties.id,
+            ...createSchema.properties
+          };
+          createSchema.properties = {
+            id: { ...schema.properties.id,
+              readOnly: false
+            },
+            ...createSchema.properties
+          };
+        }
 
-      setEditSchema(editSchema);
-      setCreateSchema(createSchema);
-    });
+        setEditSchema(editSchema);
+        setCreateSchema(createSchema);
+      });
+    }
   }, [apiUrl, name]);
   return /*#__PURE__*/_react.default.createElement(ResourceContext.Provider, {
     value: {

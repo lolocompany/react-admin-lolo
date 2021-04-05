@@ -14,7 +14,7 @@ import { singularize } from 'inflection';
 const ResourceContext = React.createContext();
 
 const Resource = props => {
-	const { name, timestamps = ['createdAt'], createWithId } = props;
+	const { name, intent, timestamps = ['createdAt'], createWithId } = props;
 
 	const [ schema, setSchema ] = useState();
 	const [ editSchema, setEditSchema ] = useState();
@@ -23,33 +23,35 @@ const Resource = props => {
 	const { apiUrl, fields, widgets } = useContext(AdminContext);
 
 	useEffect(() => {
-		const schemaUrl = apiUrl + '/schemas/' + singularize(name)
+		if(intent === 'route') {
+			const schemaUrl = apiUrl + '/schemas/' + singularize(name)
 
-		ra.fetchUtils.fetchJson(schemaUrl).then(({ json }) => {
-			const { uiSchema = {}, ...schema } = json;
-			enableWidgets(uiSchema, schema);
+			ra.fetchUtils.fetchJson(schemaUrl).then(({ json }) => {
+				const { uiSchema = {}, ...schema } = json;
+				enableWidgets(uiSchema, schema);
 
-			delete schema.additionalProperties;
-			setSchema(schema);
-			setUiSchema(uiSchema);
-		
-			const editSchema = removeReadonly(schema);
-			const createSchema = removeReadonly(schema);
+				delete schema.additionalProperties;
+				setSchema(schema);
+				setUiSchema(uiSchema);
+			
+				const editSchema = removeReadonly(schema);
+				const createSchema = removeReadonly(schema);
 
-			if (createWithId) {
-				editSchema.properties = {
-					id: schema.properties.id,
-					...createSchema.properties
-				};
-				createSchema.properties = {
-					id: { ...schema.properties.id, readOnly: false },
-					...createSchema.properties
-				};
-			}
+				if (createWithId) {
+					editSchema.properties = {
+						id: schema.properties.id,
+						...createSchema.properties
+					};
+					createSchema.properties = {
+						id: { ...schema.properties.id, readOnly: false },
+						...createSchema.properties
+					};
+				}
 
-			setEditSchema(editSchema);
-			setCreateSchema(createSchema);
-		});
+				setEditSchema(editSchema);
+				setCreateSchema(createSchema);
+			});
+		}
 	}, [ apiUrl, name ]);
 
 	return (
