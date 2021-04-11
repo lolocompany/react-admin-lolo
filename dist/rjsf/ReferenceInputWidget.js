@@ -35,6 +35,8 @@ var _Admin = require("../Admin");
 
 var _utils = require("../utils");
 
+var _useIsMountedRef = _interopRequireDefault(require("../hooks/useIsMountedRef"));
+
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
@@ -73,6 +75,7 @@ function ReferenceInputWidget(props) {
     dataProvider
   } = _react.default.useContext(_Admin.AdminContext);
 
+  const isMountedRef = (0, _useIsMountedRef.default)();
   const classes = useStyles();
   const typeCamel = id.split('_').pop().replace(/Id$/, '');
   const typePlural = (0, _inflection.transform)(typeCamel, ['underscore', 'dasherize', 'pluralize']);
@@ -86,20 +89,22 @@ function ReferenceInputWidget(props) {
 
 
   const search = _react.default.useMemo(() => (0, _throttleDebounce.debounce)(500, async (filter, cb) => {
-    setLoading(true);
-    const res = await dataProvider.getList(typePlural, {
-      filter,
-      pagination: {
-        perPage: 25
+    if (isMountedRef.current) {
+      setLoading(true);
+      const res = await dataProvider.getList(typePlural, {
+        filter,
+        pagination: {
+          perPage: 25
+        }
+      });
+      setLoading(false); // Ugly hack for resources without a name field (createById)
+
+      if (res.data.length && res.data.every(item => !item.name)) {
+        setFindBy('id');
       }
-    });
-    setLoading(false); // Ugly hack for resources without a name field (createById)
 
-    if (res.data.length && res.data.every(item => !item.name)) {
-      setFindBy('id');
+      cb(res.data);
     }
-
-    cb(res.data);
   }), []);
 
   _react.default.useEffect(() => {
@@ -122,8 +127,6 @@ function ReferenceInputWidget(props) {
             if (res && res.data) {
               setInputValue(res.data.name || res.data.id);
               setOptions(getOptionsArray([res.data]));
-            } else {
-              setValue(undefined);
             }
           } catch (err) {
             console.error('getOne', typePlural, value, err.message);
@@ -156,8 +159,8 @@ function ReferenceInputWidget(props) {
     options: options,
     autoComplete: true,
     includeInputInList: true,
-    filterSelectedOptions: true,
-    value: value,
+    filterSelectedOptions: true // value={value}
+    ,
     inputValue: inputValue,
     onChange: (event, newValue) => {
       if (newValue) {

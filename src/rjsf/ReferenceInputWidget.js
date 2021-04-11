@@ -14,6 +14,7 @@ import { debounce } from "throttle-debounce";
 
 import { AdminContext } from '../Admin';
 import { keyToRef } from '../utils';
+import useIsMountedRef from '../hooks/useIsMountedRef';
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -30,6 +31,7 @@ function ReferenceInputWidget(props) {
   const [loading, setLoading] = React.useState(false);
   const [findBy, setFindBy] = React.useState('name');
 	const { dataProvider } = React.useContext(AdminContext);
+  const isMountedRef = useIsMountedRef()
 
 	const classes = useStyles();
 
@@ -44,19 +46,21 @@ function ReferenceInputWidget(props) {
 
   const search = React.useMemo(
     () => debounce(500, async (filter, cb) => {
-    	setLoading(true);
-			const res = await dataProvider.getList(typePlural, {
-				filter,
-				pagination: { perPage: 25 }
-			});
-			setLoading(false);
+    	if(isMountedRef.current) {
+        setLoading(true);
+        const res = await dataProvider.getList(typePlural, {
+          filter,
+          pagination: { perPage: 25 }
+        });
+        setLoading(false);
 
-      // Ugly hack for resources without a name field (createById)
-      if (res.data.length && res.data.every(item => !item.name)) {
-        setFindBy('id');
+        // Ugly hack for resources without a name field (createById)
+        if (res.data.length && res.data.every(item => !item.name)) {
+          setFindBy('id');
+        }
+
+        cb(res.data);
       }
-
-      cb(res.data);
     }), []
   );
 
@@ -76,8 +80,6 @@ function ReferenceInputWidget(props) {
   					if (res && res.data) {
   						setInputValue(res.data.name || res.data.id);
   						setOptions(getOptionsArray([ res.data ]));
-  					} else {
-  						setValue(undefined);
   					}
           } catch (err) {
             console.error('getOne', typePlural, value, err.message);
@@ -107,7 +109,7 @@ function ReferenceInputWidget(props) {
           autoComplete
           includeInputInList
           filterSelectedOptions
-          value={value}
+          // value={value}
           inputValue={inputValue}
           onChange={(event, newValue) => {
             if (newValue) {
