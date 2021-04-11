@@ -36,6 +36,10 @@ function ReferenceInputWidget(props) {
 	const typeCamel = id.split('_').pop().replace(/Id$/, '');
   const typePlural = transform(typeCamel, [ 'underscore', 'dasherize', 'pluralize' ]);
 
+  const getOptionsArray = (arr) => {
+    return arr.map((v) => ({ id: v.id, value: v.name || v.id }))
+  }
+
   // TODO: handle readOnly
 
   const search = React.useMemo(
@@ -61,10 +65,9 @@ function ReferenceInputWidget(props) {
   		return;
 
     } else if (value) {
-    	const selectedOption = options.find(opt => opt.id === value);
+    	const selectedOption = options.find(opt => opt.value === value);
     	if (selectedOption) {
-    		setInputValue(selectedOption.name || selectedOption.id);
-
+    		setInputValue(selectedOption.value);
     	} else {
 	    	(async () => {
 	    		setLoading(true);
@@ -72,7 +75,7 @@ function ReferenceInputWidget(props) {
   					const res = await dataProvider.getOne(typePlural, { id: value });
   					if (res && res.data) {
   						setInputValue(res.data.name || res.data.id);
-  						setOptions([ res.data ]);
+  						setOptions(getOptionsArray([ res.data ]));
   					} else {
   						setValue(undefined);
   					}
@@ -85,7 +88,7 @@ function ReferenceInputWidget(props) {
 
     } else {
 	    search({ [findBy]: inputValue }, results => {
-	    	setOptions(results);
+	    	setOptions(getOptionsArray(results));
 	    });
 	  }
   }, [value, inputValue, search]);
@@ -97,8 +100,8 @@ function ReferenceInputWidget(props) {
           id={id}
           autoComplete={true}
           blurOnSelect={true}
-          getOptionLabel={option => option ? (option.name || option.id || '') : ''}
-          getOptionSelected={option => option && option.id === value}
+          getOptionLabel={option => option.value}
+          getOptionSelected={option => option && option.value === value}
           filterOptions={x => x}
           options={options}
           autoComplete
@@ -108,16 +111,14 @@ function ReferenceInputWidget(props) {
           inputValue={inputValue}
           onChange={(event, newValue) => {
             if (newValue) {
-              setInputValue(newValue.name || newValue.id);
+              setInputValue(newValue.value);
               onChange(newValue.id);
             } else {
               setInputValue('');
               onChange(undefined);
             }
             }}
-          onInputChange={(event, newInputValue) => {
-            setInputValue(newInputValue);
-          }}
+          onInputChange={(event, newInputValue) => setInputValue(newInputValue)}
           renderInput={(params) => (
             <TextField
               {...params}
@@ -135,9 +136,6 @@ function ReferenceInputWidget(props) {
               }}
             />
           )}
-          renderOption={(option) => {
-            return option.name || option.id
-          }}
         />
       </Grid>
       <Grid item xs={1} align='right'>

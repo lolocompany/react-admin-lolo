@@ -75,7 +75,15 @@ function ReferenceInputWidget(props) {
 
   const classes = useStyles();
   const typeCamel = id.split('_').pop().replace(/Id$/, '');
-  const typePlural = (0, _inflection.transform)(typeCamel, ['underscore', 'dasherize', 'pluralize']); // TODO: handle readOnly
+  const typePlural = (0, _inflection.transform)(typeCamel, ['underscore', 'dasherize', 'pluralize']);
+
+  const getOptionsArray = arr => {
+    return arr.map(v => ({
+      id: v.id,
+      value: v.name || v.id
+    }));
+  }; // TODO: handle readOnly
+
 
   const search = _react.default.useMemo(() => (0, _throttleDebounce.debounce)(500, async (filter, cb) => {
     setLoading(true);
@@ -98,10 +106,10 @@ function ReferenceInputWidget(props) {
     if (loading) {
       return;
     } else if (value) {
-      const selectedOption = options.find(opt => opt.id === value);
+      const selectedOption = options.find(opt => opt.value === value);
 
       if (selectedOption) {
-        setInputValue(selectedOption.name || selectedOption.id);
+        setInputValue(selectedOption.value);
       } else {
         (async () => {
           setLoading(true);
@@ -113,7 +121,7 @@ function ReferenceInputWidget(props) {
 
             if (res && res.data) {
               setInputValue(res.data.name || res.data.id);
-              setOptions([res.data]);
+              setOptions(getOptionsArray([res.data]));
             } else {
               setValue(undefined);
             }
@@ -128,7 +136,7 @@ function ReferenceInputWidget(props) {
       search({
         [findBy]: inputValue
       }, results => {
-        setOptions(results);
+        setOptions(getOptionsArray(results));
       });
     }
   }, [value, inputValue, search]);
@@ -142,8 +150,8 @@ function ReferenceInputWidget(props) {
     id: id,
     autoComplete: true,
     blurOnSelect: true,
-    getOptionLabel: option => option ? option.name || option.id || '' : '',
-    getOptionSelected: option => option && option.id === value,
+    getOptionLabel: option => option.value,
+    getOptionSelected: option => option && option.value === value,
     filterOptions: x => x,
     options: options,
     autoComplete: true,
@@ -153,16 +161,14 @@ function ReferenceInputWidget(props) {
     inputValue: inputValue,
     onChange: (event, newValue) => {
       if (newValue) {
-        setInputValue(newValue.name || newValue.id);
+        setInputValue(newValue.value);
         onChange(newValue.id);
       } else {
         setInputValue('');
         onChange(undefined);
       }
     },
-    onInputChange: (event, newInputValue) => {
-      setInputValue(newInputValue);
-    },
+    onInputChange: (event, newInputValue) => setInputValue(newInputValue),
     renderInput: params => /*#__PURE__*/_react.default.createElement(_TextField.default, _extends({}, params, {
       label: schema && schema.title || typePlural,
       style: {
@@ -176,10 +182,7 @@ function ReferenceInputWidget(props) {
           size: 18
         }) : null, params.InputProps.endAdornment)
       }
-    })),
-    renderOption: option => {
-      return option.name || option.id;
-    }
+    }))
   })), /*#__PURE__*/_react.default.createElement(_Grid.default, {
     item: true,
     xs: 1,
