@@ -19,6 +19,8 @@ var ra = _interopRequireWildcard(require("react-admin"));
 
 var _CreateActions = _interopRequireDefault(require("./CreateActions"));
 
+var _CustomToolbar = _interopRequireDefault(require("./components/CustomToolbar"));
+
 var _utils = require("../dist/utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -94,7 +96,7 @@ const Create = props => {
     }) => {
       setFormData(formData);
     }
-  }, ' '))), /*#__PURE__*/_react.default.createElement(ra.Toolbar, null, /*#__PURE__*/_react.default.createElement(_core.Box, {
+  }, ' '))), /*#__PURE__*/_react.default.createElement(_CustomToolbar.default, null, /*#__PURE__*/_react.default.createElement(_core.Box, {
     display: "flex",
     justifyContent: "space-between",
     width: "100%"

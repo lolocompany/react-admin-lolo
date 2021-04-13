@@ -6,6 +6,7 @@ import { ResourceContext }  from './Resource';
 import { titleize, singularize } from 'inflection';
 import * as ra from 'react-admin';
 import CreateActions from './CreateActions';
+import CustomToolbar from './components/CustomToolbar'
 import { isEqual } from '../dist/utils';
 
 const Create = props => {
@@ -70,7 +71,7 @@ const Create = props => {
           </Form>
         </Box>
       </Card>
-  		<ra.Toolbar>
+  		<CustomToolbar>
         <Box display="flex" justifyContent="space-between" width="100%">
           <ra.SaveButton
             saving={saving}
@@ -78,7 +79,7 @@ const Create = props => {
             handleSubmitWithRedirect={() => save(formData)}
           />
         </Box>
-  		</ra.Toolbar>
+  		</CustomToolbar>
 		</div>
 	);
 };

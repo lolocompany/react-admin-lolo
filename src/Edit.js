@@ -5,6 +5,7 @@ import { ResourceContext }  from './Resource';
 import { titleize, singularize } from 'inflection';
 import * as ra from 'react-admin';
 import EditActions from './EditActions';
+import CustomToolbar from './components/CustomToolbar'
 import Form from "@rjsf/material-ui";
 
 const Edit = props => {
@@ -57,7 +58,7 @@ const Edit = props => {
   				</Form>
         </Box>
       </Card>
-  		<ra.Toolbar>
+  		<CustomToolbar>
   			<Box display="flex" justifyContent="space-between" width="100%">
   				<ra.SaveButton
   					saving={saving}
@@ -71,7 +72,7 @@ const Edit = props => {
             undoable={false}
   					/>
   			</Box>
-  		</ra.Toolbar>
+  		</CustomToolbar>
     </div>
 	);
 };
