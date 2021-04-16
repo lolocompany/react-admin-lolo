@@ -33,6 +33,8 @@ var _throttleDebounce = require("throttle-debounce");
 
 var _Admin = require("../Admin");
 
+var _Resource = require("../Resource");
+
 var _utils = require("../utils");
 
 var _useIsMountedRef = _interopRequireDefault(require("../hooks/useIsMountedRef"));
@@ -75,15 +77,28 @@ function ReferenceInputWidget(props) {
     dataProvider
   } = _react.default.useContext(_Admin.AdminContext);
 
+  const {
+    refWidgetLabelFormat
+  } = _react.default.useContext(_Resource.ResourceContext);
+
   const isMountedRef = (0, _useIsMountedRef.default)();
   const classes = useStyles();
   const typeCamel = id.split('_').pop().replace(/Id$/, '');
   const typePlural = (0, _inflection.transform)(typeCamel, ['underscore', 'dasherize', 'pluralize']);
 
   const getOptionsArray = arr => {
+    const generateLabels = obj => {
+      if (refWidgetLabelFormat[id]) {
+        return refWidgetLabelFormat[id](obj);
+      } else {
+        return obj.name || obj.id;
+      }
+    };
+
     return arr.map(v => ({
       id: v.id,
-      value: v.name || v.id
+      value: v.name || v.id,
+      label: generateLabels(v)
     }));
   }; // TODO: handle readOnly
 
@@ -111,7 +126,7 @@ function ReferenceInputWidget(props) {
     if (loading) {
       return;
     } else if (value) {
-      const selectedOption = options.find(opt => opt.value === value);
+      const selectedOption = options.find(opt => opt.id === value);
 
       if (selectedOption) {
         setInputValue(selectedOption.value);
@@ -153,14 +168,14 @@ function ReferenceInputWidget(props) {
     id: id,
     autoComplete: true,
     blurOnSelect: true,
-    getOptionLabel: option => option.value,
-    getOptionSelected: option => option && option.value === value,
+    getOptionLabel: option => option.label,
+    getOptionSelected: option => option && option.id === value,
     filterOptions: x => x,
     options: options,
     autoComplete: true,
     includeInputInList: true,
-    filterSelectedOptions: true // value={value}
-    ,
+    filterSelectedOptions: true,
+    value: value,
     inputValue: inputValue,
     onChange: (event, newValue) => {
       if (newValue) {

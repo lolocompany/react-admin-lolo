@@ -13,6 +13,7 @@ import { transform } from 'inflection';
 import { debounce } from "throttle-debounce";
 
 import { AdminContext } from '../Admin';
+import { ResourceContext } from '../Resource'
 import { keyToRef } from '../utils';
 import useIsMountedRef from '../hooks/useIsMountedRef';
 
@@ -31,6 +32,7 @@ function ReferenceInputWidget(props) {
   const [loading, setLoading] = React.useState(false);
   const [findBy, setFindBy] = React.useState('name');
 	const { dataProvider } = React.useContext(AdminContext);
+	const { refWidgetLabelFormat } = React.useContext(ResourceContext);
   const isMountedRef = useIsMountedRef()
 
 	const classes = useStyles();
@@ -39,7 +41,15 @@ function ReferenceInputWidget(props) {
   const typePlural = transform(typeCamel, [ 'underscore', 'dasherize', 'pluralize' ]);
 
   const getOptionsArray = (arr) => {
-    return arr.map((v) => ({ id: v.id, value: v.name || v.id }))
+    const generateLabels = (obj) => {
+      if(refWidgetLabelFormat[id]) {
+        return refWidgetLabelFormat[id](obj)
+      } else {
+        return obj.name || obj.id
+      }
+    }
+
+    return arr.map((v) => ({ id: v.id, value: v.name || v.id, label: generateLabels(v) }))
   }
 
   // TODO: handle readOnly
@@ -69,7 +79,7 @@ function ReferenceInputWidget(props) {
   		return;
 
     } else if (value) {
-    	const selectedOption = options.find(opt => opt.value === value);
+    	const selectedOption = options.find(opt => opt.id === value);
     	if (selectedOption) {
     		setInputValue(selectedOption.value);
     	} else {
@@ -77,8 +87,8 @@ function ReferenceInputWidget(props) {
 	    		setLoading(true);
           try {
   					const res = await dataProvider.getOne(typePlural, { id: value });
-  					if (res && res.data) {
-  						setInputValue(res.data.name || res.data.id);
+            if (res && res.data) {
+              setInputValue(res.data.name || res.data.id);
   						setOptions(getOptionsArray([ res.data ]));
   					}
           } catch (err) {
@@ -102,14 +112,14 @@ function ReferenceInputWidget(props) {
           id={id}
           autoComplete={true}
           blurOnSelect={true}
-          getOptionLabel={option => option.value}
-          getOptionSelected={option => option && option.value === value}
+          getOptionLabel={option => option.label}
+          getOptionSelected={option => option && option.id === value}
           filterOptions={x => x}
           options={options}
           autoComplete
           includeInputInList
           filterSelectedOptions
-          // value={value}
+          value={value}
           inputValue={inputValue}
           onChange={(event, newValue) => {
             if (newValue) {
