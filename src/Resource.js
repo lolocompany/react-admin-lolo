@@ -8,13 +8,22 @@ import Create from './Create';
 import Edit from './Edit';
 import List from './List';
 import * as rjsf from './rjsf';
+import {buildCreateSchema, buildEditSchema} from './utils'
 import { AdminContext } from './Admin';
 import { singularize } from 'inflection';
 
 const ResourceContext = React.createContext();
 
 const Resource = props => {
-	const { name, timestamps = ['createdAt'], createWithId } = props;
+	const { 
+		name,
+		intent,
+		timestamps = ['createdAt'],
+		createWithId,
+		editSchemaTransform = schema => buildEditSchema(schema),
+		createSchemaTransform = schema => buildCreateSchema(schema),
+		refWidgetLabelFormat = {} // Can be overridden in by creating object as { [referenceId]: () => {}, ... } 
+	} = props;
 
 	const [ schema, setSchema ] = useState();
 	const [ editSchema, setEditSchema ] = useState();
@@ -23,37 +32,39 @@ const Resource = props => {
 	const { apiUrl, fields, widgets } = useContext(AdminContext);
 
 	useEffect(() => {
-		const schemaUrl = apiUrl + '/schemas/' + singularize(name)
+		if(intent === 'route') {
+			const schemaUrl = apiUrl + '/schemas/' + singularize(name)
 
-		ra.fetchUtils.fetchJson(schemaUrl).then(({ json }) => {
-			const { uiSchema = {}, ...schema } = json;
-			enableWidgets(uiSchema, schema);
+			ra.fetchUtils.fetchJson(schemaUrl).then(({ json }) => {
+				const { uiSchema = {}, ...schema } = json;
+				enableWidgets(uiSchema, schema);
 
-			delete schema.additionalProperties;
-			setSchema(schema);
-			setUiSchema(uiSchema);
-		
-			const editSchema = removeReadonly(schema);
-			const createSchema = removeReadonly(schema);
+				delete schema.additionalProperties;
+				setSchema(schema);
+				setUiSchema(uiSchema);
+			
+				const editSchema = editSchemaTransform(schema)
+				const createSchema = createSchemaTransform(schema);
 
-			if (createWithId) {
-				editSchema.properties = {
-					id: schema.properties.id,
-					...createSchema.properties
-				};
-				createSchema.properties = {
-					id: { ...schema.properties.id, readOnly: false },
-					...createSchema.properties
-				};
-			}
+				if (createWithId) {
+					editSchema.properties = {
+						id: schema.properties.id,
+						...createSchema.properties
+					};
+					createSchema.properties = {
+						id: { ...schema.properties.id, readOnly: false },
+						...createSchema.properties
+					};
+				}
 
-			setEditSchema(editSchema);
-			setCreateSchema(createSchema);
-		});
+				setEditSchema(editSchema);
+				setCreateSchema(createSchema);
+			});
+		}
 	}, [ apiUrl, name ]);
 
 	return (
-		<ResourceContext.Provider value={{ schema, editSchema, createSchema, uiSchema, timestamps, fields, widgets }}>
+		<ResourceContext.Provider value={{ schema, editSchema, createSchema, uiSchema, timestamps, fields, widgets, refWidgetLabelFormat }}>
 			<ra.Resource
 				list={List}
 				create={Create}
@@ -78,18 +89,6 @@ const enableWidgets = (uiSchema, schema) => {
 			traverse(uiSchema).set(path, { 'ui:widget': withRouter(rjsf.ReferenceInputWidget) });
 		}
 	});
-}
-
-const removeReadonly = schema => {
-	const copy = JSON.parse(JSON.stringify(schema));
-
-	traverse(copy).forEach(function() {
-		if (this.key === 'readOnly') {
-			this.parent.remove();
-		}
-	});
-
-	return copy;
 }
 
 export {

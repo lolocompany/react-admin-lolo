@@ -21,6 +21,8 @@ var _List = _interopRequireDefault(require("./List"));
 
 var rjsf = _interopRequireWildcard(require("./rjsf"));
 
+var _utils = require("./utils");
+
 var _Admin = require("./Admin");
 
 var _inflection = require("inflection");
@@ -40,8 +42,13 @@ exports.ResourceContext = ResourceContext;
 const Resource = props => {
   const {
     name,
+    intent,
     timestamps = ['createdAt'],
-    createWithId
+    createWithId,
+    editSchemaTransform = schema => (0, _utils.buildEditSchema)(schema),
+    createSchemaTransform = schema => (0, _utils.buildCreateSchema)(schema),
+    refWidgetLabelFormat = {} // Can be overridden in by creating object as { [referenceId]: () => {}, ... } 
+
   } = props;
   const [schema, setSchema] = (0, _react.useState)();
   const [editSchema, setEditSchema] = (0, _react.useState)();
@@ -53,37 +60,39 @@ const Resource = props => {
     widgets
   } = (0, _react.useContext)(_Admin.AdminContext);
   (0, _react.useEffect)(() => {
-    const schemaUrl = apiUrl + '/schemas/' + (0, _inflection.singularize)(name);
-    ra.fetchUtils.fetchJson(schemaUrl).then(({
-      json
-    }) => {
-      const {
-        uiSchema = {},
-        ...schema
-      } = json;
-      enableWidgets(uiSchema, schema);
-      delete schema.additionalProperties;
-      setSchema(schema);
-      setUiSchema(uiSchema);
-      const editSchema = removeReadonly(schema);
-      const createSchema = removeReadonly(schema);
+    if (intent === 'route') {
+      const schemaUrl = apiUrl + '/schemas/' + (0, _inflection.singularize)(name);
+      ra.fetchUtils.fetchJson(schemaUrl).then(({
+        json
+      }) => {
+        const {
+          uiSchema = {},
+          ...schema
+        } = json;
+        enableWidgets(uiSchema, schema);
+        delete schema.additionalProperties;
+        setSchema(schema);
+        setUiSchema(uiSchema);
+        const editSchema = editSchemaTransform(schema);
+        const createSchema = createSchemaTransform(schema);
 
-      if (createWithId) {
-        editSchema.properties = {
-          id: schema.properties.id,
-          ...createSchema.properties
-        };
-        createSchema.properties = {
-          id: { ...schema.properties.id,
-            readOnly: false
-          },
-          ...createSchema.properties
-        };
-      }
+        if (createWithId) {
+          editSchema.properties = {
+            id: schema.properties.id,
+            ...createSchema.properties
+          };
+          createSchema.properties = {
+            id: { ...schema.properties.id,
+              readOnly: false
+            },
+            ...createSchema.properties
+          };
+        }
 
-      setEditSchema(editSchema);
-      setCreateSchema(createSchema);
-    });
+        setEditSchema(editSchema);
+        setCreateSchema(createSchema);
+      });
+    }
   }, [apiUrl, name]);
   return /*#__PURE__*/_react.default.createElement(ResourceContext.Provider, {
     value: {
@@ -93,7 +102,8 @@ const Resource = props => {
       uiSchema,
       timestamps,
       fields,
-      widgets
+      widgets,
+      refWidgetLabelFormat
     }
   }, /*#__PURE__*/_react.default.createElement(ra.Resource, _extends({
     list: _List.default,
@@ -120,14 +130,4 @@ const enableWidgets = (uiSchema, schema) => {
       });
     }
   });
-};
-
-const removeReadonly = schema => {
-  const copy = JSON.parse(JSON.stringify(schema));
-  (0, _traverse.default)(copy).forEach(function () {
-    if (this.key === 'readOnly') {
-      this.parent.remove();
-    }
-  });
-  return copy;
 };

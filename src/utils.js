@@ -1,5 +1,6 @@
 import React from 'react';
 import * as ra from 'react-admin';
+import traverse from 'traverse';
 import { transform } from 'inflection';
 
 export const keyToRef = key => transform(
@@ -20,4 +21,27 @@ export const SelectInput = props => {
 
 export const isEqual = (a, b) => {
   return JSON.stringify(a) === JSON.stringify(b);
+}
+
+
+/*Transforming schema for EDIT/CREATE Resources */
+
+const removeReadonly = schema => {
+	const copy = JSON.parse(JSON.stringify(schema));
+
+	traverse(copy).forEach(function() {
+		if (this.key === 'readOnly') {
+			this.parent.remove();
+		}
+	});
+
+	return copy;
+}
+
+export const buildEditSchema = (schema) => {
+	return removeReadonly(schema)
+}
+
+export const buildCreateSchema = (schema) => {
+	return removeReadonly(schema)
 }

@@ -3,11 +3,13 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.isEqual = exports.SelectInput = exports.TextField = exports.keyToRef = void 0;
+exports.buildCreateSchema = exports.buildEditSchema = exports.isEqual = exports.SelectInput = exports.TextField = exports.keyToRef = void 0;
 
 var _react = _interopRequireDefault(require("react"));
 
 var ra = _interopRequireWildcard(require("react-admin"));
+
+var _traverse = _interopRequireDefault(require("traverse"));
 
 var _inflection = require("inflection");
 
@@ -46,5 +48,29 @@ exports.SelectInput = SelectInput;
 const isEqual = (a, b) => {
   return JSON.stringify(a) === JSON.stringify(b);
 };
+/*Transforming schema for EDIT/CREATE Resources */
+
 
 exports.isEqual = isEqual;
+
+const removeReadonly = schema => {
+  const copy = JSON.parse(JSON.stringify(schema));
+  (0, _traverse.default)(copy).forEach(function () {
+    if (this.key === 'readOnly') {
+      this.parent.remove();
+    }
+  });
+  return copy;
+};
+
+const buildEditSchema = schema => {
+  return removeReadonly(schema);
+};
+
+exports.buildEditSchema = buildEditSchema;
+
+const buildCreateSchema = schema => {
+  return removeReadonly(schema);
+};
+
+exports.buildCreateSchema = buildCreateSchema;
