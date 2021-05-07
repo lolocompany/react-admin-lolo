@@ -31,13 +31,13 @@ var _inflection = require("inflection");
 
 var _throttleDebounce = require("throttle-debounce");
 
-var _Admin = require("../Admin");
-
 var _Resource = require("../Resource");
 
 var _utils = require("../utils");
 
 var _useIsMountedRef = _interopRequireDefault(require("../hooks/useIsMountedRef"));
+
+var _useAdminContext = require("../hooks/useAdminContext");
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
 
@@ -75,7 +75,7 @@ function ReferenceInputWidget(props) {
 
   const {
     dataProvider
-  } = _react.default.useContext(_Admin.AdminContext);
+  } = (0, _useAdminContext.useAdminContext)();
 
   const {
     refWidgetLabelFormat

@@ -12,10 +12,10 @@ import parse from 'autosuggest-highlight/parse';
 import { transform } from 'inflection';
 import { debounce } from "throttle-debounce";
 
-import { AdminContext } from '../Admin';
 import { ResourceContext } from '../Resource'
 import { keyToRef } from '../utils';
 import useIsMountedRef from '../hooks/useIsMountedRef';
+import {useAdminContext} from '../hooks/useAdminContext'
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -31,7 +31,7 @@ function ReferenceInputWidget(props) {
   const [options, setOptions] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [findBy, setFindBy] = React.useState('name');
-	const { dataProvider } = React.useContext(AdminContext);
+	const { dataProvider } = useAdminContext();
 	const { refWidgetLabelFormat } = React.useContext(ResourceContext);
   const isMountedRef = useIsMountedRef()
 

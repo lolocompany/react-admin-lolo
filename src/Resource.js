@@ -9,7 +9,7 @@ import Edit from './Edit';
 import List from './List';
 import * as rjsf from './rjsf';
 import {buildCreateSchema, buildEditSchema} from './utils'
-import { AdminContext } from './Admin';
+import {useAdminContext} from './hooks/useAdminContext'
 import { singularize } from 'inflection';
 
 const ResourceContext = React.createContext();
@@ -29,7 +29,7 @@ const Resource = props => {
 	const [ editSchema, setEditSchema ] = useState();
 	const [ createSchema, setCreateSchema ] = useState();
 	const [ uiSchema, setUiSchema] = useState();
-	const { apiUrl, fields, widgets } = useContext(AdminContext);
+	const { apiUrl, fields, widgets } = useAdminContext();
 
 	useEffect(() => {
 		if(intent === 'route') {

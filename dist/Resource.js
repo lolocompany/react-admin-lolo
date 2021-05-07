@@ -23,7 +23,7 @@ var rjsf = _interopRequireWildcard(require("./rjsf"));
 
 var _utils = require("./utils");
 
-var _Admin = require("./Admin");
+var _useAdminContext = require("./hooks/useAdminContext");
 
 var _inflection = require("inflection");
 
@@ -58,7 +58,7 @@ const Resource = props => {
     apiUrl,
     fields,
     widgets
-  } = (0, _react.useContext)(_Admin.AdminContext);
+  } = (0, _useAdminContext.useAdminContext)();
   (0, _react.useEffect)(() => {
     if (intent === 'route') {
       const schemaUrl = apiUrl + '/schemas/' + (0, _inflection.singularize)(name);
