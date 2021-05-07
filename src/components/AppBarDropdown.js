@@ -1,5 +1,5 @@
 import React from 'react'
-import {Logout} from 'react-admin';
+import {Logout, useRefresh} from 'react-admin';
 import PowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
 import {List, ListSubheader, ListItem, Divider, makeStyles } from '@material-ui/core'
 import {useAdminContext} from '../hooks/useAdminContext'
@@ -18,6 +18,7 @@ const useStyles = makeStyles((theme) => ({
 const AppBarDropdown = (props) => {
   const {accounts, selectedAccount, setSelectedAccount} = useAdminContext()
   const classes = useStyles()
+  const refresh = useRefresh()
 
 	const handleAccountSelect = account => {
 		const selectedAcc = accounts.find(item => item.id === account.id);
@@ -28,6 +29,7 @@ const AppBarDropdown = (props) => {
       localStorage.setItem('accountId', account.id);
     }
 
+    refresh()
 		setSelectedAccount(account)
 	}
 

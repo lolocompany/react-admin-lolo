@@ -37,6 +37,7 @@ const AppBarDropdown = props => {
     setSelectedAccount
   } = (0, _useAdminContext.useAdminContext)();
   const classes = useStyles();
+  const refresh = (0, _reactAdmin.useRefresh)();
 
   const handleAccountSelect = account => {
     const selectedAcc = accounts.find(item => item.id === account.id);
@@ -47,6 +48,7 @@ const AppBarDropdown = props => {
       localStorage.setItem('accountId', account.id);
     }
 
+    refresh();
     setSelectedAccount(account);
   };
 

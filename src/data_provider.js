@@ -11,6 +11,12 @@ export default apiUrl => {
 
     const session = await Auth.currentSession();
     options.headers.set('Authorization', session.idToken.jwtToken);
+
+    const accountId = localStorage.getItem('accountId');
+    if (accountId) {
+      options.headers.set('Lolo-Account-Id', accountId)
+    }
+
     return fetchUtils.fetchJson(apiUrl + path, options)
       .catch(err => {
         if (err.body && err.body.errors) {

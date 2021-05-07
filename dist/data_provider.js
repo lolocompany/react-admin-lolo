@@ -25,6 +25,12 @@ var _default = apiUrl => {
 
     const session = await _auth.default.currentSession();
     options.headers.set('Authorization', session.idToken.jwtToken);
+    const accountId = localStorage.getItem('accountId');
+
+    if (accountId) {
+      options.headers.set('Lolo-Account-Id', accountId);
+    }
+
     return _reactAdmin.fetchUtils.fetchJson(apiUrl + path, options).catch(err => {
       if (err.body && err.body.errors) {
         err.message = err.body.errors.map(item => {
