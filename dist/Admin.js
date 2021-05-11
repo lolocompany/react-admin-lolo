@@ -3,12 +3,6 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-Object.defineProperty(exports, "AdminContext", {
-  enumerable: true,
-  get: function () {
-    return _useAdminContext.AdminContext;
-  }
-});
 exports.Admin = void 0;
 
 var _react = _interopRequireDefault(require("react"));

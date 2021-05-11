@@ -22,7 +22,6 @@ const Resource = props => {
 		createWithId,
 		editSchemaTransform = schema => buildEditSchema(schema),
 		createSchemaTransform = schema => buildCreateSchema(schema),
-		refWidgetLabelFormat = {} // Can be overridden in by creating object as { [referenceId]: () => {}, ... } 
 	} = props;
 
 	const [ schema, setSchema ] = useState();
@@ -64,7 +63,7 @@ const Resource = props => {
 	}, [ apiUrl, name ]);
 
 	return (
-		<ResourceContext.Provider value={{ schema, editSchema, createSchema, uiSchema, timestamps, fields, widgets, refWidgetLabelFormat }}>
+		<ResourceContext.Provider value={{ schema, editSchema, createSchema, uiSchema, timestamps, fields, widgets }}>
 			<ra.Resource
 				list={List}
 				create={Create}

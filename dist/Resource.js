@@ -46,9 +46,7 @@ const Resource = props => {
     timestamps = ['createdAt'],
     createWithId,
     editSchemaTransform = schema => (0, _utils.buildEditSchema)(schema),
-    createSchemaTransform = schema => (0, _utils.buildCreateSchema)(schema),
-    refWidgetLabelFormat = {} // Can be overridden in by creating object as { [referenceId]: () => {}, ... } 
-
+    createSchemaTransform = schema => (0, _utils.buildCreateSchema)(schema)
   } = props;
   const [schema, setSchema] = (0, _react.useState)();
   const [editSchema, setEditSchema] = (0, _react.useState)();
@@ -102,8 +100,7 @@ const Resource = props => {
       uiSchema,
       timestamps,
       fields,
-      widgets,
-      refWidgetLabelFormat
+      widgets
     }
   }, /*#__PURE__*/_react.default.createElement(ra.Resource, _extends({
     list: _List.default,

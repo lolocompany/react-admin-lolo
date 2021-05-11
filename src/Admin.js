@@ -33,6 +33,5 @@ const Admin = ({ apiUrl, fields = {}, widgets = {}, ...props }) => {
 };
 
 export {
-	Admin,
-	AdminContext
+	Admin
 }

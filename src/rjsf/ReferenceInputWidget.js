@@ -32,7 +32,6 @@ function ReferenceInputWidget(props) {
   const [loading, setLoading] = React.useState(false);
   const [findBy, setFindBy] = React.useState('name');
 	const { dataProvider } = useAdminContext();
-	const { refWidgetLabelFormat } = React.useContext(ResourceContext);
   const isMountedRef = useIsMountedRef()
 
 	const classes = useStyles();
@@ -41,15 +40,7 @@ function ReferenceInputWidget(props) {
   const typePlural = transform(typeCamel, [ 'underscore', 'dasherize', 'pluralize' ]);
 
   const getOptionsArray = (arr) => {
-    const generateLabels = (obj) => {
-      if(refWidgetLabelFormat[id]) {
-        return refWidgetLabelFormat[id](obj)
-      } else {
-        return obj.name || obj.id
-      }
-    }
-
-    return arr.map((v) => ({ id: v.id, value: v.name || v.id, label: generateLabels(v) }))
+    return arr.map((v) => ({ id: v.id, value: v.name || v.id }))
   }
 
   // TODO: handle readOnly
@@ -112,7 +103,7 @@ function ReferenceInputWidget(props) {
           id={id}
           autoComplete={true}
           blurOnSelect={true}
-          getOptionLabel={option => option.label}
+          getOptionLabel={option => option.value}
           getOptionSelected={option => option && option.id === value}
           filterOptions={x => x}
           options={options}
