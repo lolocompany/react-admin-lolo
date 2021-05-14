@@ -31,9 +31,13 @@ var _inflection = require("inflection");
 
 var _throttleDebounce = require("throttle-debounce");
 
-var _Admin = require("../Admin");
+var _Resource = require("../Resource");
 
 var _utils = require("../utils");
+
+var _useIsMountedRef = _interopRequireDefault(require("../hooks/useIsMountedRef"));
+
+var _useAdminContext = require("../hooks/useAdminContext");
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
 
@@ -71,27 +75,37 @@ function ReferenceInputWidget(props) {
 
   const {
     dataProvider
-  } = _react.default.useContext(_Admin.AdminContext);
-
+  } = (0, _useAdminContext.useAdminContext)();
+  const isMountedRef = (0, _useIsMountedRef.default)();
   const classes = useStyles();
   const typeCamel = id.split('_').pop().replace(/Id$/, '');
-  const typePlural = (0, _inflection.transform)(typeCamel, ['underscore', 'dasherize', 'pluralize']); // TODO: handle readOnly
+  const typePlural = (0, _inflection.transform)(typeCamel, ['underscore', 'dasherize', 'pluralize']);
+
+  const getOptionsArray = arr => {
+    return arr.map(v => ({
+      id: v.id,
+      value: v.name || v.id
+    }));
+  }; // TODO: handle readOnly
+
 
   const search = _react.default.useMemo(() => (0, _throttleDebounce.debounce)(500, async (filter, cb) => {
-    setLoading(true);
-    const res = await dataProvider.getList(typePlural, {
-      filter,
-      pagination: {
-        perPage: 25
+    if (isMountedRef.current) {
+      setLoading(true);
+      const res = await dataProvider.getList(typePlural, {
+        filter,
+        pagination: {
+          perPage: 25
+        }
+      });
+      setLoading(false); // Ugly hack for resources without a name field (createById)
+
+      if (res.data.length && res.data.every(item => !item.name)) {
+        setFindBy('id');
       }
-    });
-    setLoading(false); // Ugly hack for resources without a name field (createById)
 
-    if (res.data.length && res.data.every(item => !item.name)) {
-      setFindBy('id');
+      cb(res.data);
     }
-
-    cb(res.data);
   }), []);
 
   _react.default.useEffect(() => {
@@ -101,7 +115,7 @@ function ReferenceInputWidget(props) {
       const selectedOption = options.find(opt => opt.id === value);
 
       if (selectedOption) {
-        setInputValue(selectedOption.name || selectedOption.id);
+        setInputValue(selectedOption.value);
       } else {
         (async () => {
           setLoading(true);
@@ -113,9 +127,7 @@ function ReferenceInputWidget(props) {
 
             if (res && res.data) {
               setInputValue(res.data.name || res.data.id);
-              setOptions([res.data]);
-            } else {
-              setValue(undefined);
+              setOptions(getOptionsArray([res.data]));
             }
           } catch (err) {
             console.error('getOne', typePlural, value, err.message);
@@ -128,7 +140,7 @@ function ReferenceInputWidget(props) {
       search({
         [findBy]: inputValue
       }, results => {
-        setOptions(results);
+        setOptions(getOptionsArray(results));
       });
     }
   }, [value, inputValue, search]);
@@ -142,7 +154,7 @@ function ReferenceInputWidget(props) {
     id: id,
     autoComplete: true,
     blurOnSelect: true,
-    getOptionLabel: option => option ? option.name || option.id || '' : '',
+    getOptionLabel: option => option.value,
     getOptionSelected: option => option && option.id === value,
     filterOptions: x => x,
     options: options,
@@ -153,16 +165,14 @@ function ReferenceInputWidget(props) {
     inputValue: inputValue,
     onChange: (event, newValue) => {
       if (newValue) {
-        setInputValue(newValue.name || newValue.id);
+        setInputValue(newValue.value);
         onChange(newValue.id);
       } else {
         setInputValue('');
         onChange(undefined);
       }
     },
-    onInputChange: (event, newInputValue) => {
-      setInputValue(newInputValue);
-    },
+    onInputChange: (event, newInputValue) => setInputValue(newInputValue),
     renderInput: params => /*#__PURE__*/_react.default.createElement(_TextField.default, _extends({}, params, {
       label: schema && schema.title || typePlural,
       style: {
@@ -176,10 +186,7 @@ function ReferenceInputWidget(props) {
           size: 18
         }) : null, params.InputProps.endAdornment)
       }
-    })),
-    renderOption: option => {
-      return option.name || option.id;
-    }
+    }))
   })), /*#__PURE__*/_react.default.createElement(_Grid.default, {
     item: true,
     xs: 1,

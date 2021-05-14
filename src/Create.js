@@ -6,6 +6,7 @@ import { ResourceContext }  from './Resource';
 import { titleize, singularize } from 'inflection';
 import * as ra from 'react-admin';
 import CreateActions from './CreateActions';
+import CustomToolbar from './components/CustomToolbar'
 import { isEqual } from '../dist/utils';
 
 const Create = props => {
@@ -54,7 +55,7 @@ const Create = props => {
       />
       <Card>
         <Box px={2} pb={1}>
-					<Form
+          <Form
 						ref={f => { form = f; }}
 						schema={schemaState || {}}
 						uiSchema={uiSchema}
@@ -65,22 +66,20 @@ const Create = props => {
             widgets={widgets}
 						onChange={({ formData }) => {
               setFormData(formData);
-						}}
-            onSubmit={({ formData })=> save(formData)}
-            >
-						{' '}
+            }}>
+            {' '}
           </Form>
         </Box>
       </Card>
-  		<ra.Toolbar>
-  			<Box display="flex" justifyContent="space-between" width="100%">
-  				<ra.SaveButton
-  					saving={saving}
-  					disabled={hasErrors}
-  					handleSubmitWithRedirect={() => form.submit()}
-  				/>
-  			</Box>
-  		</ra.Toolbar>
+  		<CustomToolbar>
+        <Box display="flex" justifyContent="space-between" width="100%">
+          <ra.SaveButton
+            saving={saving}
+            disabled={hasErrors}
+            handleSubmitWithRedirect={() => save(formData)}
+          />
+        </Box>
+  		</CustomToolbar>
 		</div>
 	);
 };

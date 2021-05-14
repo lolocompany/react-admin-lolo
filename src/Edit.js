@@ -5,6 +5,7 @@ import { ResourceContext }  from './Resource';
 import { titleize, singularize } from 'inflection';
 import * as ra from 'react-admin';
 import EditActions from './EditActions';
+import CustomToolbar from './components/CustomToolbar'
 import Form from "@rjsf/material-ui";
 
 const Edit = props => {
@@ -12,7 +13,6 @@ const Edit = props => {
   const [schemaState, setSchemaState] = useState({})
 	const [ hasErrors, setHasErrors ] = useState(true);
 	const { editSchema: schema, uiSchema, fields, widgets } = useContext(ResourceContext);
-	let form;
 
   const {
     basePath,
@@ -42,7 +42,6 @@ const Edit = props => {
       <Card>
         <Box px={2} pb={1}>
   				<Form
-  					ref={f => { form = f; }}
   					schema={schemaState || {}}
   					uiSchema={uiSchema}
   					formData={formData}
@@ -54,18 +53,17 @@ const Edit = props => {
               setFormData(formData);
   						setHasErrors(!!errors.length);
   					}}
-            onSubmit={({ formData })=> save(formData)}
             >
   					{' '}
   				</Form>
         </Box>
       </Card>
-  		<ra.Toolbar>
+  		<CustomToolbar>
   			<Box display="flex" justifyContent="space-between" width="100%">
   				<ra.SaveButton
   					saving={saving}
   					disabled={hasErrors}
-  					handleSubmitWithRedirect={() => form.submit()}
+  					handleSubmitWithRedirect={() => save(formData)}
   				  />
   				<ra.DeleteButton
   					record={record}
@@ -74,7 +72,7 @@ const Edit = props => {
             undoable={false}
   					/>
   			</Box>
-  		</ra.Toolbar>
+  		</CustomToolbar>
     </div>
 	);
 };

@@ -12,8 +12,10 @@ import parse from 'autosuggest-highlight/parse';
 import { transform } from 'inflection';
 import { debounce } from "throttle-debounce";
 
-import { AdminContext } from '../Admin';
+import { ResourceContext } from '../Resource'
 import { keyToRef } from '../utils';
+import useIsMountedRef from '../hooks/useIsMountedRef';
+import {useAdminContext} from '../hooks/useAdminContext'
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -29,30 +31,37 @@ function ReferenceInputWidget(props) {
   const [options, setOptions] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [findBy, setFindBy] = React.useState('name');
-	const { dataProvider } = React.useContext(AdminContext);
+	const { dataProvider } = useAdminContext();
+  const isMountedRef = useIsMountedRef()
 
 	const classes = useStyles();
 
 	const typeCamel = id.split('_').pop().replace(/Id$/, '');
   const typePlural = transform(typeCamel, [ 'underscore', 'dasherize', 'pluralize' ]);
 
+  const getOptionsArray = (arr) => {
+    return arr.map((v) => ({ id: v.id, value: v.name || v.id }))
+  }
+
   // TODO: handle readOnly
 
   const search = React.useMemo(
     () => debounce(500, async (filter, cb) => {
-    	setLoading(true);
-			const res = await dataProvider.getList(typePlural, {
-				filter,
-				pagination: { perPage: 25 }
-			});
-			setLoading(false);
+    	if(isMountedRef.current) {
+        setLoading(true);
+        const res = await dataProvider.getList(typePlural, {
+          filter,
+          pagination: { perPage: 25 }
+        });
+        setLoading(false);
 
-      // Ugly hack for resources without a name field (createById)
-      if (res.data.length && res.data.every(item => !item.name)) {
-        setFindBy('id');
+        // Ugly hack for resources without a name field (createById)
+        if (res.data.length && res.data.every(item => !item.name)) {
+          setFindBy('id');
+        }
+
+        cb(res.data);
       }
-
-      cb(res.data);
     }), []
   );
 
@@ -63,18 +72,15 @@ function ReferenceInputWidget(props) {
     } else if (value) {
     	const selectedOption = options.find(opt => opt.id === value);
     	if (selectedOption) {
-    		setInputValue(selectedOption.name || selectedOption.id);
-
+    		setInputValue(selectedOption.value);
     	} else {
 	    	(async () => {
 	    		setLoading(true);
           try {
   					const res = await dataProvider.getOne(typePlural, { id: value });
-  					if (res && res.data) {
-  						setInputValue(res.data.name || res.data.id);
-  						setOptions([ res.data ]);
-  					} else {
-  						setValue(undefined);
+            if (res && res.data) {
+              setInputValue(res.data.name || res.data.id);
+  						setOptions(getOptionsArray([ res.data ]));
   					}
           } catch (err) {
             console.error('getOne', typePlural, value, err.message);
@@ -85,7 +91,7 @@ function ReferenceInputWidget(props) {
 
     } else {
 	    search({ [findBy]: inputValue }, results => {
-	    	setOptions(results);
+	    	setOptions(getOptionsArray(results));
 	    });
 	  }
   }, [value, inputValue, search]);
@@ -97,7 +103,7 @@ function ReferenceInputWidget(props) {
           id={id}
           autoComplete={true}
           blurOnSelect={true}
-          getOptionLabel={option => option ? (option.name || option.id || '') : ''}
+          getOptionLabel={option => option.value}
           getOptionSelected={option => option && option.id === value}
           filterOptions={x => x}
           options={options}
@@ -108,16 +114,14 @@ function ReferenceInputWidget(props) {
           inputValue={inputValue}
           onChange={(event, newValue) => {
             if (newValue) {
-              setInputValue(newValue.name || newValue.id);
+              setInputValue(newValue.value);
               onChange(newValue.id);
             } else {
               setInputValue('');
               onChange(undefined);
             }
             }}
-          onInputChange={(event, newInputValue) => {
-            setInputValue(newInputValue);
-          }}
+          onInputChange={(event, newInputValue) => setInputValue(newInputValue)}
           renderInput={(params) => (
             <TextField
               {...params}
@@ -135,9 +139,6 @@ function ReferenceInputWidget(props) {
               }}
             />
           )}
-          renderOption={(option) => {
-            return option.name || option.id
-          }}
         />
       </Grid>
       <Grid item xs={1} align='right'>

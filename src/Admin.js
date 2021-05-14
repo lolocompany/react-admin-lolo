@@ -5,8 +5,8 @@ import authProvider from './auth_provider';
 import i18nProvider from './i18n_provider';
 import LoginPage from './LoginPage.js';
 import './Admin.css';
-
-const AdminContext = React.createContext({});
+import {AdminContext} from './hooks/useAdminContext'
+import AppBarDropdown from './components/AppBarDropdown'
 
 const Admin = ({ apiUrl, fields = {}, widgets = {}, ...props }) => {
 	const dataProvider = _dataProvider(apiUrl);
@@ -18,6 +18,7 @@ const Admin = ({ apiUrl, fields = {}, widgets = {}, ...props }) => {
 			i18nProvider={i18nProvider}
 			loginPage={LoginPage}
 			title='Lolo Admin'
+			logoutButton={AppBarDropdown}
 			{...props}
 			>
 			{ props.children }
@@ -25,13 +26,12 @@ const Admin = ({ apiUrl, fields = {}, widgets = {}, ...props }) => {
 )
 
 	return (
-		<AdminContext.Provider value={{ apiUrl, dataProvider, fields, widgets }}>
+		<AdminContext data={{apiUrl, dataProvider, fields, widgets}}>
 			<RAdmin />
-		</AdminContext.Provider>
+		</AdminContext>
 	);
 };
 
 export {
-	Admin,
-	AdminContext
+	Admin
 }
