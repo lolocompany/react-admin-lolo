@@ -8,7 +8,7 @@ import Create from './Create';
 import Edit from './Edit';
 import List from './List';
 import * as rjsf from './rjsf';
-import {buildCreateSchema, buildEditSchema} from './utils'
+import {buildCreateSchema, buildEditSchema, buildListSchema} from './utils'
 import {useAdminContext} from './hooks/useAdminContext'
 import { singularize } from 'inflection';
 
@@ -20,13 +20,15 @@ const Resource = props => {
 		intent,
 		timestamps = ['createdAt'],
 		createWithId,
-		editSchemaTransform = schema => buildEditSchema(schema),
-		createSchemaTransform = schema => buildCreateSchema(schema),
+		editSchemaTransform = (...args) => buildEditSchema(...args),
+		createSchemaTransform = (...args) => buildCreateSchema(...args),
+		listSchemaTransform = (...args) => buildListSchema(...args)
 	} = props;
 
 	const [ schema, setSchema ] = useState();
 	const [ editSchema, setEditSchema ] = useState();
 	const [ createSchema, setCreateSchema ] = useState();
+	const [listSchema, setListSchema] = useState()
 	const [ uiSchema, setUiSchema] = useState();
 	const { apiUrl, fields, widgets } = useAdminContext();
 
@@ -41,29 +43,19 @@ const Resource = props => {
 				delete schema.additionalProperties;
 				setSchema(schema);
 				setUiSchema(uiSchema);
+
+				const editSchema = editSchemaTransform(schema, {createWithId})
+				const createSchema = createSchemaTransform(schema, {createWithId})
 			
-				const editSchema = editSchemaTransform(schema)
-				const createSchema = createSchemaTransform(schema);
-
-				if (createWithId) {
-					editSchema.properties = {
-						id: schema.properties.id,
-						...createSchema.properties
-					};
-					createSchema.properties = {
-						id: { ...schema.properties.id, readOnly: false },
-						...createSchema.properties
-					};
-				}
-
-				setEditSchema(editSchema);
-				setCreateSchema(createSchema);
+				setEditSchema(editSchema)
+				setCreateSchema(createSchema)
+				setListSchema(listSchemaTransform(createSchema))
 			});
 		}
 	}, [ apiUrl, name ]);
 
 	return (
-		<ResourceContext.Provider value={{ schema, editSchema, createSchema, uiSchema, timestamps, fields, widgets }}>
+		<ResourceContext.Provider value={{ schema, editSchema, createSchema, listSchema, uiSchema, timestamps, fields, widgets }}>
 			<ra.Resource
 				list={List}
 				create={Create}

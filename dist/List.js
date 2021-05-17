@@ -43,9 +43,10 @@ const BulkActionButtons = props => /*#__PURE__*/_react.default.createElement(_re
 
 const List = props => {
   const {
-    createSchema: schema
+    listSchema: schema
   } = (0, _react.useContext)(_Resource.ResourceContext);
   if (!schema) return null;
+  console.log(schema, 'schemaaaaa');
   return /*#__PURE__*/_react.default.createElement(ra.List, _extends({}, props, {
     bulkActionButtons: props.hasEdit ? /*#__PURE__*/_react.default.createElement(BulkActionButtons, null) : false,
     filters: /*#__PURE__*/_react.default.createElement(_Filter.default, {

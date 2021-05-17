@@ -30,7 +30,7 @@ const removeReadonly = schema => {
 	const copy = JSON.parse(JSON.stringify(schema));
 
 	traverse(copy).forEach(function() {
-		if (this.key === 'readOnly') {
+		if (this.key === 'readOnly' && this.node === true) {
 			this.parent.remove();
 		}
 	});
@@ -38,10 +38,32 @@ const removeReadonly = schema => {
 	return copy;
 }
 
-export const buildEditSchema = (schema) => {
-	return removeReadonly(schema)
+export const buildEditSchema = (schema, options = {}) => {
+	const updatedSchema = removeReadonly(schema)
+
+	if(options.createWithId) {
+		updatedSchema.properties = {
+			id: schema.properties.id,
+			...updatedSchema.properties
+		}
+	}
+
+	return updatedSchema
 }
 
-export const buildCreateSchema = (schema) => {
+export const buildCreateSchema = (schema, options = {}) => {
+	const updatedSchema = removeReadonly(schema)
+
+	if(options.createWithId) {
+		updatedSchema.properties = {
+			id: { ...schema.properties.id, readOnly: false },
+			...updatedSchema.properties
+		};
+	}
+
+	return updatedSchema
+}
+
+export const buildListSchema = (schema, options = {}) => {
 	return removeReadonly(schema)
 }

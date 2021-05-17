@@ -21,11 +21,12 @@ const BulkActionButtons = props => (
 
 const List = props => {
 	const {
-		createSchema: schema,
+		listSchema: schema,
 	} = useContext(ResourceContext);
 
 	if (!schema) return null;
 
+	console.log(schema, 'schemaaaaa')
 	return (
     <ra.List
     	{...props} 

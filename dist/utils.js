@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.buildCreateSchema = exports.buildEditSchema = exports.isEqual = exports.SelectInput = exports.TextField = exports.keyToRef = void 0;
+exports.buildListSchema = exports.buildCreateSchema = exports.buildEditSchema = exports.isEqual = exports.SelectInput = exports.TextField = exports.keyToRef = void 0;
 
 var _react = _interopRequireDefault(require("react"));
 
@@ -56,21 +56,47 @@ exports.isEqual = isEqual;
 const removeReadonly = schema => {
   const copy = JSON.parse(JSON.stringify(schema));
   (0, _traverse.default)(copy).forEach(function () {
-    if (this.key === 'readOnly') {
+    if (this.key === 'readOnly' && this.node === true) {
       this.parent.remove();
     }
   });
   return copy;
 };
 
-const buildEditSchema = schema => {
-  return removeReadonly(schema);
+const buildEditSchema = (schema, options = {}) => {
+  const updatedSchema = removeReadonly(schema);
+
+  if (options.createWithId) {
+    updatedSchema.properties = {
+      id: schema.properties.id,
+      ...updatedSchema.properties
+    };
+  }
+
+  return updatedSchema;
 };
 
 exports.buildEditSchema = buildEditSchema;
 
-const buildCreateSchema = schema => {
-  return removeReadonly(schema);
+const buildCreateSchema = (schema, options = {}) => {
+  const updatedSchema = removeReadonly(schema);
+
+  if (options.createWithId) {
+    updatedSchema.properties = {
+      id: { ...schema.properties.id,
+        readOnly: false
+      },
+      ...updatedSchema.properties
+    };
+  }
+
+  return updatedSchema;
 };
 
 exports.buildCreateSchema = buildCreateSchema;
+
+const buildListSchema = (schema, options = {}) => {
+  return removeReadonly(schema);
+};
+
+exports.buildListSchema = buildListSchema;
