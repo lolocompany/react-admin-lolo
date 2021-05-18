@@ -42,10 +42,11 @@ import MyList from './MyList';
 
 Schema transform functions help you manipulate the schema that is fetched from the respective resource's schema API. `LoloResource` component accepts the following schema tranform functions as props:
 
-- `listSchemaTransform`: Manipulates the `List` component schema. It helps in displaying selected fields on the table list. For Example, the following will only display *ID* and *Name* on the table:
+- `listSchemaTransform`: Manipulates the `List` component schema. It helps in displaying selected fields on the table list. For Example, the following will only display *ID* and *Name* on the enterprise table:
 
 ```javascript
-<LoloResource 
+<LoloResource
+  name='enterprises'
   listSchemaTransform={({properties, ...rest}) => {
     const {id, name} = properties
     return {

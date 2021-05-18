@@ -26,7 +26,6 @@ const List = props => {
 
 	if (!schema) return null;
 
-	console.log(schema, 'schemaaaaa')
 	return (
     <ra.List
     	{...props} 

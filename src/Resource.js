@@ -19,17 +19,17 @@ const Resource = props => {
 		name,
 		intent,
 		timestamps = ['createdAt'],
-		createWithId,
-		editSchemaTransform = (...args) => buildEditSchema(...args),
-		createSchemaTransform = (...args) => buildCreateSchema(...args),
-		listSchemaTransform = (...args) => buildListSchema(...args)
+		createWithId = false,
+		editSchemaTransform = (schema) => ({...schema}),
+		createSchemaTransform = (schema) => ({...schema}),
+		listSchemaTransform = (schema) => ({...schema}),
 	} = props;
 
 	const [ schema, setSchema ] = useState();
 	const [ editSchema, setEditSchema ] = useState();
 	const [ createSchema, setCreateSchema ] = useState();
-	const [listSchema, setListSchema] = useState()
-	const [ uiSchema, setUiSchema] = useState();
+	const [ listSchema, setListSchema ] = useState()
+	const [ uiSchema, setUiSchema ] = useState();
 	const { apiUrl, fields, widgets } = useAdminContext();
 
 	useEffect(() => {
@@ -44,12 +44,13 @@ const Resource = props => {
 				setSchema(schema);
 				setUiSchema(uiSchema);
 
-				const editSchema = editSchemaTransform(schema, {createWithId})
-				const createSchema = createSchemaTransform(schema, {createWithId})
-			
+				const editSchema = buildEditSchema(editSchemaTransform(schema), {createWithId})
+				const createSchema = buildCreateSchema(createSchemaTransform(schema), {createWithId})
+				const listSchema = buildListSchema(listSchemaTransform(createSchema))
+				
 				setEditSchema(editSchema)
 				setCreateSchema(createSchema)
-				setListSchema(listSchemaTransform(createSchema))
+				setListSchema(listSchema)
 			});
 		}
 	}, [ apiUrl, name ]);

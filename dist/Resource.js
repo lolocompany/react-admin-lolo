@@ -44,10 +44,13 @@ const Resource = props => {
     name,
     intent,
     timestamps = ['createdAt'],
-    createWithId,
-    editSchemaTransform = (...args) => (0, _utils.buildEditSchema)(...args),
-    createSchemaTransform = (...args) => (0, _utils.buildCreateSchema)(...args),
-    listSchemaTransform = (...args) => (0, _utils.buildListSchema)(...args)
+    createWithId = false,
+    editSchemaTransform = schema => ({ ...schema
+    }),
+    createSchemaTransform = schema => ({ ...schema
+    }),
+    listSchemaTransform = schema => ({ ...schema
+    })
   } = props;
   const [schema, setSchema] = (0, _react.useState)();
   const [editSchema, setEditSchema] = (0, _react.useState)();
@@ -73,15 +76,16 @@ const Resource = props => {
         delete schema.additionalProperties;
         setSchema(schema);
         setUiSchema(uiSchema);
-        const editSchema = editSchemaTransform(schema, {
+        const editSchema = (0, _utils.buildEditSchema)(editSchemaTransform(schema), {
           createWithId
         });
-        const createSchema = createSchemaTransform(schema, {
+        const createSchema = (0, _utils.buildCreateSchema)(createSchemaTransform(schema), {
           createWithId
         });
+        const listSchema = (0, _utils.buildListSchema)(listSchemaTransform(createSchema));
         setEditSchema(editSchema);
         setCreateSchema(createSchema);
-        setListSchema(listSchemaTransform(createSchema));
+        setListSchema(listSchema);
       });
     }
   }, [apiUrl, name]);
