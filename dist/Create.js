@@ -34,11 +34,14 @@ const Create = props => {
   const [schemaState, setSchemaState] = (0, _react.useState)({});
   const [hasErrors, setHasErrors] = (0, _react.useState)(true);
   const {
-    createSchema: schema,
-    uiSchema,
+    createSchema,
     widgets,
     fields
   } = (0, _react.useContext)(_Resource.ResourceContext);
+  const {
+    uiSchema = {},
+    ...schema
+  } = createSchema;
   let form;
   const {
     defaultTitle,
@@ -67,7 +70,7 @@ const Create = props => {
       } = schema;
       setSchemaState(restSchema);
     }
-  }, [schema]);
+  }, [createSchema]);
   (0, _react.useEffect)(() => {
     if (form) {
       setHasErrors(!!form.state.errors.length);

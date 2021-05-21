@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.buildListSchema = exports.buildCreateSchema = exports.buildEditSchema = exports.isEqual = exports.SelectInput = exports.TextField = exports.keyToRef = void 0;
+exports.removeReadonly = exports.deepClone = exports.isEqual = exports.SelectInput = exports.TextField = exports.keyToRef = void 0;
 
 var _react = _interopRequireDefault(require("react"));
 
@@ -48,55 +48,29 @@ exports.SelectInput = SelectInput;
 const isEqual = (a, b) => {
   return JSON.stringify(a) === JSON.stringify(b);
 };
-/*Transforming schema for EDIT/CREATE Resources */
-
 
 exports.isEqual = isEqual;
 
-const removeReadonly = schema => {
-  const copy = JSON.parse(JSON.stringify(schema));
-  (0, _traverse.default)(copy).forEach(function () {
+const deepClone = value => {
+  return JSON.parse(JSON.stringify(value));
+};
+
+exports.deepClone = deepClone;
+
+const removeReadonly = json => {
+  const {
+    uiSchema = {},
+    ...schema
+  } = deepClone(json);
+  (0, _traverse.default)(schema).forEach(function () {
     if (this.key === 'readOnly' && this.node === true) {
       this.parent.remove();
     }
   });
-  return copy;
+  return {
+    uiSchema,
+    ...schema
+  };
 };
 
-const buildEditSchema = (schema, options = {}) => {
-  const updatedSchema = removeReadonly(schema);
-
-  if (options.createWithId) {
-    updatedSchema.properties = {
-      id: schema.properties.id,
-      ...updatedSchema.properties
-    };
-  }
-
-  return updatedSchema;
-};
-
-exports.buildEditSchema = buildEditSchema;
-
-const buildCreateSchema = (schema, options = {}) => {
-  const updatedSchema = removeReadonly(schema);
-
-  if (options.createWithId) {
-    updatedSchema.properties = {
-      id: { ...schema.properties.id,
-        readOnly: false
-      },
-      ...updatedSchema.properties
-    };
-  }
-
-  return updatedSchema;
-};
-
-exports.buildCreateSchema = buildCreateSchema;
-
-const buildListSchema = (schema, options = {}) => {
-  return removeReadonly(schema);
-};
-
-exports.buildListSchema = buildListSchema;
+exports.removeReadonly = removeReadonly;

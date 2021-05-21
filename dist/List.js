@@ -45,7 +45,7 @@ const List = props => {
   const {
     listSchema: schema
   } = (0, _react.useContext)(_Resource.ResourceContext);
-  if (!schema) return null;
+  if (!Object.keys(schema).length) return null;
   return /*#__PURE__*/_react.default.createElement(ra.List, _extends({}, props, {
     bulkActionButtons: props.hasEdit ? /*#__PURE__*/_react.default.createElement(BulkActionButtons, null) : false,
     filters: /*#__PURE__*/_react.default.createElement(_Filter.default, {
@@ -72,7 +72,7 @@ const List = props => {
 const toField = ([key, fieldSchema]) => {
   const fieldProps = {
     source: key,
-    label: fieldSchema.title,
+    label: fieldSchema ? fieldSchema.title : '',
     key
   };
   if (key.endsWith('Id')) return refField(fieldProps);

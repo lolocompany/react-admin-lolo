@@ -44,7 +44,6 @@ const Resource = props => {
     name,
     intent,
     timestamps = ['createdAt'],
-    createWithId = false,
     editSchemaTransform = schema => ({ ...schema
     }),
     createSchemaTransform = schema => ({ ...schema
@@ -52,11 +51,10 @@ const Resource = props => {
     listSchemaTransform = schema => ({ ...schema
     })
   } = props;
-  const [schema, setSchema] = (0, _react.useState)();
-  const [editSchema, setEditSchema] = (0, _react.useState)();
-  const [createSchema, setCreateSchema] = (0, _react.useState)();
-  const [listSchema, setListSchema] = (0, _react.useState)();
-  const [uiSchema, setUiSchema] = (0, _react.useState)();
+  const [schema, setSchema] = (0, _react.useState)({});
+  const [editSchema, setEditSchema] = (0, _react.useState)({});
+  const [createSchema, setCreateSchema] = (0, _react.useState)({});
+  const [listSchema, setListSchema] = (0, _react.useState)({});
   const {
     apiUrl,
     fields,
@@ -68,23 +66,14 @@ const Resource = props => {
       ra.fetchUtils.fetchJson(schemaUrl).then(({
         json
       }) => {
-        const {
-          uiSchema = {},
-          ...schema
-        } = json;
-        enableWidgets(uiSchema, schema);
-        delete schema.additionalProperties;
-        setSchema(schema);
-        setUiSchema(uiSchema);
-        const editSchema = (0, _utils.buildEditSchema)(editSchemaTransform(schema), {
-          createWithId
-        });
-        const createSchema = (0, _utils.buildCreateSchema)(createSchemaTransform(schema), {
-          createWithId
-        });
-        const listSchema = (0, _utils.buildListSchema)(listSchemaTransform(createSchema));
-        setEditSchema(editSchema);
-        setCreateSchema(createSchema);
+        delete json.additionalProperties;
+        setSchema(json);
+        const updatedJson = (0, _utils.removeReadonly)(json);
+        const editSchema = editSchemaTransform(updatedJson);
+        const createSchema = createSchemaTransform(updatedJson);
+        const listSchema = listSchemaTransform(updatedJson);
+        setEditSchema(enableWidgets(editSchema));
+        setCreateSchema(enableWidgets(createSchema));
         setListSchema(listSchema);
       });
     }
@@ -95,7 +84,6 @@ const Resource = props => {
       editSchema,
       createSchema,
       listSchema,
-      uiSchema,
       timestamps,
       fields,
       widgets
@@ -111,7 +99,11 @@ exports.Resource = Resource;
 
 const oneOf = part => part === 'oneOf';
 
-const enableWidgets = (uiSchema, schema) => {
+const enableWidgets = json => {
+  const {
+    uiSchema = {},
+    ...schema
+  } = (0, _utils.deepClone)(json);
   (0, _traverse.default)(schema).forEach(function () {
     if (/Id$/.test(this.key)) {
       let path = this.path.filter(part => !['properties', 'dependencies'].includes(part));
@@ -125,4 +117,8 @@ const enableWidgets = (uiSchema, schema) => {
       });
     }
   });
+  return {
+    uiSchema,
+    ...schema
+  };
 };

@@ -23,47 +23,18 @@ export const isEqual = (a, b) => {
   return JSON.stringify(a) === JSON.stringify(b);
 }
 
+export const deepClone = (value) => {
+	return JSON.parse(JSON.stringify(value))
+}
 
-/*Transforming schema for EDIT/CREATE Resources */
+export const removeReadonly = json => {
+	const {uiSchema = {}, ...schema } = deepClone(json)
 
-const removeReadonly = schema => {
-	const copy = JSON.parse(JSON.stringify(schema));
-
-	traverse(copy).forEach(function() {
+	traverse(schema).forEach(function() {
 		if (this.key === 'readOnly' && this.node === true) {
 			this.parent.remove();
 		}
 	});
 
-	return copy;
-}
-
-export const buildEditSchema = (schema, options = {}) => {
-	const updatedSchema = removeReadonly(schema)
-
-	if(options.createWithId) {
-		updatedSchema.properties = {
-			id: schema.properties.id,
-			...updatedSchema.properties
-		}
-	}
-
-	return updatedSchema
-}
-
-export const buildCreateSchema = (schema, options = {}) => {
-	const updatedSchema = removeReadonly(schema)
-
-	if(options.createWithId) {
-		updatedSchema.properties = {
-			id: { ...schema.properties.id, readOnly: false },
-			...updatedSchema.properties
-		};
-	}
-
-	return updatedSchema
-}
-
-export const buildListSchema = (schema, options = {}) => {
-	return removeReadonly(schema)
+	return {uiSchema, ...schema };
 }

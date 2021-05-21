@@ -8,7 +8,7 @@ import Create from './Create';
 import Edit from './Edit';
 import List from './List';
 import * as rjsf from './rjsf';
-import {buildCreateSchema, buildEditSchema, buildListSchema} from './utils'
+import {deepClone, removeReadonly} from './utils'
 import {useAdminContext} from './hooks/useAdminContext'
 import { singularize } from 'inflection';
 
@@ -19,17 +19,15 @@ const Resource = props => {
 		name,
 		intent,
 		timestamps = ['createdAt'],
-		createWithId = false,
 		editSchemaTransform = (schema) => ({...schema}),
 		createSchemaTransform = (schema) => ({...schema}),
 		listSchemaTransform = (schema) => ({...schema}),
 	} = props;
 
-	const [ schema, setSchema ] = useState();
-	const [ editSchema, setEditSchema ] = useState();
-	const [ createSchema, setCreateSchema ] = useState();
-	const [ listSchema, setListSchema ] = useState()
-	const [ uiSchema, setUiSchema ] = useState();
+	const [ schema, setSchema ] = useState({});
+	const [ editSchema, setEditSchema ] = useState({});
+	const [ createSchema, setCreateSchema ] = useState({});
+	const [ listSchema, setListSchema ] = useState({})
 	const { apiUrl, fields, widgets } = useAdminContext();
 
 	useEffect(() => {
@@ -37,26 +35,23 @@ const Resource = props => {
 			const schemaUrl = apiUrl + '/schemas/' + singularize(name)
 
 			ra.fetchUtils.fetchJson(schemaUrl).then(({ json }) => {
-				const { uiSchema = {}, ...schema } = json;
-				enableWidgets(uiSchema, schema);
+				delete json.additionalProperties
+				setSchema(json);
 
-				delete schema.additionalProperties;
-				setSchema(schema);
-				setUiSchema(uiSchema);
-
-				const editSchema = buildEditSchema(editSchemaTransform(schema), {createWithId})
-				const createSchema = buildCreateSchema(createSchemaTransform(schema), {createWithId})
-				const listSchema = buildListSchema(listSchemaTransform(createSchema))
+				const updatedJson = removeReadonly(json)
+				const editSchema = editSchemaTransform(updatedJson)
+				const createSchema = createSchemaTransform(updatedJson)
+				const listSchema = listSchemaTransform(updatedJson)
 				
-				setEditSchema(editSchema)
-				setCreateSchema(createSchema)
+				setEditSchema(enableWidgets(editSchema))
+				setCreateSchema(enableWidgets(createSchema))
 				setListSchema(listSchema)
 			});
 		}
 	}, [ apiUrl, name ]);
 
 	return (
-		<ResourceContext.Provider value={{ schema, editSchema, createSchema, listSchema, uiSchema, timestamps, fields, widgets }}>
+		<ResourceContext.Provider value={{ schema, editSchema, createSchema, listSchema, timestamps, fields, widgets }}>
 			<ra.Resource
 				list={List}
 				create={Create}
@@ -69,7 +64,9 @@ const Resource = props => {
 
 const oneOf = part => part === 'oneOf';
 
-const enableWidgets = (uiSchema, schema) => {
+const enableWidgets = (json) => {
+	const { uiSchema = {}, ...schema } = deepClone(json)
+
 	traverse(schema).forEach(function() {
 		if (/Id$/.test(this.key)) {
 			let path = this.path.filter(part => ![ 'properties', 'dependencies' ].includes(part));
@@ -81,6 +78,8 @@ const enableWidgets = (uiSchema, schema) => {
 			traverse(uiSchema).set(path, { 'ui:widget': withRouter(rjsf.ReferenceInputWidget) });
 		}
 	});
+
+	return { uiSchema, ...schema }
 }
 
 export {

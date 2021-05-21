@@ -24,7 +24,7 @@ const List = props => {
 		listSchema: schema,
 	} = useContext(ResourceContext);
 
-	if (!schema) return null;
+	if (!Object.keys(schema).length) return null;
 
 	return (
     <ra.List
@@ -54,7 +54,7 @@ const List = props => {
 const toField = ([ key, fieldSchema ]) => {
 	const fieldProps = {
 		source: key,
-		label: fieldSchema.title,
+		label: fieldSchema ? fieldSchema.title : '',
 		key
 	}
 

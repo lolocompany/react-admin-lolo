@@ -10,9 +10,10 @@ import Form from "@rjsf/material-ui";
 
 const Edit = props => {
   const [ formData, setFormData ] = useState({});
-  const [schemaState, setSchemaState] = useState({})
+  const [ schemaState, setSchemaState ] = useState({})
 	const [ hasErrors, setHasErrors ] = useState(true);
-	const { editSchema: schema, uiSchema, fields, widgets } = useContext(ResourceContext);
+	const { editSchema, fields, widgets } = useContext(ResourceContext);
+	const { uiSchema = {}, ...schema } = editSchema
 
   const {
     basePath,
@@ -29,7 +30,7 @@ const Edit = props => {
       const {$id, ...restSchema} = schema
       setSchemaState(restSchema)
     }
-  }, [schema])
+  }, [editSchema])
 
 	return (
     <div>

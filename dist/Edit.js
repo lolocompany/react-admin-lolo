@@ -32,11 +32,14 @@ const Edit = props => {
   const [schemaState, setSchemaState] = (0, _react.useState)({});
   const [hasErrors, setHasErrors] = (0, _react.useState)(true);
   const {
-    editSchema: schema,
-    uiSchema,
+    editSchema,
     fields,
     widgets
   } = (0, _react.useContext)(_Resource.ResourceContext);
+  const {
+    uiSchema = {},
+    ...schema
+  } = editSchema;
   const {
     basePath,
     record,
@@ -55,7 +58,7 @@ const Edit = props => {
       } = schema;
       setSchemaState(restSchema);
     }
-  }, [schema]);
+  }, [editSchema]);
   return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement(_EditActions.default, props), /*#__PURE__*/_react.default.createElement(ra.TitleForRecord, {
     title: props.title,
     record: record,

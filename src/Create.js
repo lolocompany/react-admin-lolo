@@ -11,10 +11,11 @@ import { isEqual } from '../dist/utils';
 
 const Create = props => {
   const [ formData, setFormData ] = useState({});
-  const [schemaState, setSchemaState] = useState({})
+  const [ schemaState, setSchemaState ] = useState({})
 	const [ hasErrors, setHasErrors ] = useState(true);
-  const { createSchema: schema, uiSchema, widgets, fields } = useContext(ResourceContext);
-	let form;
+  const { createSchema, widgets, fields } = useContext(ResourceContext);
+	const { uiSchema = {}, ...schema } = createSchema
+  let form;
 
   const {
     defaultTitle,
@@ -37,7 +38,7 @@ const Create = props => {
       const {$id, ...restSchema} = schema
       setSchemaState(restSchema)
     }
-  }, [schema])
+  }, [createSchema])
   
   useEffect(() => {
     if(form) {
