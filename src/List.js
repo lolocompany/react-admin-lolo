@@ -5,7 +5,7 @@ import { keyToRef, TextField } from './utils';
 import ListActions from './ListActions';
 import ListEmpty from './ListEmpty';
 import Filter from './Filter';
-import { pluralize } from 'inflection';
+import { pluralize, titleize, inflect } from 'inflection';
 
 const ExpandPanel = ({ id, record, resource }) => (
 	<pre style={{fontSize: '1.1rem'}}>
@@ -28,7 +28,7 @@ const List = props => {
 
 	return (
     <ra.List
-    	{...props} 
+      {...props}
     	bulkActionButtons={props.hasEdit ? <BulkActionButtons /> : false}
     	filters={<Filter schema={schema} />}
     	actions={<ListActions />}
@@ -41,10 +41,7 @@ const List = props => {
         expand={props.expand || <ExpandPanel />}
       	>
         {
-          Object.entries({
-            ...schema.properties,
-            createdAt: { type: 'string', format: 'date-time' }
-          }).map(toField)
+          Object.entries(schema.properties).map(toField)
       	}
       </ra.Datagrid>
     </ra.List>
@@ -59,6 +56,7 @@ const toField = ([ key, fieldSchema ]) => {
 	}
 
 	if (key.endsWith('Id')) return refField(fieldProps);
+	if (key.endsWith('Ids')) return refManyField(fieldProps);
 	if (fieldSchema.enum) return enumField(fieldProps, fieldSchema);
 
 	switch(fieldSchema.type) {
@@ -73,7 +71,7 @@ const toField = ([ key, fieldSchema ]) => {
 		case 'integer':
 		case 'number':
 			return <ra.NumberField {...fieldProps}/>
-			
+
 		default:
 			return null;
 	}
@@ -91,13 +89,22 @@ const refField = ({ key, ...props }) => {
 	);
 };
 
+const refManyField = ({ key, label, ...props }) => {
+	return (
+		<ra.FunctionField label={label} render={record => {
+			const count = (record[key] || []).length;
+			return `${count} ${inflect('items', count)}`;
+		}}/>
+	);
+};
+
 const enumField = (fieldProps, fieldSchema) => {
 	const { enum: _enum, enumNames = []} = fieldSchema;
 	const choices = _enum.map((id, i) => ({ id, name: enumNames[i] || id }))
-	
+
 	return (
 		<ra.SelectField
-			{...fieldProps} 
+			{...fieldProps}
 			choices={choices}
 			translateChoice={false}
 		/>

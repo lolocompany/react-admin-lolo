@@ -61,12 +61,7 @@ const List = props => {
   }), /*#__PURE__*/_react.default.createElement(ra.Datagrid, {
     rowClick: props.hasShow ? 'show' : props.hasEdit ? 'edit' : null,
     expand: props.expand || /*#__PURE__*/_react.default.createElement(ExpandPanel, null)
-  }, Object.entries({ ...schema.properties,
-    createdAt: {
-      type: 'string',
-      format: 'date-time'
-    }
-  }).map(toField)));
+  }, Object.entries(schema.properties).map(toField)));
 };
 
 const toField = ([key, fieldSchema]) => {
@@ -76,6 +71,7 @@ const toField = ([key, fieldSchema]) => {
     key
   };
   if (key.endsWith('Id')) return refField(fieldProps);
+  if (key.endsWith('Ids')) return refManyField(fieldProps);
   if (fieldSchema.enum) return enumField(fieldProps, fieldSchema);
 
   switch (fieldSchema.type) {
@@ -104,6 +100,20 @@ const refField = ({
     reference: (0, _utils.keyToRef)(key),
     key: key
   }, props), /*#__PURE__*/_react.default.createElement(_utils.TextField, null));
+};
+
+const refManyField = ({
+  key,
+  label,
+  ...props
+}) => {
+  return /*#__PURE__*/_react.default.createElement(ra.FunctionField, {
+    label: label,
+    render: record => {
+      const count = (record[key] || []).length;
+      return `${count} ${(0, _inflection.inflect)('items', count)}`;
+    }
+  });
 };
 
 const enumField = (fieldProps, fieldSchema) => {

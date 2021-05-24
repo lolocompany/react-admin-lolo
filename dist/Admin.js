@@ -33,6 +33,7 @@ function _extends() { _extends = Object.assign || function (target) { for (var i
 
 const Admin = ({
   apiUrl,
+  accountsUrl,
   fields = {},
   widgets = {},
   ...props
@@ -51,6 +52,7 @@ const Admin = ({
   return /*#__PURE__*/_react.default.createElement(_useAdminContext.AdminContext, {
     data: {
       apiUrl,
+      accountsUrl,
       dataProvider,
       fields,
       widgets

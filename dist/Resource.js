@@ -43,7 +43,6 @@ const Resource = props => {
   const {
     name,
     intent,
-    timestamps = ['createdAt'],
     editSchemaTransform = schema => ({ ...schema
     }),
     createSchemaTransform = schema => ({ ...schema
@@ -64,17 +63,14 @@ const Resource = props => {
     if (intent === 'route') {
       const schemaUrl = apiUrl + '/schemas/' + (0, _inflection.singularize)(name);
       ra.fetchUtils.fetchJson(schemaUrl).then(({
-        json
+        json: pristineSchema
       }) => {
-        delete json.additionalProperties;
-        setSchema(json);
-        const updatedJson = (0, _utils.removeReadonly)(json);
-        const editSchema = editSchemaTransform(updatedJson);
-        const createSchema = createSchemaTransform(updatedJson);
-        const listSchema = listSchemaTransform(updatedJson);
-        setEditSchema(enableWidgets(editSchema));
-        setCreateSchema(enableWidgets(createSchema));
-        setListSchema(listSchema);
+        delete pristineSchema.additionalProperties;
+        setSchema(pristineSchema);
+        const writableSchema = enableWidgets((0, _utils.removeReadonly)(pristineSchema));
+        setEditSchema(editSchemaTransform(writableSchema, pristineSchema));
+        setCreateSchema(createSchemaTransform(writableSchema, pristineSchema));
+        setListSchema(buildListSchema(listSchemaTransform, writableSchema, pristineSchema));
       });
     }
   }, [apiUrl, name]);
@@ -84,7 +80,6 @@ const Resource = props => {
       editSchema,
       createSchema,
       listSchema,
-      timestamps,
       fields,
       widgets
     }
@@ -105,15 +100,21 @@ const enableWidgets = json => {
     ...schema
   } = (0, _utils.deepClone)(json);
   (0, _traverse.default)(schema).forEach(function () {
-    if (/Id$/.test(this.key)) {
+    if (/Ids?$/.test(this.key)) {
       let path = this.path.filter(part => !['properties', 'dependencies'].includes(part));
 
       while (path.find(oneOf)) {
         path.splice(path.findIndex(oneOf) - 1, 3);
       }
 
-      (0, _traverse.default)(uiSchema).set(path, {
+      const schemaPatch = this.key.endsWith('s') ? {
+        'ui:field': rjsf.ReferenceInputManyField
+      } : {
         'ui:widget': (0, _reactRouter.withRouter)(rjsf.ReferenceInputWidget)
+      }; // Don't overwrite any existing uiSchema
+
+      (0, _traverse.default)(uiSchema).set(path, { ...schemaPatch,
+        ...(0, _traverse.default)(uiSchema).get(path)
       });
     }
   });
@@ -121,4 +122,12 @@ const enableWidgets = json => {
     uiSchema,
     ...schema
   };
+};
+
+const buildListSchema = (listTransform, wrSchema, prSchema) => {
+  return listTransform({ ...wrSchema,
+    properties: { ...wrSchema.properties,
+      createdAt: prSchema.properties.createdAt
+    }
+  }, prSchema);
 };

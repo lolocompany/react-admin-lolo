@@ -30,6 +30,8 @@ function useAdminContext() {
   return context;
 }
 
+const defaultAccountsUrl = 'https://dev.lolo.company/api/accounts/all';
+
 function AdminContext(props) {
   const [accounts, setAccounts] = (0, _react.useState)([]);
   const [selectedAccount, setSelectedAccount] = (0, _react.useState)(null);
@@ -43,7 +45,7 @@ function AdminContext(props) {
         Accept: 'application/json'
       });
       headers.set('Authorization', session.idToken.jwtToken);
-      ra.fetchUtils.fetchJson('https://dev.lolo.company/api/accounts/all', {
+      ra.fetchUtils.fetchJson(data.accountsUrl || defaultAccountsUrl, {
         headers
       }).then(({
         json

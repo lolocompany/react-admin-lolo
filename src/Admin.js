@@ -8,7 +8,7 @@ import './Admin.css';
 import {AdminContext} from './hooks/useAdminContext'
 import AppBarDropdown from './components/AppBarDropdown'
 
-const Admin = ({ apiUrl, fields = {}, widgets = {}, ...props }) => {
+const Admin = ({ apiUrl, accountsUrl, fields = {}, widgets = {}, ...props }) => {
 	const dataProvider = _dataProvider(apiUrl);
 
 	const RAdmin = () => (
@@ -26,7 +26,7 @@ const Admin = ({ apiUrl, fields = {}, widgets = {}, ...props }) => {
 )
 
 	return (
-		<AdminContext data={{apiUrl, dataProvider, fields, widgets}}>
+		<AdminContext data={{apiUrl, accountsUrl, dataProvider, fields, widgets}}>
 			<RAdmin />
 		</AdminContext>
 	);
