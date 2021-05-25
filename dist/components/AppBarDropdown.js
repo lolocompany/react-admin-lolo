@@ -52,14 +52,15 @@ const AppBarDropdown = props => {
     setSelectedAccount(account);
   };
 
+  const selectedAccountId = selectedAccount ? selectedAccount.id : '';
   return /*#__PURE__*/_react.default.createElement("div", {
     className: classes.dropdown
   }, /*#__PURE__*/_react.default.createElement(_core.List, null, /*#__PURE__*/_react.default.createElement(_core.ListSubheader, null, "Accounts"), accounts.map((account, i) => /*#__PURE__*/_react.default.createElement(_core.ListItem, {
     key: i,
     button: true,
     value: account.id,
-    selected: account.id === selectedAccount.id,
-    disabled: account.id === selectedAccount.id,
+    selected: account.id === selectedAccountId,
+    disabled: account.id === selectedAccountId,
     onClick: () => handleAccountSelect(account)
   }, account.name)), /*#__PURE__*/_react.default.createElement("div", {
     className: classes.divider

@@ -62,14 +62,16 @@ function AdminContext (props) {
 export {useAdminContext, AdminContext}
 
 const getSelectedAccount = accounts => {
-  const id = localStorage.getItem('accountId');
-  let account;
-
-  if (id) {
-    account = accounts.find(item => item.id === id);
-    if (account) return account;
-    localStorage.removeItem('accountId');
+  if(accounts.length) {
+    const id = localStorage.getItem('accountId');
+    const isPrimaryAccount = accounts.find(item => item.isPrimary);
+    
+    if(id) {
+      return accounts.find(item => item.id === id) || null
+    } else {
+      return isPrimaryAccount || accounts[0]
+    }
   }
 
-  return accounts.find(item => item.isPrimary);
+  return null
 };
