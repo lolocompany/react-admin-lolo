@@ -27,7 +27,7 @@ const Resource = props => {
 	const [ editSchema, setEditSchema ] = useState({});
 	const [ createSchema, setCreateSchema ] = useState({});
 	const [ listSchema, setListSchema ] = useState({})
-	const { apiUrl, fields, widgets } = useAdminContext();
+	const { apiUrl, fields, widgets, selectedAccount } = useAdminContext();
 
 	useEffect(() => {
 		if(intent === 'route') {
@@ -41,18 +41,21 @@ const Resource = props => {
 
 				setEditSchema(editSchemaTransform(
 					writableSchema,
-					pristineSchema
+					pristineSchema,
+					selectedAccount
 				));
 
 				setCreateSchema(createSchemaTransform(
 					writableSchema,
-					pristineSchema
+					pristineSchema,
+					selectedAccount
 				));
 
 				setListSchema(buildListSchema(
 					listSchemaTransform,
 					writableSchema,
-					pristineSchema
+					pristineSchema,
+					selectedAccount
 				));
 			});
 		}
@@ -98,14 +101,14 @@ const enableWidgets = (json) => {
 	return { uiSchema, ...schema }
 }
 
-const buildListSchema = (listTransform, wrSchema, prSchema) => {
+const buildListSchema = (listTransform, wrSchema, prSchema, selectedAccount) => {
 	return listTransform({
 		...wrSchema,
 		properties: {
 			...wrSchema.properties,
 			createdAt: prSchema.properties.createdAt
 		}
-	}, prSchema);
+	}, prSchema, selectedAccount);
 };
 
 export {
