@@ -30,7 +30,7 @@ const Resource = props => {
 	const { apiUrl, fields, widgets, selectedAccount } = useAdminContext();
 
 	useEffect(() => {
-		if(intent === 'route') {
+		if(intent === 'route' && selectedAccount) {
 			const schemaUrl = apiUrl + '/schemas/' + singularize(name)
 
 			ra.fetchUtils.fetchJson(schemaUrl).then(({ json: pristineSchema }) => {
@@ -59,7 +59,7 @@ const Resource = props => {
 				));
 			});
 		}
-	}, [ apiUrl, name ]);
+	}, [ apiUrl, name, selectedAccount ]);
 
 	return (
 		<ResourceContext.Provider value={{ schema, editSchema, createSchema, listSchema, fields, widgets }}>
