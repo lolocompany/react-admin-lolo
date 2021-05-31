@@ -40,14 +40,19 @@ import MyList from './MyList';
 
 ### Schema Transforms
 
-Schema transform functions help you manipulate the schema that is fetched from the respective resource's schema API. `LoloResource` component accepts the following schema tranform functions as props:
+Schema transform functions help you manipulate the schema that is fetched from the respective resource's schema API. Each function recieves following values as arguments `transform(writableSchema, pristineSchema, selectedAccount)` where in:
+- `writableSchema`: Manipulated schema with updated/removed properties
+- `pristineSchema`: Original schema recieved from the resource's schema API
+- `selectedAccount`: Current account selected for the panel
+
+The `LoloResource` component accepts the following schema tranform functions as props:
 
 - `listSchemaTransform`: Manipulates the `List` component schema. It helps in displaying selected fields on the table list. For Example, the following will only display *ID* and *Name* on the enterprise table:
 
 ```javascript
 <LoloResource
   name='enterprises'
-  listSchemaTransform={({properties, ...rest}) => {
+  listSchemaTransform={({properties, ...rest}, pristineSchema, selectedAccount) => {
     const {id, name} = properties
     return {
       ...rest,
@@ -59,12 +64,12 @@ Schema transform functions help you manipulate the schema that is fetched from t
 - `createSchemaTransform`: Manipulates the `Create` component schema. For Example, the following will add an extra field *customId* on the create form with a read only property:
 
 ```javascript
-<LoloResource createSchemaTransform={(schema) => ({...schema, customId: {type: 'string', readOnly: true}})} />
+<LoloResource createSchemaTransform={(writableSchema, pristineSchema, selectedAccount) => ({...writableSchema, customId: {type: 'string', readOnly: true}})} />
 ```
 
 - `editSchemaTransform`: Manipulates the `Edit` component schema. For Example, the following will add an extra field *customId* on the edit form:
 
 ```javascript
-<LoloResource editSchemaTransform={(schema) => ({...schema, customId: {type: 'string'}}})} />
+<LoloResource editSchemaTransform={(writableSchema, pristineSchema, selectedAccount) => ({...writableSchema, customId: {type: 'string'}}})} />
 ```
 
