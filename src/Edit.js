@@ -4,7 +4,7 @@ import { ResourceContext }  from './Resource';
 import { titleize, singularize } from 'inflection';
 import * as ra from 'react-admin';
 import EditActions from './EditActions';
-import FormComponent from './rjsf/FormComponent';
+import {FormComponent} from './rjsf';
 
 const Edit = props => {
 	const { editSchema } = useContext(ResourceContext);

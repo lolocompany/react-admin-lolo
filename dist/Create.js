@@ -15,7 +15,7 @@ var ra = _interopRequireWildcard(require("react-admin"));
 
 var _CreateActions = _interopRequireDefault(require("./CreateActions"));
 
-var _FormComponent = _interopRequireDefault(require("./rjsf/FormComponent"));
+var _rjsf = require("./rjsf");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -33,7 +33,7 @@ const Create = props => {
     title: props.title,
     record: controllerData.record,
     defaultTitle: getTitle(createSchema.title || controllerData.resource)
-  }), /*#__PURE__*/_react.default.createElement(_FormComponent.default, {
+  }), /*#__PURE__*/_react.default.createElement(_rjsf.FormComponent, {
     controllerData: controllerData,
     schema: createSchema
   }));

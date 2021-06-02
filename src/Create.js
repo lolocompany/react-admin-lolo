@@ -4,7 +4,7 @@ import { ResourceContext }  from './Resource';
 import { titleize, singularize } from 'inflection';
 import * as ra from 'react-admin';
 import CreateActions from './CreateActions';
-import FormComponent from './rjsf/FormComponent';
+import {FormComponent} from './rjsf';
 
 const Create = props => {
   const { createSchema } = useContext(ResourceContext);
