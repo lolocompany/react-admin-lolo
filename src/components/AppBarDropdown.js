@@ -33,17 +33,18 @@ const AppBarDropdown = (props) => {
 		setSelectedAccount(account)
 	}
 
+	const selectedAccountId = selectedAccount ? selectedAccount.id : ''
 	return (
 		<div className={classes.dropdown}>
 			<List>
 				<ListSubheader>Accounts</ListSubheader>
 			{
-				accounts.map((account, i) => (
+				 accounts.map((account, i) => (
 					<ListItem key={i}
 						button
 						value={account.id}
-						selected={account.id === selectedAccount.id}
-						disabled={account.id === selectedAccount.id}
+						selected={account.id === selectedAccountId}
+						disabled={account.id === selectedAccountId}
 						onClick={() => handleAccountSelect(account)}
 					>
 						{account.name}

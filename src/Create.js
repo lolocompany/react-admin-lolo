@@ -1,85 +1,27 @@
 import React from 'react';
-import { useContext, useState, useEffect } from 'react';
-import Form from "@rjsf/material-ui";
-import { Box, Card } from '@material-ui/core';
+import { useContext } from 'react';
 import { ResourceContext }  from './Resource';
 import { titleize, singularize } from 'inflection';
 import * as ra from 'react-admin';
 import CreateActions from './CreateActions';
-import CustomToolbar from './components/CustomToolbar'
-import { isEqual } from '../dist/utils';
+import {FormComponent} from './rjsf';
 
 const Create = props => {
-  const [ formData, setFormData ] = useState({});
-  const [schemaState, setSchemaState] = useState({})
-	const [ hasErrors, setHasErrors ] = useState(true);
-  const { createSchema: schema, uiSchema, widgets, fields } = useContext(ResourceContext);
-	let form;
+  const { createSchema } = useContext(ResourceContext);
+  const controllerData = ra.useCreateController({ ...props });
 
-  const {
-    defaultTitle,
-    record,
-    resource,
-    save,
-    saving,
-  } = ra.useCreateController({ ...props });
-
-  function usePrevious(value) {
-    const ref = React.useRef()
-    if(!isEqual(ref.current, value)){
-      ref.current = value
-    }
-    return ref.current
-  }
-
-  useEffect(() => {
-    if(schema) {
-      const {$id, ...restSchema} = schema
-      setSchemaState(restSchema)
-    }
-  }, [schema])
-  
-  useEffect(() => {
-    if(form) {
-      setHasErrors(!!form.state.errors.length)
-    }
-  }, usePrevious(form))
-  
 	return (
     <div>
       <CreateActions {...props} />
       <ra.TitleForRecord
         title={props.title}
-        record={record}
-        defaultTitle={getTitle(schemaState.title || resource)}
+        record={controllerData.record}
+        defaultTitle={getTitle(createSchema.title || controllerData.resource)}
       />
-      <Card>
-        <Box px={2} pb={1}>
-          <Form
-						ref={f => { form = f; }}
-						schema={schemaState || {}}
-						uiSchema={uiSchema}
-						formData={formData}
-            showErrorList={false}
-            liveValidate={true}
-            fields={fields}
-            widgets={widgets}
-						onChange={({ formData }) => {
-              setFormData(formData);
-            }}>
-            {' '}
-          </Form>
-        </Box>
-      </Card>
-  		<CustomToolbar>
-        <Box display="flex" justifyContent="space-between" width="100%">
-          <ra.SaveButton
-            saving={saving}
-            disabled={hasErrors}
-            handleSubmitWithRedirect={() => save(formData)}
-          />
-        </Box>
-  		</CustomToolbar>
+      <FormComponent 
+        controllerData={controllerData}
+        schema={createSchema}
+      />
 		</div>
 	);
 };

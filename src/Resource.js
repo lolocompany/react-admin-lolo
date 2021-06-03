@@ -8,7 +8,7 @@ import Create from './Create';
 import Edit from './Edit';
 import List from './List';
 import * as rjsf from './rjsf';
-import {buildCreateSchema, buildEditSchema} from './utils'
+import {deepClone, removeReadonly} from './utils'
 import {useAdminContext} from './hooks/useAdminContext'
 import { singularize } from 'inflection';
 
@@ -18,52 +18,51 @@ const Resource = props => {
 	const { 
 		name,
 		intent,
-		timestamps = ['createdAt'],
-		createWithId,
-		editSchemaTransform = schema => buildEditSchema(schema),
-		createSchemaTransform = schema => buildCreateSchema(schema),
+		editSchemaTransform = (schema) => ({...schema}),
+		createSchemaTransform = (schema) => ({...schema}),
+		listSchemaTransform = (schema) => ({...schema}),
 	} = props;
 
-	const [ schema, setSchema ] = useState();
-	const [ editSchema, setEditSchema ] = useState();
-	const [ createSchema, setCreateSchema ] = useState();
-	const [ uiSchema, setUiSchema] = useState();
-	const { apiUrl, fields, widgets } = useAdminContext();
+	const [ schema, setSchema ] = useState({});
+	const [ editSchema, setEditSchema ] = useState({});
+	const [ createSchema, setCreateSchema ] = useState({});
+	const [ listSchema, setListSchema ] = useState({})
+	const { apiUrl, fields, widgets, selectedAccount } = useAdminContext();
 
 	useEffect(() => {
-		if(intent === 'route') {
+		if(intent === 'route' && selectedAccount) {
 			const schemaUrl = apiUrl + '/schemas/' + singularize(name)
 
-			ra.fetchUtils.fetchJson(schemaUrl).then(({ json }) => {
-				const { uiSchema = {}, ...schema } = json;
-				enableWidgets(uiSchema, schema);
+			ra.fetchUtils.fetchJson(schemaUrl).then(({ json: pristineSchema }) => {
+				delete pristineSchema.additionalProperties;
+				setSchema(pristineSchema);
 
-				delete schema.additionalProperties;
-				setSchema(schema);
-				setUiSchema(uiSchema);
-			
-				const editSchema = editSchemaTransform(schema)
-				const createSchema = createSchemaTransform(schema);
+				const writableSchema = enableWidgets(removeReadonly(pristineSchema));
 
-				if (createWithId) {
-					editSchema.properties = {
-						id: schema.properties.id,
-						...createSchema.properties
-					};
-					createSchema.properties = {
-						id: { ...schema.properties.id, readOnly: false },
-						...createSchema.properties
-					};
-				}
+				setEditSchema(editSchemaTransform(
+					writableSchema,
+					pristineSchema,
+					selectedAccount
+				));
 
-				setEditSchema(editSchema);
-				setCreateSchema(createSchema);
+				setCreateSchema(createSchemaTransform(
+					writableSchema,
+					pristineSchema,
+					selectedAccount
+				));
+
+				setListSchema(buildListSchema(
+					listSchemaTransform,
+					writableSchema,
+					pristineSchema,
+					selectedAccount
+				));
 			});
 		}
-	}, [ apiUrl, name ]);
+	}, [ apiUrl, name, selectedAccount ]);
 
 	return (
-		<ResourceContext.Provider value={{ schema, editSchema, createSchema, uiSchema, timestamps, fields, widgets }}>
+		<ResourceContext.Provider value={{ schema, editSchema, createSchema, listSchema, fields, widgets }}>
 			<ra.Resource
 				list={List}
 				create={Create}
@@ -76,19 +75,41 @@ const Resource = props => {
 
 const oneOf = part => part === 'oneOf';
 
-const enableWidgets = (uiSchema, schema) => {
+const enableWidgets = (json) => {
+	const { uiSchema = {}, ...schema } = deepClone(json)
+
 	traverse(schema).forEach(function() {
-		if (/Id$/.test(this.key)) {
+		if (/Ids?$/.test(this.key)) {
 			let path = this.path.filter(part => ![ 'properties', 'dependencies' ].includes(part));
 
 			while (path.find(oneOf)) {
 				path.splice(path.findIndex(oneOf) - 1, 3);
 			}
 
-			traverse(uiSchema).set(path, { 'ui:widget': withRouter(rjsf.ReferenceInputWidget) });
+			const schemaPatch = this.key.endsWith('s') ?
+				{ 'ui:field':  rjsf.ReferenceInputManyField } :
+				{ 'ui:widget': withRouter(rjsf.ReferenceInputWidget) };
+
+			// Don't overwrite any existing uiSchema
+			traverse(uiSchema).set(path, {
+				...schemaPatch,
+				...traverse(uiSchema).get(path)
+			});
 		}
 	});
+
+	return { uiSchema, ...schema }
 }
+
+const buildListSchema = (listTransform, wrSchema, prSchema, selectedAccount) => {
+	return listTransform({
+		...wrSchema,
+		properties: {
+			...wrSchema.properties,
+			createdAt: prSchema.properties.createdAt
+		}
+	}, prSchema, selectedAccount);
+};
 
 export {
 	Resource,

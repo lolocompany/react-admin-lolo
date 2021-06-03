@@ -4,6 +4,7 @@ import { default  as LoloCreate } from './Create';
 import { default as LoloEdit } from './Edit';
 import { default as LoloList } from './List';
 import dataProvider from './data_provider';
+import { useAdminContext } from './hooks/useAdminContext';
 
 export {
 	LoloAdmin,
@@ -11,5 +12,6 @@ export {
 	LoloCreate,
 	LoloEdit,
 	LoloList,
-	dataProvider
+	dataProvider,
+	useAdminContext
 }

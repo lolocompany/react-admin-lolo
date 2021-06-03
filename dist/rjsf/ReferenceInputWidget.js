@@ -154,14 +154,14 @@ function ReferenceInputWidget(props) {
     id: id,
     autoComplete: true,
     blurOnSelect: true,
-    getOptionLabel: option => option.value,
+    getOptionLabel: option => option.value || option,
     getOptionSelected: option => option && option.id === value,
     filterOptions: x => x,
     options: options,
     autoComplete: true,
     includeInputInList: true,
     filterSelectedOptions: true,
-    value: value,
+    value: inputValue,
     inputValue: inputValue,
     onChange: (event, newValue) => {
       if (newValue) {

@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.buildCreateSchema = exports.buildEditSchema = exports.isEqual = exports.SelectInput = exports.TextField = exports.keyToRef = void 0;
+exports.removeReadonly = exports.deepClone = exports.isEqual = exports.SelectInput = exports.TextField = exports.keyToRef = void 0;
 
 var _react = _interopRequireDefault(require("react"));
 
@@ -48,29 +48,29 @@ exports.SelectInput = SelectInput;
 const isEqual = (a, b) => {
   return JSON.stringify(a) === JSON.stringify(b);
 };
-/*Transforming schema for EDIT/CREATE Resources */
-
 
 exports.isEqual = isEqual;
 
-const removeReadonly = schema => {
-  const copy = JSON.parse(JSON.stringify(schema));
-  (0, _traverse.default)(copy).forEach(function () {
-    if (this.key === 'readOnly') {
+const deepClone = value => {
+  return JSON.parse(JSON.stringify(value));
+};
+
+exports.deepClone = deepClone;
+
+const removeReadonly = json => {
+  const {
+    uiSchema = {},
+    ...schema
+  } = deepClone(json);
+  (0, _traverse.default)(schema).forEach(function () {
+    if (this.key === 'readOnly' && this.node === true) {
       this.parent.remove();
     }
   });
-  return copy;
+  return {
+    uiSchema,
+    ...schema
+  };
 };
 
-const buildEditSchema = schema => {
-  return removeReadonly(schema);
-};
-
-exports.buildEditSchema = buildEditSchema;
-
-const buildCreateSchema = schema => {
-  return removeReadonly(schema);
-};
-
-exports.buildCreateSchema = buildCreateSchema;
+exports.removeReadonly = removeReadonly;

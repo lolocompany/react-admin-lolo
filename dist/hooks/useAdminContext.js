@@ -30,6 +30,8 @@ function useAdminContext() {
   return context;
 }
 
+const defaultAccountsUrl = 'https://dev.lolo.company/api/accounts/all';
+
 function AdminContext(props) {
   const [accounts, setAccounts] = (0, _react.useState)([]);
   const [selectedAccount, setSelectedAccount] = (0, _react.useState)(null);
@@ -43,7 +45,7 @@ function AdminContext(props) {
         Accept: 'application/json'
       });
       headers.set('Authorization', session.idToken.jwtToken);
-      ra.fetchUtils.fetchJson('https://dev.lolo.company/api/accounts/all', {
+      ra.fetchUtils.fetchJson(data.accountsUrl || defaultAccountsUrl, {
         headers
       }).then(({
         json
@@ -74,14 +76,16 @@ function AdminContext(props) {
 }
 
 const getSelectedAccount = accounts => {
-  const id = localStorage.getItem('accountId');
-  let account;
+  if (accounts.length) {
+    const id = localStorage.getItem('accountId');
+    const isPrimaryAccount = accounts.find(item => item.isPrimary);
 
-  if (id) {
-    account = accounts.find(item => item.id === id);
-    if (account) return account;
-    localStorage.removeItem('accountId');
+    if (id) {
+      return accounts.find(item => item.id === id) || null;
+    } else {
+      return isPrimaryAccount || accounts[0];
+    }
   }
 
-  return accounts.find(item => item.isPrimary);
+  return null;
 };

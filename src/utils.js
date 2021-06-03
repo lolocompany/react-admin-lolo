@@ -23,25 +23,18 @@ export const isEqual = (a, b) => {
   return JSON.stringify(a) === JSON.stringify(b);
 }
 
+export const deepClone = (value) => {
+	return JSON.parse(JSON.stringify(value))
+}
 
-/*Transforming schema for EDIT/CREATE Resources */
+export const removeReadonly = json => {
+	const {uiSchema = {}, ...schema } = deepClone(json)
 
-const removeReadonly = schema => {
-	const copy = JSON.parse(JSON.stringify(schema));
-
-	traverse(copy).forEach(function() {
-		if (this.key === 'readOnly') {
+	traverse(schema).forEach(function() {
+		if (this.key === 'readOnly' && this.node === true) {
 			this.parent.remove();
 		}
 	});
 
-	return copy;
-}
-
-export const buildEditSchema = (schema) => {
-	return removeReadonly(schema)
-}
-
-export const buildCreateSchema = (schema) => {
-	return removeReadonly(schema)
+	return {uiSchema, ...schema };
 }

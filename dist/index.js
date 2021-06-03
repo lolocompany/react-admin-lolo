@@ -39,6 +39,12 @@ Object.defineProperty(exports, "dataProvider", {
     return _data_provider.default;
   }
 });
+Object.defineProperty(exports, "useAdminContext", {
+  enumerable: true,
+  get: function () {
+    return _useAdminContext.useAdminContext;
+  }
+});
 
 var _Admin = require("./Admin");
 
@@ -51,5 +57,7 @@ var _Edit = _interopRequireDefault(require("./Edit"));
 var _List = _interopRequireDefault(require("./List"));
 
 var _data_provider = _interopRequireDefault(require("./data_provider"));
+
+var _useAdminContext = require("./hooks/useAdminContext");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
