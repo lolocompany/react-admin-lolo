@@ -3,14 +3,18 @@ import { stringify } from 'query-string';
 import { humanize, camelize, pluralize } from 'inflection';
 import Auth from '@aws-amplify/auth';
 
-export default apiUrl => {
+const defaultGetToken = async () => {
+  const session = await Auth.currentSession();
+  return session.idToken.jwtToken;
+};
+
+export default (apiUrl, getToken = defaultGetToken) => {
   const fetchJson = async (path, options = {}) => {
     if (!options.headers) {
       options.headers = new Headers({ Accept: 'application/json' });
     }
 
-    const session = await Auth.currentSession();
-    options.headers.set('Authorization', session.idToken.jwtToken);
+    options.headers.set('Authorization', await getToken());
 
     const accountId = localStorage.getItem('accountId');
     if (accountId) {
