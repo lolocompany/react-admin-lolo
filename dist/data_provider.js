@@ -15,7 +15,12 @@ var _auth = _interopRequireDefault(require("@aws-amplify/auth"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var _default = apiUrl => {
+const defaultGetToken = async () => {
+  const session = await _auth.default.currentSession();
+  return session.idToken.jwtToken;
+};
+
+var _default = (apiUrl, getToken = defaultGetToken) => {
   const fetchJson = async (path, options = {}) => {
     if (!options.headers) {
       options.headers = new Headers({
@@ -23,8 +28,7 @@ var _default = apiUrl => {
       });
     }
 
-    const session = await _auth.default.currentSession();
-    options.headers.set('Authorization', session.idToken.jwtToken);
+    options.headers.set('Authorization', await getToken());
     const accountId = localStorage.getItem('accountId');
 
     if (accountId) {
