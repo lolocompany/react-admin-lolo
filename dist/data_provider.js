@@ -36,7 +36,11 @@ var _default = apiUrl => {
     }
 
     return _reactAdmin.fetchUtils.fetchJson(apiUrl + path, options).catch(err => {
-      if (err.body && err.body.errors) {
+      if (err.body && err.body.error) {
+        // 401, 403, 500
+        err.message = err.body.error;
+      } else if (err.body && err.body.errors) {
+        // 422
         err.message = err.body.errors.map(item => {
           const field = (0, _inflection.humanize)(item.dataPath.replace('.body.', ''));
           return `${field} ${item.message}`;
