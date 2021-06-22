@@ -3,12 +3,12 @@ import { stringify } from 'query-string';
 import { humanize, camelize, pluralize } from 'inflection';
 import Auth from '@aws-amplify/auth';
 
-const defaultGetToken = async () => {
-  const session = await Auth.currentSession();
-  return session.idToken.jwtToken;
-};
+export default apiUrl => {
+  let getToken = async () => {
+    const session = await Auth.currentSession();
+    return session.idToken.jwtToken;
+  };
 
-export default (apiUrl, getToken = defaultGetToken) => {
   const fetchJson = async (path, options = {}) => {
     if (!options.headers) {
       options.headers = new Headers({ Accept: 'application/json' });
@@ -50,6 +50,12 @@ export default (apiUrl, getToken = defaultGetToken) => {
   };
 
   return {
+    /**
+     * API URL
+     */
+
+    apiUrl,
+
     /**
      * Custom request
      */
@@ -195,6 +201,18 @@ export default (apiUrl, getToken = defaultGetToken) => {
         }
       }
       return { data: deletedIds };
+    },
+
+    /**
+     * getToken
+     */
+
+    get getToken() {
+      return getToken;
+    },
+
+    set getToken(fn) {
+      getToken = fn;
     }
   };
 };

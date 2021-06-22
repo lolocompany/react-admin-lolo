@@ -15,12 +15,12 @@ var _auth = _interopRequireDefault(require("@aws-amplify/auth"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const defaultGetToken = async () => {
-  const session = await _auth.default.currentSession();
-  return session.idToken.jwtToken;
-};
+var _default = apiUrl => {
+  let getToken = async () => {
+    const session = await _auth.default.currentSession();
+    return session.idToken.jwtToken;
+  };
 
-var _default = (apiUrl, getToken = defaultGetToken) => {
   const fetchJson = async (path, options = {}) => {
     if (!options.headers) {
       options.headers = new Headers({
@@ -63,6 +63,11 @@ var _default = (apiUrl, getToken = defaultGetToken) => {
   };
 
   return {
+    /**
+     * API URL
+     */
+    apiUrl,
+
     /**
      * Custom request
      */
@@ -218,7 +223,19 @@ var _default = (apiUrl, getToken = defaultGetToken) => {
       return {
         data: deletedIds
       };
+    },
+
+    /**
+     * getToken
+     */
+    get getToken() {
+      return getToken;
+    },
+
+    set getToken(fn) {
+      getToken = fn;
     }
+
   };
 };
 

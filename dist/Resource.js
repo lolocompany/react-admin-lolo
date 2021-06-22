@@ -55,26 +55,24 @@ const Resource = props => {
   const [createSchema, setCreateSchema] = (0, _react.useState)({});
   const [listSchema, setListSchema] = (0, _react.useState)({});
   const {
-    apiUrl,
     fields,
     widgets,
     selectedAccount
   } = (0, _useAdminContext.useAdminContext)();
+  const dataProvider = ra.useDataProvider();
   (0, _react.useEffect)(() => {
-    if (intent === 'route' && selectedAccount) {
-      const schemaUrl = apiUrl + '/schemas/' + (0, _inflection.singularize)(name);
-      ra.fetchUtils.fetchJson(schemaUrl).then(({
-        json: pristineSchema
-      }) => {
-        delete pristineSchema.additionalProperties;
-        setSchema(pristineSchema);
-        const writableSchema = enableWidgets((0, _utils.removeReadonly)(pristineSchema));
-        setEditSchema(editSchemaTransform(writableSchema, pristineSchema, selectedAccount));
-        setCreateSchema(createSchemaTransform(writableSchema, pristineSchema, selectedAccount));
-        setListSchema(buildListSchema(listSchemaTransform, writableSchema, pristineSchema, selectedAccount));
-      });
-    }
-  }, [apiUrl, name, selectedAccount]);
+    if (intent !== 'route' || !selectedAccount || !dataProvider) return;
+    dataProvider.sendRequest('/schemas/' + (0, _inflection.singularize)(name)).then(({
+      data: pristineSchema
+    }) => {
+      delete pristineSchema.additionalProperties;
+      setSchema(pristineSchema);
+      const writableSchema = enableWidgets((0, _utils.removeReadonly)(pristineSchema));
+      setEditSchema(editSchemaTransform(writableSchema, pristineSchema, selectedAccount));
+      setCreateSchema(createSchemaTransform(writableSchema, pristineSchema, selectedAccount));
+      setListSchema(buildListSchema(listSchemaTransform, writableSchema, pristineSchema, selectedAccount));
+    });
+  }, [name, selectedAccount, dataProvider]);
   return /*#__PURE__*/_react.default.createElement(ResourceContext.Provider, {
     value: {
       schema,
@@ -101,23 +99,22 @@ const enableWidgets = json => {
     ...schema
   } = (0, _utils.deepClone)(json);
   (0, _traverse.default)(schema).forEach(function () {
-    if (/Ids?$/.test(this.key)) {
-      let path = this.path.filter(part => !['properties', 'dependencies'].includes(part));
+    if (!/Ids?$/.test(this.key)) return;
+    let path = this.path.filter(part => !['properties', 'dependencies'].includes(part));
 
-      while (path.find(oneOf)) {
-        path.splice(path.findIndex(oneOf) - 1, 3);
-      }
-
-      const schemaPatch = this.key.endsWith('s') ? {
-        'ui:field': rjsf.ReferenceInputManyField
-      } : {
-        'ui:widget': (0, _reactRouter.withRouter)(rjsf.ReferenceInputWidget)
-      }; // Don't overwrite any existing uiSchema
-
-      (0, _traverse.default)(uiSchema).set(path, { ...schemaPatch,
-        ...(0, _traverse.default)(uiSchema).get(path)
-      });
+    while (path.find(oneOf)) {
+      path.splice(path.findIndex(oneOf) - 1, 3);
     }
+
+    const schemaPatch = this.key.endsWith('s') ? {
+      'ui:field': rjsf.ReferenceInputManyField
+    } : {
+      'ui:widget': (0, _reactRouter.withRouter)(rjsf.ReferenceInputWidget)
+    }; // Don't overwrite any existing uiSchema
+
+    (0, _traverse.default)(uiSchema).set(path, { ...schemaPatch,
+      ...(0, _traverse.default)(uiSchema).get(path)
+    });
   });
   return {
     uiSchema,
