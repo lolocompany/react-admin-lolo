@@ -36,9 +36,10 @@ const Admin = ({
   accountsUrl,
   fields = {},
   widgets = {},
+  dataProvider,
   ...props
 }) => {
-  const dataProvider = (0, _data_provider.default)(apiUrl);
+  dataProvider = dataProvider || (0, _data_provider.default)(apiUrl);
 
   const RAdmin = () => /*#__PURE__*/_react.default.createElement(ra.Admin, _extends({
     dataProvider: dataProvider,
@@ -51,8 +52,8 @@ const Admin = ({
 
   return /*#__PURE__*/_react.default.createElement(_useAdminContext.AdminContext, {
     data: {
-      apiUrl,
       accountsUrl,
+      authProvider: _auth_provider.default,
       dataProvider,
       fields,
       widgets

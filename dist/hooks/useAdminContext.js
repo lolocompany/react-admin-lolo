@@ -40,11 +40,10 @@ function AdminContext(props) {
   } = props;
   (0, _react.useEffect)(() => {
     const getAccounts = async () => {
-      const session = await _auth.default.currentSession();
-      let headers = new Headers({
+      const headers = new Headers({
         Accept: 'application/json'
       });
-      headers.set('Authorization', session.idToken.jwtToken);
+      headers.set('Authorization', await data.dataProvider.getToken());
       ra.fetchUtils.fetchJson(data.accountsUrl || defaultAccountsUrl, {
         headers
       }).then(({
@@ -52,12 +51,9 @@ function AdminContext(props) {
       }) => {
         setAccounts(json.accounts);
         setSelectedAccount(getSelectedAccount(json.accounts));
-      }).catch(e => {
-        if (localStorage.getItem('accountId')) {
-          localStorage.removeItem('accountId');
-        }
-
-        throw e;
+      }).catch(err => {
+        if (err.status === 401) data.authProvider.logout();
+        throw err;
       });
     };
 
@@ -76,16 +72,13 @@ function AdminContext(props) {
 }
 
 const getSelectedAccount = accounts => {
-  if (accounts.length) {
-    const id = localStorage.getItem('accountId');
-    const isPrimaryAccount = accounts.find(item => item.isPrimary);
+  if (accounts.length < 1) return null;
+  const id = localStorage.getItem('accountId');
+  const isPrimaryAccount = accounts.find(item => item.isPrimary);
 
-    if (id) {
-      return accounts.find(item => item.id === id) || null;
-    } else {
-      return isPrimaryAccount || accounts[0];
-    }
+  if (id) {
+    return accounts.find(item => item.id === id) || null;
+  } else {
+    return isPrimaryAccount || accounts[0];
   }
-
-  return null;
 };
