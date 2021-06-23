@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import * as ra from 'react-admin';
-import Auth from '@aws-amplify/auth';
+import useAuth from './useAuth';
 
 const AdminDataContext = React.createContext({})
 
@@ -19,12 +19,13 @@ const defaultAccountsUrl = 'https://dev.lolo.company/api/accounts/all';
 function AdminContext (props) {
   const [ accounts, setAccounts ] = useState([]);
   const [ selectedAccount, setSelectedAccount ] = useState(null);
+  const {jwtToken} = useAuth()
   const { data } = props;
 
   useEffect(() => {
     const getAccounts = async () => {
       const headers = new Headers({ Accept: 'application/json' });
-      headers.set('Authorization', await data.dataProvider.getToken());
+      headers.set('Authorization', jwtToken);
 
       ra.fetchUtils.fetchJson(data.accountsUrl || defaultAccountsUrl, {
         headers
@@ -39,10 +40,10 @@ function AdminContext (props) {
       })
     }
 
-    if (!accounts.length) {
+    if (jwtToken) {
       getAccounts();
     }
-  }, [])
+  }, [jwtToken])
 
   return (
     <AdminDataContext.Provider

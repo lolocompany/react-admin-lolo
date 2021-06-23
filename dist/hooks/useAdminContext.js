@@ -10,7 +10,7 @@ var _react = _interopRequireWildcard(require("react"));
 
 var ra = _interopRequireWildcard(require("react-admin"));
 
-var _auth = _interopRequireDefault(require("@aws-amplify/auth"));
+var _useAuth = _interopRequireDefault(require("./useAuth"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -36,6 +36,9 @@ function AdminContext(props) {
   const [accounts, setAccounts] = (0, _react.useState)([]);
   const [selectedAccount, setSelectedAccount] = (0, _react.useState)(null);
   const {
+    jwtToken
+  } = (0, _useAuth.default)();
+  const {
     data
   } = props;
   (0, _react.useEffect)(() => {
@@ -43,7 +46,7 @@ function AdminContext(props) {
       const headers = new Headers({
         Accept: 'application/json'
       });
-      headers.set('Authorization', await data.dataProvider.getToken());
+      headers.set('Authorization', jwtToken);
       ra.fetchUtils.fetchJson(data.accountsUrl || defaultAccountsUrl, {
         headers
       }).then(({
@@ -57,10 +60,10 @@ function AdminContext(props) {
       });
     };
 
-    if (!accounts.length) {
+    if (jwtToken) {
       getAccounts();
     }
-  }, []);
+  }, [jwtToken]);
   return /*#__PURE__*/_react.default.createElement(AdminDataContext.Provider, {
     value: {
       accounts,
