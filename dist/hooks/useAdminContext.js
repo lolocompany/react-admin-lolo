@@ -33,14 +33,14 @@ function useAdminContext() {
 const defaultAccountsUrl = 'https://dev.lolo.company/api/accounts/all';
 
 function AdminContext(props) {
+  const {
+    data
+  } = props;
   const [accounts, setAccounts] = (0, _react.useState)([]);
   const [selectedAccount, setSelectedAccount] = (0, _react.useState)(null);
   const {
     jwtToken
-  } = (0, _useAuth.default)();
-  const {
-    data
-  } = props;
+  } = (0, _useAuth.default)(data.isCustomConfigured);
   (0, _react.useEffect)(() => {
     const getAccounts = async () => {
       const headers = new Headers({

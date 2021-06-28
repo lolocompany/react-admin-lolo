@@ -45,6 +45,12 @@ Object.defineProperty(exports, "useAdminContext", {
     return _useAdminContext.useAdminContext;
   }
 });
+Object.defineProperty(exports, "localStorage", {
+  enumerable: true,
+  get: function () {
+    return _localStorage.default;
+  }
+});
 
 var _Admin = require("./Admin");
 
@@ -59,5 +65,7 @@ var _List = _interopRequireDefault(require("./List"));
 var _data_provider = _interopRequireDefault(require("./data_provider"));
 
 var _useAdminContext = require("./hooks/useAdminContext");
+
+var _localStorage = _interopRequireDefault(require("./helpers/localStorage"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }

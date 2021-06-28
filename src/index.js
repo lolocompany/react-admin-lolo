@@ -5,6 +5,7 @@ import { default as LoloEdit } from './Edit';
 import { default as LoloList } from './List';
 import dataProvider from './data_provider';
 import { useAdminContext } from './hooks/useAdminContext';
+import { default as localStorage } from './helpers/localStorage'
 
 export {
 	LoloAdmin,
@@ -13,5 +14,6 @@ export {
 	LoloEdit,
 	LoloList,
 	dataProvider,
-	useAdminContext
+	useAdminContext,
+	localStorage
 }

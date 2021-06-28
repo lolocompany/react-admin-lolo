@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import * as ra from 'react-admin';
 import _dataProvider from './data_provider';
 import authProvider from './auth_provider';
@@ -8,8 +8,21 @@ import './Admin.css';
 import {AdminContext} from './hooks/useAdminContext'
 import AppBarDropdown from './components/AppBarDropdown'
 
-const Admin = ({ apiUrl, accountsUrl, fields = {}, widgets = {}, dataProvider, ...props }) => {
-  dataProvider = dataProvider || _dataProvider(apiUrl);
+const Admin = ({
+  fields = {},
+  widgets = {},
+  apiUrl,
+  accountsUrl,
+  ...props
+}) => {
+  const dataProvider = props.dataProvider || _dataProvider(apiUrl);
+  const [isCustomConfigured, setIsCustomConfigured] = useState(false)
+
+  useEffect(() => {
+    if(props.dataProvider || props.authProvider) {
+      setIsCustomConfigured(true)
+    }
+  }, [props.dataProvider, props.authProvider])
 
   const RAdmin = () => (
     <ra.Admin
@@ -26,7 +39,14 @@ const Admin = ({ apiUrl, accountsUrl, fields = {}, widgets = {}, dataProvider, .
 )
 
   return (
-    <AdminContext data={{ accountsUrl, authProvider, dataProvider, fields, widgets }}>
+    <AdminContext data={{ 
+      accountsUrl,
+      authProvider,
+      dataProvider,
+      isCustomConfigured,
+      fields,
+      widgets
+    }}>
       <RAdmin />
     </AdminContext>
   );
