@@ -41,7 +41,7 @@ function useAuth (isCustomConfigured) {
     }
 
     return () => {
-      window.removeEventListener('itemInserted', () => {})
+      window.removeEventListener('localStorageItemUpdated', () => {})
     }
   }, [isCustomConfigured])
 
