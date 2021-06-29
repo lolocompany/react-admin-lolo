@@ -1,4 +1,4 @@
-import Amplify, { Auth } from 'aws-amplify';
+import Amplify, { Auth, Hub } from 'aws-amplify';
 
 Amplify.configure({
   Auth: {
@@ -8,10 +8,46 @@ Amplify.configure({
   }
 });
 
-export default {
+let authProvider = {
+  init: async (updateAuth) => {
+    let token = null
+
+    token = await (async () => {
+      try {
+        const session = await Auth.currentSession()
+        return session.idToken.jwtToken
+      } catch (e) {
+        return null
+      }
+    })()
+
+    Hub.listen('auth', (data) => {
+      const {payload: {
+        event,
+        data: {
+          signInUserSession: {
+            idToken: {jwtToken}
+          }
+        }
+      }} = data
+      updateAuth((event === 'signIn') ? jwtToken : null)
+    })
+
+    updateAuth(token)
+  },
   login: params => Promise.resolve(),
   logout: params => Auth.signOut(),
   checkAuth: params => Auth.currentSession(),
   checkError: error => Promise.resolve(),
   getPermissions: params => Promise.resolve()
 };
+
+class AuthProvider {
+  constructor(options) {
+    if(options) {
+      authProvider = Object.assign(authProvider, options)
+    }
+  }
+}
+
+export { AuthProvider, authProvider }

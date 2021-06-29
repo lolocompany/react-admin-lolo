@@ -4,15 +4,16 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-const event = new Event('localStorageItemUpdated');
 const customlocalStorage = {
   setItem: (key, value) => {
+    let event = new Event('localStorageItemUpdated');
     event.key = key;
     event.value = value;
     localStorage.setItem(key, value);
     window.dispatchEvent(event);
   },
   removeItem: key => {
+    let event = new Event('localStorageItemUpdated');
     localStorage.removeItem(key);
     window.dispatchEvent(event);
   },

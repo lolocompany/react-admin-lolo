@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import * as ra from 'react-admin';
 import _dataProvider from './data_provider';
-import authProvider from './auth_provider';
+import {authProvider, AuthProvider} from './auth_provider';
 import i18nProvider from './i18n_provider';
 import LoginPage from './LoginPage.js';
 import './Admin.css';
@@ -16,13 +16,10 @@ const Admin = ({
   ...props
 }) => {
   const dataProvider = props.dataProvider || _dataProvider(apiUrl);
-  const [isCustomConfigured, setIsCustomConfigured] = useState(false)
 
-  useEffect(() => {
-    if(props.dataProvider || props.authProvider) {
-      setIsCustomConfigured(true)
-    }
-  }, [props.dataProvider, props.authProvider])
+  if(props.authProvider) {
+    new AuthProvider(props.authProvider)
+  }
 
   const RAdmin = () => (
     <ra.Admin
@@ -36,14 +33,13 @@ const Admin = ({
       >
       { props.children }
     </ra.Admin>
-)
+  )
 
   return (
     <AdminContext data={{ 
       accountsUrl,
       authProvider,
       dataProvider,
-      isCustomConfigured,
       fields,
       widgets
     }}>

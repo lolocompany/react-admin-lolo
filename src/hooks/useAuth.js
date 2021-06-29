@@ -1,49 +1,14 @@
 import React, {useEffect, useState} from 'react'
-import {Hub, Auth} from 'aws-amplify';
+import { authProvider } from '../auth_provider';
 
-function useAuth (isCustomConfigured) {
+function useAuth () {
   const [jwtToken, setJwtToken] = useState(null)
 
-  const getCurrentSession = async () => {
-    try {
-      const session = await Auth.currentSession()
-      setJwtToken(session.idToken.jwtToken)
-    } catch(e) {
-      setJwtToken(null)
-    }
-  }
-
-  const getCurrentLocalStorageValue = () => {
-    return setJwtToken(localStorage.getItem('token') || null)
-  }
-
   useEffect(() => {
-    if(isCustomConfigured) {
-      getCurrentLocalStorageValue()
-
-      window.addEventListener('localStorageItemUpdated', (e) => {
-        e.value ? setJwtToken(e.value) : setJwtToken(null)
-      }, false)
-    } else {
-      getCurrentSession()
-
-      Hub.listen('auth', (data) => {
-        const {payload: {
-          event,
-          data: {
-            signInUserSession: {
-              idToken: {jwtToken}
-            }
-          }
-        }} = data
-        setJwtToken(event === 'signIn' ? jwtToken : null)
-      }) 
-    }
-
-    return () => {
-      window.removeEventListener('localStorageItemUpdated', () => {})
-    }
-  }, [isCustomConfigured])
+    authProvider.init(token => {
+      setJwtToken(token)
+    })
+  }, [])
 
   return {jwtToken}
 }

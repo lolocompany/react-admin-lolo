@@ -40,7 +40,7 @@ function AdminContext(props) {
   const [selectedAccount, setSelectedAccount] = (0, _react.useState)(null);
   const {
     jwtToken
-  } = (0, _useAuth.default)(data.isCustomConfigured);
+  } = (0, _useAuth.default)();
   (0, _react.useEffect)(() => {
     const getAccounts = async () => {
       const headers = new Headers({

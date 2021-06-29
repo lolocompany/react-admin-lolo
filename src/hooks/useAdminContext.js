@@ -20,7 +20,7 @@ function AdminContext (props) {
   const { data } = props;
   const [ accounts, setAccounts ] = useState([]);
   const [ selectedAccount, setSelectedAccount ] = useState(null);
-  const {jwtToken} = useAuth(data.isCustomConfigured)
+  const { jwtToken } = useAuth()
 
   useEffect(() => {
     const getAccounts = async () => {
