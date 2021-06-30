@@ -10,7 +10,7 @@ var _react = _interopRequireWildcard(require("react"));
 
 var ra = _interopRequireWildcard(require("react-admin"));
 
-var _auth = _interopRequireDefault(require("@aws-amplify/auth"));
+var _useAuth = _interopRequireDefault(require("./useAuth"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -33,17 +33,20 @@ function useAdminContext() {
 const defaultAccountsUrl = 'https://dev.lolo.company/api/accounts/all';
 
 function AdminContext(props) {
-  const [accounts, setAccounts] = (0, _react.useState)([]);
-  const [selectedAccount, setSelectedAccount] = (0, _react.useState)(null);
   const {
     data
   } = props;
+  const [accounts, setAccounts] = (0, _react.useState)([]);
+  const [selectedAccount, setSelectedAccount] = (0, _react.useState)(null);
+  const {
+    jwtToken
+  } = (0, _useAuth.default)();
   (0, _react.useEffect)(() => {
     const getAccounts = async () => {
       const headers = new Headers({
         Accept: 'application/json'
       });
-      headers.set('Authorization', await data.dataProvider.getToken());
+      headers.set('Authorization', jwtToken);
       ra.fetchUtils.fetchJson(data.accountsUrl || defaultAccountsUrl, {
         headers
       }).then(({
@@ -57,10 +60,10 @@ function AdminContext(props) {
       });
     };
 
-    if (!accounts.length) {
+    if (jwtToken) {
       getAccounts();
     }
-  }, []);
+  }, [jwtToken]);
   return /*#__PURE__*/_react.default.createElement(AdminDataContext.Provider, {
     value: {
       accounts,

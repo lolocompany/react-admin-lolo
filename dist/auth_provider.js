@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports.authProvider = exports.AuthProvider = void 0;
 
 var _awsAmplify = _interopRequireWildcard(require("aws-amplify"));
 
@@ -19,11 +19,51 @@ _awsAmplify.default.configure({
   }
 });
 
-var _default = {
+let authProvider = {
+  init: async updateAuth => {
+    let token = null;
+    token = await (async () => {
+      try {
+        const session = await _awsAmplify.Auth.currentSession();
+        return session.idToken.jwtToken;
+      } catch (e) {
+        return null;
+      }
+    })();
+
+    _awsAmplify.Hub.listen('auth', data => {
+      const {
+        payload: {
+          event,
+          data: {
+            signInUserSession: {
+              idToken: {
+                jwtToken
+              }
+            }
+          }
+        }
+      } = data;
+      updateAuth(event === 'signIn' ? jwtToken : null);
+    });
+
+    updateAuth(token);
+  },
   login: params => Promise.resolve(),
   logout: params => _awsAmplify.Auth.signOut(),
   checkAuth: params => _awsAmplify.Auth.currentSession(),
   checkError: error => Promise.resolve(),
   getPermissions: params => Promise.resolve()
 };
-exports.default = _default;
+exports.authProvider = authProvider;
+
+class AuthProvider {
+  constructor(options) {
+    if (options) {
+      exports.authProvider = authProvider = Object.assign(authProvider, options);
+    }
+  }
+
+}
+
+exports.AuthProvider = AuthProvider;
