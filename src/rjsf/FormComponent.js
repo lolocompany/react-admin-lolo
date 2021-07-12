@@ -4,7 +4,7 @@ import Form from "@rjsf/material-ui";
 import { ResourceContext }  from '../Resource';
 import * as ra from 'react-admin';
 import CustomToolbar from '../components/CustomToolbar'
-import { isEqual } from '../../dist/utils';
+import { isEqual } from '../utils';
 
 const FormComponent = (props) => {
   const [ formData, setFormData ] = useState({});
