@@ -1,21 +1,34 @@
 {
-  "name": "react-admin-lolo",
-  "version": "1.0.0",
-  "description": "",
+  "name": "@inclusivedot/react-admin-lolo",
+  "version": "1.0.2",
+  "description": "A library for schema-driven web apps using [Lolo](https://lolo.company), [React Admin](https://github.com/marmelab/react-admin) and [RJSF](https://github.com/rjsf-team/react-jsonschema-form)",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "source": "src/index.js",
   "outDir": "dist",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "jest",
     "build": "rollup -c"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "React",
+    "React-Admin",
+    "Lolo"
+  ],
+  "author": "Lolo",
   "license": "ISC",
   "peerDependencies": {
-    "react": "16.8.0",
-    "react-dom": "16.8.0"
+    "@aws-amplify/ui-react": "^0.2",
+    "@rjsf/core": "^2.4.0",
+    "@rjsf/material-ui": "^2.4.0",
+    "react": "^16.8.0",
+    "react-dom": "^16.8.0",
+    "aws-amplify": "^3.0.0",
+    "react-admin": "^3.9.0",
+    "react-admin-import-csv": "^0.2.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.5",
@@ -27,6 +40,7 @@
     "@rollup/plugin-commonjs": "^19.0.0",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^13.0.0",
+    "@rollup/plugin-replace": "^2.4.2",
     "@testing-library/react": "^12.0.0",
     "babel-jest": "^27.0.6",
     "identity-obj-proxy": "^3.0.0",
@@ -41,5 +55,13 @@
     "@material-ui/lab": "^4.0.0-alpha.60",
     "throttle-debounce": "^3.0.1",
     "traverse": "^0.6.6"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lolocompany/react-admin-lolo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lolocompany/react-admin-lolo/issues"
+  },
+  "homepage": "https://github.com/lolocompany/react-admin-lolo#readme"
 }

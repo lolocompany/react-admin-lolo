@@ -2,6 +2,7 @@ import babel from '@rollup/plugin-babel'
 import json from '@rollup/plugin-json'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
 import commonjs from "@rollup/plugin-commonjs"
+import replace from '@rollup/plugin-replace'
 import css from "rollup-plugin-import-css"
 import external from 'rollup-plugin-peer-deps-external'
 import del from 'rollup-plugin-delete'
@@ -9,7 +10,6 @@ import pkg from './package.json'
 
 const externalDeps = [
   ...Object.keys(pkg.peerDependencies || {}),
-  ...Object.keys(pkg.devDependencies || {}),
 ]
 
 const makeExternalPredicate = externalArr => {
@@ -50,6 +50,10 @@ export default {
     }
   ],
   plugins: [
+    replace({
+      'process.env.NODE_ENV': JSON.stringify('production'),
+      preventAssignment: true
+    }),
     external(),
     commonjs({ 
       include: /node_modules/
