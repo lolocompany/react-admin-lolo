@@ -25,7 +25,8 @@ const CODES = [
   'THIS_IS_UNDEFINED',
   'MISSING_GLOBAL_NAME',
   'CIRCULAR_DEPENDENCY',
-  'UNRESOLVED_IMPORT'
+  'UNRESOLVED_IMPORT',
+  'UNUSED_EXTERNAL_IMPORT'
 ]
 
 const discardWarning = warning => {
@@ -49,6 +50,11 @@ export default {
       sourcemap: true
     }
   ],
+  watch: {
+    include: 'src/**',
+    exclude: ['node_modules/**'],
+    buildDelay: 200
+  },
   plugins: [
     replace({
       'process.env.NODE_ENV': JSON.stringify('production'),
