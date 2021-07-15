@@ -8,19 +8,6 @@ import external from 'rollup-plugin-peer-deps-external'
 import del from 'rollup-plugin-delete'
 import pkg from './package.json'
 
-const externalDeps = [
-  ...Object.keys(pkg.peerDependencies || {}),
-]
-
-const makeExternalPredicate = externalArr => {
-  if (externalArr.length === 0) {
-    return () => false
-  }
-  const pattern = new RegExp(`^(${externalArr.join("|")})($|/)`);
-  return id => pattern.test(id)
-}
-
-
 const CODES = [
   'THIS_IS_UNDEFINED',
   'MISSING_GLOBAL_NAME',
@@ -56,23 +43,24 @@ export default {
     buildDelay: 200
   },
   plugins: [
+    external(),
     replace({
       'process.env.NODE_ENV': JSON.stringify('production'),
       preventAssignment: true
     }),
-    external(),
+    babel({ exclude: 'node_modules/**', babelHelpers: 'bundled' }),
     commonjs({ 
       include: /node_modules/
     }),
-    babel({ exclude: 'node_modules/**', babelHelpers: 'bundled' }),
     nodeResolve({
       preferBuiltins: false,
       browser: true,
+      moduleDirectories: ['node_modules']
     }),
     css(),
     json(),
     del({ targets: ['dist/*'] }),
   ],
-  external: makeExternalPredicate(externalDeps),
+  external: Object.keys(pkg.peerDependencies || {}),
   onwarn: discardWarning
 }
