@@ -2,7 +2,6 @@ import babel from '@rollup/plugin-babel'
 import json from '@rollup/plugin-json'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
 import commonjs from "@rollup/plugin-commonjs"
-import replace from '@rollup/plugin-replace'
 import css from "rollup-plugin-import-css"
 import external from 'rollup-plugin-peer-deps-external'
 import del from 'rollup-plugin-delete'
@@ -44,23 +43,18 @@ export default {
   },
   plugins: [
     external(),
-    replace({
-      'process.env.NODE_ENV': JSON.stringify('production'),
-      preventAssignment: true
-    }),
-    babel({ exclude: 'node_modules/**', babelHelpers: 'bundled' }),
+    babel({ exclude: 'node_modules/**', babelHelpers: 'runtime' }),
     commonjs({ 
       include: /node_modules/
     }),
     nodeResolve({
       preferBuiltins: false,
       browser: true,
-      moduleDirectories: ['node_modules']
     }),
     css(),
     json(),
     del({ targets: ['dist/*'] }),
   ],
-  external: Object.keys(pkg.peerDependencies || {}),
+  external: [...Object.keys(pkg.peerDependencies || {}), "@babel/runtime"],
   onwarn: discardWarning
 }
