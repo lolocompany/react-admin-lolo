@@ -1,12 +1,15 @@
 import React from 'react';
 import * as ra from 'react-admin';
-import _dataProvider from './data_provider';
-import {authProvider, AuthProvider} from './auth_provider';
-import i18nProvider from './i18n_provider';
-import LoginPage from './LoginPage.js';
+import {
+  dataProvider as _dataProvider,
+  authProvider,
+  AuthProvider,
+  i18nProvider
+} from '../providers';
+import {LoginPage} from '../views';
+import {AdminContext} from '../hooks/useAdminContext'
+import {AppBarDropdown} from '../components'
 import './Admin.css';
-import {AdminContext} from './hooks/useAdminContext'
-import AppBarDropdown from './components/AppBarDropdown'
 
 const Admin = ({
   fields = {},

@@ -1,10 +1,9 @@
-import React from 'react';
-import { useContext } from 'react';
-import { ResourceContext }  from './Resource';
-import { titleize, singularize } from 'inflection';
+import React, {useContext} from 'react';
 import * as ra from 'react-admin';
-import CreateActions from './CreateActions';
-import {FormComponent} from './rjsf';
+import { titleize, singularize } from 'inflection';
+import { ResourceContext }  from '../views/Resource';
+import { CreateActions } from '../components';
+import { FormComponent } from '../rjsf';
 
 const Create = props => {
   const { createSchema } = useContext(ResourceContext);

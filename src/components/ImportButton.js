@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { ImportButton } from 'react-admin-import-csv';
-import { ResourceContext } from './Resource';
+import { ResourceContext } from '../views/Resource';
 
 export default props => {
 	const { schema } = useContext(ResourceContext);

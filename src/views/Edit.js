@@ -1,10 +1,9 @@
-import React from 'react';
-import { useContext } from 'react';
-import { ResourceContext }  from './Resource';
-import { titleize, singularize } from 'inflection';
+import React, { useContext } from 'react';
 import * as ra from 'react-admin';
-import EditActions from './EditActions';
-import {FormComponent} from './rjsf';
+import { titleize, singularize } from 'inflection';
+import { ResourceContext }  from '../views/Resource';
+import {EditActions} from '../components';
+import {FormComponent} from '../rjsf';
 
 const Edit = props => {
 	const { editSchema } = useContext(ResourceContext);

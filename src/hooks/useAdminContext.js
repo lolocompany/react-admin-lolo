@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import * as ra from 'react-admin';
-import useAuth from './useAuth';
+import { useAuth } from './';
 
 const AdminDataContext = React.createContext({})
 

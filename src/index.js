@@ -1,10 +1,12 @@
-import { Admin as LoloAdmin } from './Admin';
-import { Resource as LoloResource } from './Resource';
-import { default  as LoloCreate } from './Create';
-import { default as LoloEdit } from './Edit';
-import { default as LoloList } from './List';
-import dataProvider from './data_provider';
-import { useAdminContext } from './hooks/useAdminContext';
+import {
+	Admin as LoloAdmin,
+	Resource as LoloResource,
+	Create as LoloCreate,
+	Edit as LoloEdit,
+	List as LoloList
+} from './views'
+import { dataProvider } from './providers';
+import { useAdminContext } from './hooks';
 import { default as localStorage } from './helpers/localStorage'
 
 export {

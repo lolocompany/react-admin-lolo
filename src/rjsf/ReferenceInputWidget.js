@@ -1,21 +1,14 @@
 import React from 'react';
-import * as ra from 'react-admin';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import CreateIcon from '@material-ui/icons/CreateOutlined';
-import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import parse from 'autosuggest-highlight/parse';
 import { transform } from 'inflection';
 import { debounce } from "throttle-debounce";
-
-import { ResourceContext } from '../Resource'
-import { keyToRef } from '../utils';
-import useIsMountedRef from '../hooks/useIsMountedRef';
-import {useAdminContext} from '../hooks/useAdminContext'
+import {useIsMountedRef, useAdminContext} from '../hooks';
 
 const useStyles = makeStyles((theme) => ({
   icon: {

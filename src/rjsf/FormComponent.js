@@ -1,9 +1,9 @@
 import React, {useState, useEffect, useRef,useContext} from 'react';
+import * as ra from 'react-admin';
 import { Box, Card } from '@material-ui/core';
 import Form from "@rjsf/material-ui";
-import { ResourceContext }  from '../Resource';
-import * as ra from 'react-admin';
-import CustomToolbar from '../components/CustomToolbar'
+import { ResourceContext }  from '../views/Resource';
+import { CustomToolbar } from '../components'
 import { isEqual } from '../utils';
 
 const FormComponent = (props) => {

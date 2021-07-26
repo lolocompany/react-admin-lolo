@@ -2,7 +2,7 @@ import React from 'react'
 import {Logout, useRefresh} from 'react-admin';
 import PowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
 import {List, ListSubheader, ListItem, Divider, makeStyles } from '@material-ui/core'
-import {useAdminContext} from '../hooks/useAdminContext'
+import {useAdminContext} from '../hooks'
 
 const useStyles = makeStyles((theme) => ({
   dropdown: {

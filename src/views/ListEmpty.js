@@ -1,12 +1,11 @@
 import * as React from 'react';
+import { CreateButton } from 'react-admin';
 import Inbox from '@material-ui/icons/Inbox';
 import inflection from 'inflection';
-
 import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslate, useListContext } from 'ra-core';
-import { CreateButton } from 'react-admin';
-import ImportButton from './ImportButton';
+import {ImportButton} from '../components';
 
 const useStyles = makeStyles(
   theme => ({
@@ -31,7 +30,7 @@ const useStyles = makeStyles(
   { name: 'RaEmpty' }
   );
 
-const Empty = props => {
+const ListEmpty = props => {
   const { resource, basePath } = useListContext(props);
   const classes = useStyles(props);
   const translate = useTranslate();
@@ -73,4 +72,4 @@ const Empty = props => {
   );
 };
 
-export default Empty;
+export default ListEmpty;

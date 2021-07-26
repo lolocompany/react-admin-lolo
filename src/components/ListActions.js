@@ -1,7 +1,6 @@
-import React from 'react';
-import { cloneElement } from 'react';
+import React, { cloneElement } from 'react';
 import * as ra from 'react-admin';
-import ImportButton from './ImportButton';
+import { ImportButton } from './';
 
 const ListActions = (props) => {
   const {

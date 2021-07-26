@@ -1,11 +1,9 @@
 import React, { useContext, Fragment } from 'react';
 import * as ra from 'react-admin';
-import { ResourceContext }  from './Resource';
-import { keyToRef, TextField } from './utils';
-import ListActions from './ListActions';
-import ListEmpty from './ListEmpty';
-import Filter from './Filter';
 import { pluralize, titleize, inflect } from 'inflection';
+import { ResourceContext }  from '../views/Resource';
+import { keyToRef, TextField } from '../utils';
+import { ListActions, ListEmpty, Filter } from '../components';
 
 const ExpandPanel = ({ id, record, resource }) => (
 	<pre style={{fontSize: '1.1rem'}}>

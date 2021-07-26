@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import { authProvider } from '../auth_provider';
+import { authProvider } from '../providers';
 
 function useAuth () {
   const [jwtToken, setJwtToken] = useState(null)

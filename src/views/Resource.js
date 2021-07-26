@@ -1,16 +1,12 @@
-import React from 'react';
-import { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { withRouter } from 'react-router';
 import * as ra from 'react-admin';
 import traverse from 'traverse';
-
-import Create from './Create';
-import Edit from './Edit';
-import List from './List';
-import * as rjsf from './rjsf';
-import { deepClone, removeReadonly } from './utils'
-import { useAdminContext } from './hooks/useAdminContext'
 import { singularize } from 'inflection';
+import * as rjsf from '../rjsf';
+import {Create, Edit, List} from './'
+import { deepClone, removeReadonly } from '../utils'
+import { useAdminContext } from '../hooks'
 
 const ResourceContext = React.createContext();
 
