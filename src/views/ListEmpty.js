@@ -5,7 +5,7 @@ import inflection from 'inflection';
 import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslate, useListContext } from 'ra-core';
-import {ImportButton} from '../components';
+import { ImportButton } from '../components';
 
 const useStyles = makeStyles(
   theme => ({
@@ -13,10 +13,7 @@ const useStyles = makeStyles(
       textAlign: 'center',
       opacity: theme.palette.type === 'light' ? 0.5 : 0.8,
       margin: '0 1em',
-      color:
-      theme.palette.type === 'light'
-      ? 'inherit'
-      : theme.palette.text.primary,
+      color: theme.palette.type === 'light' ? 'inherit' : theme.palette.text.primary,
     },
     icon: {
       width: '9em',
@@ -27,8 +24,8 @@ const useStyles = makeStyles(
       marginTop: '2em',
     },
   }),
-  { name: 'RaEmpty' }
-  );
+  { name: 'RaEmpty' },
+);
 
 const ListEmpty = props => {
   const { resource, basePath } = useListContext(props);
@@ -42,8 +39,8 @@ const ListEmpty = props => {
         smart_count: 0,
         _: inflection.pluralize(resource),
       }),
-      true
-      ),
+      true,
+    ),
   });
 
   const emptyMessage = translate('ra.page.empty', { name: resourceName });
@@ -56,12 +53,12 @@ const ListEmpty = props => {
         <Typography variant="h4" paragraph>
           {translate(`resources.${resource}.empty`, {
             _: emptyMessage,
-            })}
+          })}
         </Typography>
         <Typography variant="body1">
           {translate(`resources.${resource}.invite`, {
             _: inviteMessage,
-            })}
+          })}
         </Typography>
       </div>
       <div className={classes.toolbar}>

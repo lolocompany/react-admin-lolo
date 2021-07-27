@@ -1,9 +1,5 @@
-import { useAdminContext } from "./useAdminContext";
-import useAuth from './useAuth'
-import useIsMountedRef from "./useIsMountedRef";
+import { useAdminContext } from './useAdminContext';
+import useAuth from './useAuth';
+import useIsMountedRef from './useIsMountedRef';
 
-export {
-  useAdminContext,
-  useAuth,
-  useIsMountedRef
-}
+export { useAdminContext, useAuth, useIsMountedRef };

@@ -7,4 +7,4 @@ const EditActions = ({ basePath, resource }) => (
   </ra.TopToolbar>
 );
 
-export default EditActions
+export default EditActions;

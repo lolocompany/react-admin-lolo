@@ -2,39 +2,26 @@ import React, { cloneElement } from 'react';
 import * as ra from 'react-admin';
 import { ImportButton } from './';
 
-const ListActions = (props) => {
-  const {
-    className,
-    exporter,
-    filters,
-    maxResults,
-    hasCreate,
-    ...rest
-  } = props;
+const ListActions = props => {
+  const { className, exporter, filters, maxResults, hasCreate, ...rest } = props;
 
-  const {
-    currentSort,
-    resource,
-    displayedFilters,
-    filterValues,
-    basePath,
-    showFilter,
-    total,
-  } = ra.useListContext();
+  const { currentSort, resource, displayedFilters, filterValues, basePath, showFilter, total } =
+    ra.useListContext();
 
   return (
     <ra.TopToolbar className={className} {...ra.sanitizeListRestProps(rest)}>
-      {filters && cloneElement(filters, {
-        resource,
-        showFilter,
-        displayedFilters,
-        filterValues,
-        context: 'button'
+      {filters &&
+        cloneElement(filters, {
+          resource,
+          showFilter,
+          displayedFilters,
+          filterValues,
+          context: 'button',
         })}
       {hasCreate ? (
         <>
-        <ra.CreateButton basePath={basePath} />
-        <ImportButton {...props} />
+          <ra.CreateButton basePath={basePath} />
+          <ImportButton {...props} />
         </>
       ) : null}
       <ra.ExportButton
@@ -48,4 +35,4 @@ const ListActions = (props) => {
   );
 };
 
-export default ListActions
+export default ListActions;

@@ -4,24 +4,18 @@ import {
   dataProvider as _dataProvider,
   authProvider,
   AuthProvider,
-  i18nProvider
+  i18nProvider,
 } from '../providers';
-import {LoginPage} from '../views';
-import {AdminContext} from '../hooks/useAdminContext'
-import {AppBarDropdown} from '../components'
+import { LoginPage } from '../views';
+import { AdminContext } from '../hooks/useAdminContext';
+import { AppBarDropdown } from '../components';
 import '../styles/Admin.css';
 
-const Admin = ({
-  fields = {},
-  widgets = {},
-  apiUrl,
-  accountsUrl,
-  ...props
-}) => {
+const Admin = ({ fields = {}, widgets = {}, apiUrl, accountsUrl, ...props }) => {
   const dataProvider = props.dataProvider || _dataProvider(apiUrl);
 
-  if(props.authProvider) {
-    new AuthProvider(props.authProvider)
+  if (props.authProvider) {
+    new AuthProvider(props.authProvider);
   }
 
   const RAdmin = () => (
@@ -30,27 +24,27 @@ const Admin = ({
       authProvider={authProvider}
       i18nProvider={i18nProvider}
       loginPage={LoginPage}
-      title='Lolo Admin'
+      title="Lolo Admin"
       logoutButton={AppBarDropdown}
       {...props}
-      >
-      { props.children }
+    >
+      {props.children}
     </ra.Admin>
-  )
+  );
 
   return (
-    <AdminContext data={{ 
-      accountsUrl,
-      authProvider,
-      dataProvider,
-      fields,
-      widgets
-    }}>
+    <AdminContext
+      data={{
+        accountsUrl,
+        authProvider,
+        dataProvider,
+        fields,
+        widgets,
+      }}
+    >
       <RAdmin />
     </AdminContext>
   );
 };
 
-export {
-  Admin
-}
+export { Admin };

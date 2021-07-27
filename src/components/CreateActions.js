@@ -7,4 +7,4 @@ const CreateActions = ({ basePath, resource }) => (
   </ra.TopToolbar>
 );
 
-export default CreateActions
+export default CreateActions;

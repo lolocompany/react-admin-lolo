@@ -1,7 +1,6 @@
-import React from 'react'
+import React from 'react';
 
 describe('List test suite', () => {
-
   //DOM TEST
   test('test no listSchema available, to return null component', () => {
     /*
@@ -9,7 +8,7 @@ describe('List test suite', () => {
 
       List render should return null
     */
-  })
+  });
 
   //DOM TEST
   test('test List rendering list based on props, listSchema and ResourceContext', () => {
@@ -23,7 +22,7 @@ describe('List test suite', () => {
 
       Test values available based on props/contextData in DOM
     */
-  })
+  });
 
   //DOM TEST
   test('test Filter component, render filters based on listSchema', () => {
@@ -32,7 +31,7 @@ describe('List test suite', () => {
 
       Test DOM tags / by Role available and Values available in them (getByRole) 
     */
-  })
+  });
 
   //UNIT TEST
   test('test toField to list data, render DOM nodes based on arguments', () => {
@@ -41,5 +40,5 @@ describe('List test suite', () => {
 
       Test DOM tags rendered based on schema pass (byRole, byText) etc
     */
-  })  
-})
+  });
+});
