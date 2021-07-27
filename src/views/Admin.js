@@ -9,7 +9,7 @@ import {
 import {LoginPage} from '../views';
 import {AdminContext} from '../hooks/useAdminContext'
 import {AppBarDropdown} from '../components'
-import './Admin.css';
+import '../styles/Admin.css';
 
 const Admin = ({
   fields = {},

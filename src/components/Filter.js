@@ -1,6 +1,5 @@
 import React from 'react';
 import * as ra from 'react-admin';
-import { keyToRef, SelectInput } from '../utils';
 import { ReferenceInputWidget }  from '../rjsf';
 
 const Filter = props => {

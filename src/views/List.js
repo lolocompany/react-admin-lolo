@@ -1,9 +1,10 @@
 import React, { useContext, Fragment } from 'react';
 import * as ra from 'react-admin';
-import { pluralize, titleize, inflect } from 'inflection';
+import { pluralize, inflect } from 'inflection';
 import { ResourceContext }  from '../views/Resource';
 import { keyToRef, TextField } from '../utils';
-import { ListActions, ListEmpty, Filter } from '../components';
+import { ListActions, Filter } from '../components';
+import { ListEmpty } from './';
 
 const ExpandPanel = ({ id, record, resource }) => (
 	<pre style={{fontSize: '1.1rem'}}>
