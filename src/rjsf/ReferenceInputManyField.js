@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDataProvider } from 'react-admin';
 import { transform } from 'inflection';
-import ArrayField from '@rjsf/core/lib/components/fields/ArrayField';
+// import ArrayField from '@rjsf/core/lib/components/fields/ArrayField';
 
 const ReferenceManyField = props => {
   const [items, setItems] = useState([]);
@@ -19,7 +19,7 @@ const ReferenceManyField = props => {
   props.schema.items.enum = items.map(item => item.id);
   props.schema.items.enumNames = items.map(item => item.name);
 
-  return <ArrayField {...props} />;
+  // return <ArrayField {...props} />;
 };
 
 export default ReferenceManyField;

@@ -22,7 +22,6 @@ var Paper = require('@material-ui/core/Paper');
 var IconButton = require('@material-ui/core/IconButton');
 var Chip = require('@material-ui/core/Chip');
 var utils = require('@material-ui/core/utils');
-var ArrayField = require('@rjsf/core/lib/components/fields/ArrayField');
 var core = require('@material-ui/core');
 var Form = require('@rjsf/material-ui');
 var reactRouter = require('react-router');
@@ -73,7 +72,6 @@ var ListSubheader__default = /*#__PURE__*/_interopDefaultLegacy(ListSubheader);
 var Paper__default = /*#__PURE__*/_interopDefaultLegacy(Paper);
 var IconButton__default = /*#__PURE__*/_interopDefaultLegacy(IconButton);
 var Chip__default = /*#__PURE__*/_interopDefaultLegacy(Chip);
-var ArrayField__default = /*#__PURE__*/_interopDefaultLegacy(ArrayField);
 var Form__default = /*#__PURE__*/_interopDefaultLegacy(Form);
 var PowerSettingsNew__default = /*#__PURE__*/_interopDefaultLegacy(PowerSettingsNew);
 var Inbox__default = /*#__PURE__*/_interopDefaultLegacy(Inbox);
@@ -4061,8 +4059,7 @@ const ReferenceManyField = props => {
   }, [dataProvider]);
   props.schema.uniqueItems = true;
   props.schema.items.enum = items.map(item => item.id);
-  props.schema.items.enumNames = items.map(item => item.name);
-  return /*#__PURE__*/React__default['default'].createElement(ArrayField__default['default'], props);
+  props.schema.items.enumNames = items.map(item => item.name); // return <ArrayField {...props} />;
 };
 
 var traverse$2 = {exports: {}};

@@ -20,7 +20,6 @@ import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
 import Chip from '@material-ui/core/Chip';
 import { createSvgIcon, unstable_useId, useControlled, useEventCallback, setRef } from '@material-ui/core/utils';
-import ArrayField from '@rjsf/core/lib/components/fields/ArrayField';
 import { Card, Box, makeStyles as makeStyles$1, List as List$1, ListSubheader as ListSubheader$1, ListItem, Divider, Toolbar, Typography } from '@material-ui/core';
 import Form from '@rjsf/material-ui';
 import { withRouter } from 'react-router';
@@ -4014,8 +4013,7 @@ const ReferenceManyField = props => {
   }, [dataProvider]);
   props.schema.uniqueItems = true;
   props.schema.items.enum = items.map(item => item.id);
-  props.schema.items.enumNames = items.map(item => item.name);
-  return /*#__PURE__*/React__default.createElement(ArrayField, props);
+  props.schema.items.enumNames = items.map(item => item.name); // return <ArrayField {...props} />;
 };
 
 var traverse$2 = {exports: {}};
