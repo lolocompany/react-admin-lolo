@@ -1,5 +1,5 @@
 {
-  "name": "react-admin-lolo",
+  "name": "@lolocompany/react-admin-lolo",
   "version": "1.1.0",
   "description": "A library for schema-driven web apps using [Lolo](https://lolo.company), [React Admin](https://github.com/marmelab/react-admin) and [RJSF](https://github.com/rjsf-team/react-jsonschema-form)",
   "main": "dist/cjs/index.js",
