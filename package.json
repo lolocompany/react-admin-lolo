@@ -23,14 +23,8 @@
   "author": "Lolo",
   "license": "ISC",
   "peerDependencies": {
-    "@aws-amplify/ui-react": "^0.2",
-    "@rjsf/core": "^2.4.0",
-    "@rjsf/material-ui": "^2.4.0",
     "react": "^16.8.0",
-    "react-dom": "^16.8.0",
-    "aws-amplify": "^3.0.0",
-    "react-admin": "^3.9.0",
-    "react-admin-import-csv": "^0.2.0"
+    "react-dom": "^16.8.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.5",
@@ -56,8 +50,15 @@
     "rollup-plugin-peer-deps-external": "^2.2.4"
   },
   "dependencies": {
+    "@aws-amplify/ui-react": "^1.2.8",
     "@babel/runtime": "^7.13.0",
     "@material-ui/lab": "^4.0.0-alpha.60",
+    "@rjsf/core": "^3.0.0",
+    "@rjsf/material-ui": "^3.0.0",
+    "aws-amplify": "^4.2.2",
+    "query-string": "^7.0.1",
+    "react-admin": "^3.17.1",
+    "react-admin-import-csv": "^1.0.22",
     "throttle-debounce": "^3.0.1",
     "traverse": "^0.6.6"
   },
