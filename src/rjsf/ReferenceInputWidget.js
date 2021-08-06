@@ -1,6 +1,5 @@
 import React from 'react';
 import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
@@ -92,47 +91,7 @@ function ReferenceInputWidget(props) {
   return (
     <Grid container>
       <Grid item xs={11}>
-        <Autocomplete
-          id={id}
-          autoComplete={true}
-          blurOnSelect={true}
-          getOptionLabel={option => option.value || option}
-          getOptionSelected={option => option && option.id === value}
-          filterOptions={x => x}
-          options={options}
-          autoComplete
-          includeInputInList
-          filterSelectedOptions
-          value={inputValue}
-          inputValue={inputValue}
-          onChange={(event, newValue) => {
-            if (newValue) {
-              setInputValue(newValue.value);
-              onChange(newValue.id);
-            } else {
-              setInputValue('');
-              onChange(undefined);
-            }
-          }}
-          onInputChange={(event, newInputValue) => setInputValue(newInputValue)}
-          renderInput={params => (
-            <TextField
-              {...params}
-              label={(schema && schema.title) || typePlural}
-              style={{ minWidth: 186, margin: 4 }}
-              variant={variant}
-              InputProps={{
-                ...params.InputProps,
-                endAdornment: (
-                  <React.Fragment>
-                    {loading ? <CircularProgress color="inherit" size={18} /> : null}
-                    {params.InputProps.endAdornment}
-                  </React.Fragment>
-                ),
-              }}
-            />
-          )}
-        />
+       
       </Grid>
       <Grid item xs={1} align="right">
         {showCreate ? (

@@ -1,6 +1,6 @@
 {
   "name": "@lolocompany/react-admin-lolo",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "A library for schema-driven web apps using [Lolo](https://lolo.company), [React Admin](https://github.com/marmelab/react-admin) and [RJSF](https://github.com/rjsf-team/react-jsonschema-form)",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -52,7 +52,8 @@
   "dependencies": {
     "@aws-amplify/ui-react": "^1.2.8",
     "@babel/runtime": "^7.13.0",
-    "@material-ui/lab": "^4.0.0-alpha.60",
+    "@material-ui/core": "^4.12.3",
+    "@material-ui/icons": "^4.11.2",
     "@rjsf/core": "^3.0.0",
     "@rjsf/material-ui": "^3.0.0",
     "aws-amplify": "^4.2.2",

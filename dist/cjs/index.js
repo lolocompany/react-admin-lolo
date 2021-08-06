@@ -2,7 +2,7 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-var index = require('./index-f6cd37ff.js');
+var index = require('./index-16c78f0c.js');
 require('react');
 require('react-dom');
 
