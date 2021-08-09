@@ -2,9 +2,16 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-var index = require('./index-66ffbd2f.js');
+var index = require('./index-85d5e516.js');
 require('react');
+require('react-admin');
+require('inflection');
+require('ra-i18n-polyglot');
+require('ra-language-english');
 require('react-dom');
+require('react-router');
+require('react-admin-import-csv');
+require('ra-core');
 
 
 
