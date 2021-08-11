@@ -26,6 +26,7 @@ const Admin = ({ fields = {}, widgets = {}, apiUrl, accountsUrl, ...props }) => 
       loginPage={LoginPage}
       title="Lolo Admin"
       logoutButton={AppBarDropdown}
+      theme={ra.defaultTheme}
       {...props}
     >
       {props.children}
