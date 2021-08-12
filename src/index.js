@@ -19,5 +19,5 @@ export {
   dataProvider,
   authProvider,
   localStorage,
-  createAdminStore
+  createAdminStore,
 };
