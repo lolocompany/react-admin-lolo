@@ -22,7 +22,7 @@ const discardWarning = warning => {
   console.error(warning);
 };
 
-export default {
+export default commandLineArgs => ({
   input: pkg.source,
   output: [
     {
@@ -53,8 +53,8 @@ export default {
     }),
     css(),
     json(),
-    del({ targets: ['dist/*'] }),
+    !commandLineArgs.watch && del({ targets: ['dist/*'] }),
   ],
   external: [...Object.keys(pkg.peerDependencies || {}), '@babel/runtime'],
   onwarn: discardWarning,
-};
+});
