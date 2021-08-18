@@ -1,17 +1,4 @@
-  
 {
-  "plugins": [
-    "@babel/plugin-proposal-export-default-from"
-  ],
-  "presets": [
-      [
-        "@babel/preset-env",
-        {
-          "targets": {
-            "node": "current"
-          }
-        }
-      ],
-      "@babel/preset-react"
-  ]
+  "plugins": ["@babel/plugin-proposal-export-default-from", "@babel/plugin-transform-runtime"],
+  "presets": [["@babel/preset-env", { "targets": { "node": "current" } }], "@babel/preset-react"]
 }

@@ -1,16 +1,16 @@
-import React, {useEffect, useState} from 'react'
-import { authProvider } from '../auth_provider';
+import React, { useEffect, useState } from 'react';
+import { authProvider } from '../providers';
 
-function useAuth () {
-  const [jwtToken, setJwtToken] = useState(null)
+function useAuth() {
+  const [jwtToken, setJwtToken] = useState(null);
 
   useEffect(() => {
     authProvider.init(token => {
-      setJwtToken(token)
-    })
-  }, [])
+      setJwtToken(token);
+    });
+  }, []);
 
-  return {jwtToken}
+  return { jwtToken };
 }
 
-export default useAuth
+export default useAuth;
