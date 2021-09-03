@@ -1,12 +1,19 @@
 import * as React from 'react';
 import React__default, { useState, useEffect, useRef, cloneElement, Component, forwardRef, useContext, Fragment } from 'react';
 import * as ra from 'react-admin';
-import { fetchUtils, useDataProvider, useRefresh, Logout, CreateButton, useLogin, adminReducer, USER_LOGOUT, adminSaga } from 'react-admin';
+import { fetchUtils, adminReducer, USER_LOGOUT, adminSaga, useDataProvider, useRefresh, Logout, CreateButton, useLogin } from 'react-admin';
+import { Provider } from 'react-redux';
+import { createHashHistory } from 'history';
 import Amplify, { Auth, Hub } from 'aws-amplify';
 import inflection, { pluralize, camelize, humanize, transform, singularize, titleize, inflect } from 'inflection';
 import Auth$1 from '@aws-amplify/auth';
 import polyglotI18nProvider from 'ra-i18n-polyglot';
 import englishMessages from 'ra-language-english';
+import { combineReducers, compose, createStore, applyMiddleware } from 'redux';
+import { connectRouter, routerMiddleware } from 'connected-react-router';
+import createSagaMiddleware from 'redux-saga';
+import { all, fork } from 'redux-saga/effects';
+import { withRouter } from 'react-router';
 import TextField$1 from '@material-ui/core/TextField';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
@@ -45,17 +52,12 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Slider from '@material-ui/core/Slider';
 import MenuItem from '@material-ui/core/MenuItem';
-import { withRouter } from 'react-router';
 import PowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
 import { ImportButton as ImportButton$1 } from 'react-admin-import-csv';
 import Inbox from '@material-ui/icons/Inbox';
 import { useListContext, useTranslate } from 'ra-core';
 import { onAuthUIStateChange, AuthState } from '@aws-amplify/ui-components';
 import { AmplifyAuthenticator, AmplifySignIn } from '@aws-amplify/ui-react';
-import { combineReducers, compose, createStore, applyMiddleware } from 'redux';
-import { connectRouter, routerMiddleware } from 'connected-react-router';
-import createSagaMiddleware from 'redux-saga';
-import { all, fork } from 'redux-saga/effects';
 
 function _extends$A() {
   _extends$A = Object.assign || function (target) {
@@ -111,7 +113,10 @@ let authProvider = {
     updateAuth(token);
   },
   login: params => Promise.resolve(),
-  logout: params => Auth.signOut(),
+  logout: params => {
+    localStorage.clear();
+    return Auth.signOut();
+  },
   checkAuth: params => Auth.currentSession(),
   checkError: error => Promise.resolve(),
   getPermissions: params => Promise.resolve()
@@ -952,6 +957,57 @@ var i18nProvider = polyglotI18nProvider(locale => englishMessages, 'en', {
   allowMissing: true
 });
 
+// in src/createAdminStore.js
+var createAdminStore = (({
+  authProvider,
+  dataProvider,
+  history
+}) => {
+  const reducer = combineReducers({
+    admin: adminReducer,
+    router: connectRouter(history) // add your own reducers here
+
+  });
+
+  const resettableAppReducer = (state, action) => reducer(action.type !== USER_LOGOUT ? state : undefined, action);
+
+  const saga = function* rootSaga() {
+    yield all([adminSaga(dataProvider, authProvider) // add your own sagas here
+    ].map(fork));
+  };
+
+  const sagaMiddleware = createSagaMiddleware();
+  const composeEnhancers = process.env.NODE_ENV === 'development' && typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
+    trace: true,
+    traceLimit: 25
+  }) || compose;
+  const store = createStore(resettableAppReducer, {
+    /* set your initial state here */
+  }, composeEnhancers(applyMiddleware(sagaMiddleware, routerMiddleware(history) // add your own middlewares here
+  ) // add your own enhancers here
+  ));
+  sagaMiddleware.run(saga);
+  return store;
+});
+
+const customlocalStorage = {
+  setItem: (key, value) => {
+    let event = new Event('localStorageItemUpdated');
+    event.key = key;
+    event.value = value;
+    localStorage.setItem(key, value);
+    window.dispatchEvent(event);
+  },
+  removeItem: key => {
+    let event = new Event('localStorageItemUpdated');
+    localStorage.removeItem(key);
+    window.dispatchEvent(event);
+  },
+  getItem: key => {
+    return localStorage.getItem(key);
+  }
+};
+
 function useAuth() {
   const [jwtToken, setJwtToken] = useState(null);
   useEffect(() => {
@@ -996,6 +1052,7 @@ function AdminContext(props) {
   const {
     jwtToken
   } = useAuth();
+  const refresh = ra.useRefresh();
   useEffect(() => {
     const getAccounts = async () => {
       const headers = new Headers({
@@ -1008,7 +1065,7 @@ function AdminContext(props) {
         json
       }) => {
         setAccounts(json.accounts);
-        setSelectedAccount(getSelectedAccount(json.accounts));
+        setSelectedAccount(getSelectedAccount(json.accounts, refresh));
       }).catch(err => {
         if (err.status === 401) data.authProvider.logout();
         throw err;
@@ -1029,7 +1086,7 @@ function AdminContext(props) {
   }, props.children);
 }
 
-const getSelectedAccount = accounts => {
+const getSelectedAccount = (accounts, refresh) => {
   if (accounts.length < 1) return null;
   const id = localStorage.getItem('accountId');
   const isPrimaryAccount = accounts.find(item => item.isPrimary);
@@ -1037,7 +1094,13 @@ const getSelectedAccount = accounts => {
   if (id) {
     return accounts.find(item => item.id === id) || null;
   } else {
-    return isPrimaryAccount || accounts[0];
+    if (isPrimaryAccount) {
+      return isPrimaryAccount;
+    } else {
+      localStorage.setItem('accountId', accounts[0].id);
+      refresh();
+      return accounts[0];
+    }
   }
 };
 
@@ -32698,6 +32761,8 @@ var ImportButton = (props => {
   }, props));
 });
 
+const history = createHashHistory();
+
 const Admin = ({
   fields = {},
   widgets = {},
@@ -32715,13 +32780,20 @@ const Admin = ({
     dataProvider: dataProvider,
     authProvider: authProvider,
     i18nProvider: i18nProvider,
+    history: history,
     loginPage: LoginPage,
     title: "Lolo Admin",
     logoutButton: AppBarDropdown,
     theme: ra.defaultTheme
   }, props), props.children);
 
-  return /*#__PURE__*/React__default.createElement(AdminContext, {
+  return /*#__PURE__*/React__default.createElement(Provider, {
+    store: createAdminStore({
+      authProvider,
+      dataProvider,
+      history
+    })
+  }, /*#__PURE__*/React__default.createElement(AdminContext, {
     data: {
       accountsUrl,
       authProvider,
@@ -32729,7 +32801,7 @@ const Admin = ({
       fields,
       widgets
     }
-  }, /*#__PURE__*/React__default.createElement(RAdmin, null));
+  }, /*#__PURE__*/React__default.createElement(RAdmin, null)));
 };
 
 const Edit = props => {
@@ -32951,57 +33023,6 @@ const LoginPage = () => {
     usernameAlias: "email",
     hideSignUp: true
   })));
-};
-
-// in src/createAdminStore.js
-var createAdminStore = (({
-  authProvider,
-  dataProvider,
-  history
-}) => {
-  const reducer = combineReducers({
-    admin: adminReducer,
-    router: connectRouter(history) // add your own reducers here
-
-  });
-
-  const resettableAppReducer = (state, action) => reducer(action.type !== USER_LOGOUT ? state : undefined, action);
-
-  const saga = function* rootSaga() {
-    yield all([adminSaga(dataProvider, authProvider) // add your own sagas here
-    ].map(fork));
-  };
-
-  const sagaMiddleware = createSagaMiddleware();
-  const composeEnhancers = process.env.NODE_ENV === 'development' && typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
-    trace: true,
-    traceLimit: 25
-  }) || compose;
-  const store = createStore(resettableAppReducer, {
-    /* set your initial state here */
-  }, composeEnhancers(applyMiddleware(sagaMiddleware, routerMiddleware(history) // add your own middlewares here
-  ) // add your own enhancers here
-  ));
-  sagaMiddleware.run(saga);
-  return store;
-});
-
-const customlocalStorage = {
-  setItem: (key, value) => {
-    let event = new Event('localStorageItemUpdated');
-    event.key = key;
-    event.value = value;
-    localStorage.setItem(key, value);
-    window.dispatchEvent(event);
-  },
-  removeItem: key => {
-    let event = new Event('localStorageItemUpdated');
-    localStorage.removeItem(key);
-    window.dispatchEvent(event);
-  },
-  getItem: key => {
-    return localStorage.getItem(key);
-  }
 };
 
 export { Admin as LoloAdmin, Create as LoloCreate, Edit as LoloEdit, List as LoloList, Resource as LoloResource, authProvider, createAdminStore, _dataProvider as dataProvider, customlocalStorage as localStorage, useAdminContext };

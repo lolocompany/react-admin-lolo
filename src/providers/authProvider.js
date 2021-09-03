@@ -38,7 +38,10 @@ let authProvider = {
     updateAuth(token);
   },
   login: params => Promise.resolve(),
-  logout: params => Auth.signOut(),
+  logout: params => {
+    localStorage.clear();
+    return Auth.signOut();
+  },
   checkAuth: params => Auth.currentSession(),
   checkError: error => Promise.resolve(),
   getPermissions: params => Promise.resolve(),

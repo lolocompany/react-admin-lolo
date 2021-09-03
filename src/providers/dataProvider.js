@@ -134,7 +134,7 @@ export default apiUrl => {
         sort: `${field} ${order.toLowerCase()}`,
         offset: (page - 1) * perPage,
         qre: 0,
-        ...buildQs({ ...params.filter, [params.target]: params.id })
+        ...buildQs({ ...params.filter, [params.target]: params.id }),
       };
 
       const url = `/${resource}?${stringify(query)}`;
