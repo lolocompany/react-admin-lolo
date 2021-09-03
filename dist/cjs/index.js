@@ -4,11 +4,18 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var React = require('react');
 var ra = require('react-admin');
+var reactRedux = require('react-redux');
+var history$1 = require('history');
 var Amplify = require('aws-amplify');
 var inflection = require('inflection');
 var Auth = require('@aws-amplify/auth');
 var polyglotI18nProvider = require('ra-i18n-polyglot');
 var englishMessages = require('ra-language-english');
+var redux = require('redux');
+var connectedReactRouter = require('connected-react-router');
+var createSagaMiddleware = require('redux-saga');
+var effects = require('redux-saga/effects');
+var reactRouter = require('react-router');
 var TextField$1 = require('@material-ui/core/TextField');
 var CircularProgress = require('@material-ui/core/CircularProgress');
 var Grid = require('@material-ui/core/Grid');
@@ -47,17 +54,12 @@ var Radio = require('@material-ui/core/Radio');
 var RadioGroup = require('@material-ui/core/RadioGroup');
 var Slider = require('@material-ui/core/Slider');
 var MenuItem = require('@material-ui/core/MenuItem');
-var reactRouter = require('react-router');
 var PowerSettingsNew = require('@material-ui/icons/PowerSettingsNew');
 var reactAdminImportCsv = require('react-admin-import-csv');
 var Inbox = require('@material-ui/icons/Inbox');
 var raCore = require('ra-core');
 var uiComponents = require('@aws-amplify/ui-components');
 var uiReact = require('@aws-amplify/ui-react');
-var redux = require('redux');
-var connectedReactRouter = require('connected-react-router');
-var createSagaMiddleware = require('redux-saga');
-var effects = require('redux-saga/effects');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
@@ -89,6 +91,7 @@ var inflection__default = /*#__PURE__*/_interopDefaultLegacy(inflection);
 var Auth__default = /*#__PURE__*/_interopDefaultLegacy(Auth);
 var polyglotI18nProvider__default = /*#__PURE__*/_interopDefaultLegacy(polyglotI18nProvider);
 var englishMessages__default = /*#__PURE__*/_interopDefaultLegacy(englishMessages);
+var createSagaMiddleware__default = /*#__PURE__*/_interopDefaultLegacy(createSagaMiddleware);
 var TextField__default = /*#__PURE__*/_interopDefaultLegacy(TextField$1);
 var CircularProgress__default = /*#__PURE__*/_interopDefaultLegacy(CircularProgress);
 var Grid__default = /*#__PURE__*/_interopDefaultLegacy(Grid);
@@ -125,7 +128,6 @@ var Slider__default = /*#__PURE__*/_interopDefaultLegacy(Slider);
 var MenuItem__default = /*#__PURE__*/_interopDefaultLegacy(MenuItem);
 var PowerSettingsNew__default = /*#__PURE__*/_interopDefaultLegacy(PowerSettingsNew);
 var Inbox__default = /*#__PURE__*/_interopDefaultLegacy(Inbox);
-var createSagaMiddleware__default = /*#__PURE__*/_interopDefaultLegacy(createSagaMiddleware);
 
 function _extends$A() {
   _extends$A = Object.assign || function (target) {
@@ -181,7 +183,10 @@ exports.authProvider = {
     updateAuth(token);
   },
   login: params => Promise.resolve(),
-  logout: params => Amplify.Auth.signOut(),
+  logout: params => {
+    localStorage.clear();
+    return Amplify.Auth.signOut();
+  },
   checkAuth: params => Amplify.Auth.currentSession(),
   checkError: error => Promise.resolve(),
   getPermissions: params => Promise.resolve()
@@ -1022,6 +1027,57 @@ var i18nProvider = polyglotI18nProvider__default['default'](locale => englishMes
   allowMissing: true
 });
 
+// in src/createAdminStore.js
+var createAdminStore = (({
+  authProvider,
+  dataProvider,
+  history
+}) => {
+  const reducer = redux.combineReducers({
+    admin: ra.adminReducer,
+    router: connectedReactRouter.connectRouter(history) // add your own reducers here
+
+  });
+
+  const resettableAppReducer = (state, action) => reducer(action.type !== ra.USER_LOGOUT ? state : undefined, action);
+
+  const saga = function* rootSaga() {
+    yield effects.all([ra.adminSaga(dataProvider, authProvider) // add your own sagas here
+    ].map(effects.fork));
+  };
+
+  const sagaMiddleware = createSagaMiddleware__default['default']();
+  const composeEnhancers = process.env.NODE_ENV === 'development' && typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
+    trace: true,
+    traceLimit: 25
+  }) || redux.compose;
+  const store = redux.createStore(resettableAppReducer, {
+    /* set your initial state here */
+  }, composeEnhancers(redux.applyMiddleware(sagaMiddleware, connectedReactRouter.routerMiddleware(history) // add your own middlewares here
+  ) // add your own enhancers here
+  ));
+  sagaMiddleware.run(saga);
+  return store;
+});
+
+const customlocalStorage = {
+  setItem: (key, value) => {
+    let event = new Event('localStorageItemUpdated');
+    event.key = key;
+    event.value = value;
+    localStorage.setItem(key, value);
+    window.dispatchEvent(event);
+  },
+  removeItem: key => {
+    let event = new Event('localStorageItemUpdated');
+    localStorage.removeItem(key);
+    window.dispatchEvent(event);
+  },
+  getItem: key => {
+    return localStorage.getItem(key);
+  }
+};
+
 function useAuth() {
   const [jwtToken, setJwtToken] = React.useState(null);
   React.useEffect(() => {
@@ -1066,6 +1122,7 @@ function AdminContext(props) {
   const {
     jwtToken
   } = useAuth();
+  const refresh = ra__namespace.useRefresh();
   React.useEffect(() => {
     const getAccounts = async () => {
       const headers = new Headers({
@@ -1078,7 +1135,7 @@ function AdminContext(props) {
         json
       }) => {
         setAccounts(json.accounts);
-        setSelectedAccount(getSelectedAccount(json.accounts));
+        setSelectedAccount(getSelectedAccount(json.accounts, refresh));
       }).catch(err => {
         if (err.status === 401) data.authProvider.logout();
         throw err;
@@ -1099,7 +1156,7 @@ function AdminContext(props) {
   }, props.children);
 }
 
-const getSelectedAccount = accounts => {
+const getSelectedAccount = (accounts, refresh) => {
   if (accounts.length < 1) return null;
   const id = localStorage.getItem('accountId');
   const isPrimaryAccount = accounts.find(item => item.isPrimary);
@@ -1107,7 +1164,13 @@ const getSelectedAccount = accounts => {
   if (id) {
     return accounts.find(item => item.id === id) || null;
   } else {
-    return isPrimaryAccount || accounts[0];
+    if (isPrimaryAccount) {
+      return isPrimaryAccount;
+    } else {
+      localStorage.setItem('accountId', accounts[0].id);
+      refresh();
+      return accounts[0];
+    }
   }
 };
 
@@ -32768,6 +32831,8 @@ var ImportButton = (props => {
   }, props));
 });
 
+const history = history$1.createHashHistory();
+
 const Admin = ({
   fields = {},
   widgets = {},
@@ -32785,13 +32850,20 @@ const Admin = ({
     dataProvider: dataProvider,
     authProvider: exports.authProvider,
     i18nProvider: i18nProvider,
+    history: history,
     loginPage: LoginPage,
     title: "Lolo Admin",
     logoutButton: AppBarDropdown,
     theme: ra__namespace.defaultTheme
   }, props), props.children);
 
-  return /*#__PURE__*/React__default['default'].createElement(AdminContext, {
+  return /*#__PURE__*/React__default['default'].createElement(reactRedux.Provider, {
+    store: createAdminStore({
+      authProvider: exports.authProvider,
+      dataProvider,
+      history
+    })
+  }, /*#__PURE__*/React__default['default'].createElement(AdminContext, {
     data: {
       accountsUrl,
       authProvider: exports.authProvider,
@@ -32799,7 +32871,7 @@ const Admin = ({
       fields,
       widgets
     }
-  }, /*#__PURE__*/React__default['default'].createElement(RAdmin, null));
+  }, /*#__PURE__*/React__default['default'].createElement(RAdmin, null)));
 };
 
 const Edit = props => {
@@ -33021,57 +33093,6 @@ const LoginPage = () => {
     usernameAlias: "email",
     hideSignUp: true
   })));
-};
-
-// in src/createAdminStore.js
-var createAdminStore = (({
-  authProvider,
-  dataProvider,
-  history
-}) => {
-  const reducer = redux.combineReducers({
-    admin: ra.adminReducer,
-    router: connectedReactRouter.connectRouter(history) // add your own reducers here
-
-  });
-
-  const resettableAppReducer = (state, action) => reducer(action.type !== ra.USER_LOGOUT ? state : undefined, action);
-
-  const saga = function* rootSaga() {
-    yield effects.all([ra.adminSaga(dataProvider, authProvider) // add your own sagas here
-    ].map(effects.fork));
-  };
-
-  const sagaMiddleware = createSagaMiddleware__default['default']();
-  const composeEnhancers = process.env.NODE_ENV === 'development' && typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
-    trace: true,
-    traceLimit: 25
-  }) || redux.compose;
-  const store = redux.createStore(resettableAppReducer, {
-    /* set your initial state here */
-  }, composeEnhancers(redux.applyMiddleware(sagaMiddleware, connectedReactRouter.routerMiddleware(history) // add your own middlewares here
-  ) // add your own enhancers here
-  ));
-  sagaMiddleware.run(saga);
-  return store;
-});
-
-const customlocalStorage = {
-  setItem: (key, value) => {
-    let event = new Event('localStorageItemUpdated');
-    event.key = key;
-    event.value = value;
-    localStorage.setItem(key, value);
-    window.dispatchEvent(event);
-  },
-  removeItem: key => {
-    let event = new Event('localStorageItemUpdated');
-    localStorage.removeItem(key);
-    window.dispatchEvent(event);
-  },
-  getItem: key => {
-    return localStorage.getItem(key);
-  }
 };
 
 exports.LoloAdmin = Admin;

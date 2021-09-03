@@ -21,6 +21,7 @@ function AdminContext(props) {
   const [accounts, setAccounts] = useState([]);
   const [selectedAccount, setSelectedAccount] = useState(null);
   const { jwtToken } = useAuth();
+  const refresh = ra.useRefresh();
 
   useEffect(() => {
     const getAccounts = async () => {
@@ -33,7 +34,7 @@ function AdminContext(props) {
         })
         .then(({ json }) => {
           setAccounts(json.accounts);
-          setSelectedAccount(getSelectedAccount(json.accounts));
+          setSelectedAccount(getSelectedAccount(json.accounts, refresh));
         })
         .catch(err => {
           if (err.status === 401) data.authProvider.logout();
@@ -60,7 +61,7 @@ function AdminContext(props) {
   );
 }
 
-const getSelectedAccount = accounts => {
+const getSelectedAccount = (accounts, refresh) => {
   if (accounts.length < 1) return null;
 
   const id = localStorage.getItem('accountId');
@@ -69,7 +70,13 @@ const getSelectedAccount = accounts => {
   if (id) {
     return accounts.find(item => item.id === id) || null;
   } else {
-    return isPrimaryAccount || accounts[0];
+    if (isPrimaryAccount) {
+      return isPrimaryAccount;
+    } else {
+      localStorage.setItem('accountId', accounts[0].id);
+      refresh();
+      return accounts[0];
+    }
   }
 };
 
