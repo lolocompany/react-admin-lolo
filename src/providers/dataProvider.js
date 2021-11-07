@@ -54,6 +54,36 @@ export default apiUrl => {
     return { data: res.json };
   };
 
+  const getList = async (resource, params, queryOpts = {}) => {
+    console.log('getList', resource, params, q);
+
+    const {
+      page = 1,
+      perPage = 10
+    } = params.pagination || {};
+
+    const {
+      field = 'id',
+      order = 'ASC'
+    } = params.sort || {};
+
+    query = {
+      limit: perPage,
+      sort: `${field} ${order.toLowerCase()}`,
+      offset: (page - 1) * perPage,
+      ...buildQs(params.filter),
+      ...queryOpts
+    };
+
+    const url = `/${resource}?${queryString.stringify(query)}`;
+    const res = await fetchJson(url);
+
+    return {
+      data: res.json[kebabToCamel(resource)],
+      total: res.json.total
+    };
+  };
+
   return {
     /**
      * API URL
@@ -74,26 +104,7 @@ export default apiUrl => {
      * getList
      */
 
-    getList: async (resource, params) => {
-      const { page = 1, perPage = 10 } = params.pagination || {};
-      const { field = 'id', order = 'ASC' } = params.sort || {};
-
-      const query = {
-        limit: perPage,
-        sort: `${field} ${order.toLowerCase()}`,
-        offset: (page - 1) * perPage,
-        ...buildQs(params.filter),
-      };
-
-      const url = `/${resource}?${stringify(query)}`;
-      const res = await fetchJson(url);
-      const cKey = pluralize(camelize(resource.replace(/-/g, ''), true));
-
-      return {
-        data: res.json[kebabToCamel(resource)],
-        total: res.json.total,
-      };
-    },
+    getList,
 
     /**
      * getOne
@@ -107,43 +118,25 @@ export default apiUrl => {
     /**
      * getMany
      */
-
     getMany: (resource, params) => {
-      const query = params.ids.reduce((memo, id) => {
-        return (memo += `&q[id]=${id}`);
-      }, `qor=1`);
+      params.filter = { id: params.ids };
 
-      const url = `/${resource}?${query}`;
-
-      return fetchJson(url).then(({ headers, json }) => ({
-        data: json[kebabToCamel(resource)],
-        total: json.total,
-      }));
+      return getList(resource, params, {
+        qor: 1,
+        qre: 0,
+        limit: 100
+      });
     },
 
     /**
      * getManyReference
      */
+    getManyReference: (resource, params) => {
+      params.filter[params.target] = params.id;
 
-    getManyReference: async (resource, params) => {
-      const { page = 1, perPage = 10 } = params.pagination || {};
-      const { field = 'id', order = 'ASC' } = params.sort || {};
-
-      const query = {
-        limit: perPage,
-        sort: `${field} ${order.toLowerCase()}`,
-        offset: (page - 1) * perPage,
-        qre: 0,
-        ...buildQs({ ...params.filter, [params.target]: params.id }),
-      };
-
-      const url = `/${resource}?${stringify(query)}`;
-      const res = await fetchJson(url);
-
-      return {
-        data: res.json[kebabToCamel(resource)],
-        total: res.json.total,
-      };
+      return getList(resource, params, {
+        qre: 0
+      });
     },
 
     /**
