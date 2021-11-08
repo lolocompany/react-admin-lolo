@@ -55,7 +55,7 @@ export default apiUrl => {
   };
 
   const getList = async (resource, params, queryOpts = {}) => {
-    console.log('getList', resource, params, q);
+    console.log('getList', resource, params, queryOpts);
 
     const {
       page = 1,
