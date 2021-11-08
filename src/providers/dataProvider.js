@@ -67,7 +67,7 @@ export default apiUrl => {
       order = 'ASC'
     } = params.sort || {};
 
-    query = {
+    const query = {
       limit: perPage,
       sort: `${field} ${order.toLowerCase()}`,
       offset: (page - 1) * perPage,
