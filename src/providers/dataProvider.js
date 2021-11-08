@@ -75,7 +75,7 @@ export default apiUrl => {
       ...queryOpts
     };
 
-    const url = `/${resource}?${queryString.stringify(query)}`;
+    const url = `/${resource}?${stringify(query)}`;
     const res = await fetchJson(url);
 
     return {
