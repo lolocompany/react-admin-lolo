@@ -26,10 +26,18 @@ const Resource = props => {
   const { fields, widgets, selectedAccount } = useAdminContext();
   const dataProvider = ra.useDataProvider();
 
+  let resourceProps = props;
+  
+  if (name.includes('_') && resourceProps.match){
+    const resName = props.name.split('_')[1];
+
+    resourceProps = { ...props, name: resName}
+  }
+  
   useEffect(() => {
     if (intent !== 'route' || !selectedAccount || !dataProvider) return;
-
-    dataProvider.sendRequest('/schemas/' + singularize(name)).then(({ data: pristineSchema }) => {
+    
+    dataProvider.sendRequest('/schemas/' + singularize(resourceProps.name)).then(({ data: pristineSchema }) => {
       delete pristineSchema.additionalProperties;
       setSchema(pristineSchema);
 
@@ -44,12 +52,12 @@ const Resource = props => {
       );
     });
   }, [name, selectedAccount, dataProvider]);
-
+  
   return (
     <ResourceContext.Provider
       value={{ schema, editSchema, createSchema, listSchema, fields, widgets }}
     >
-      <ra.Resource list={List} create={Create} edit={Edit} {...props} />
+      <ra.Resource list={List} create={Create} edit={Edit}  {...resourceProps} />
     </ResourceContext.Provider>
   );
 };
