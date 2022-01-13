@@ -18,7 +18,7 @@ const BulkActionButtons = props => (
 
 const List = props => {
   const { listSchema: schema } = useContext(ResourceContext);
-
+  
   if (!Object.keys(schema).length) return null;
 
   return (
@@ -26,7 +26,7 @@ const List = props => {
       {...props}
       bulkActionButtons={props.hasEdit ? <BulkActionButtons /> : false}
       filters={<Filter schema={schema} />}
-      actions={<ListActions />}
+      actions={props.disableActions ? null : <ListActions />}
       empty={<ListEmpty />}
       sort={{ field: 'createdAt', order: 'ASC' }}
       title={schema.title ? pluralize(schema.title) : undefined}

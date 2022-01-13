@@ -31,7 +31,7 @@ const Resource = props => {
   if (name.includes('_') && resourceProps.match){
     const resName = props.name.split('_')[1];
 
-    resourceProps = { ...props, name: resName}
+    resourceProps = { ...props, name: resName }
   }
   
   useEffect(() => {
