@@ -24,13 +24,13 @@ npm install --save @lolocompany/react-admin-lolo
 
 react-admin-lolo requires a few dependencies to be installed along with it to operate as expected.
 
-- @aws-amplify/ui-react: >=1.0.0
+- @aws-amplify/ui-react: ^1.2.5
 - aws-amplify: >=3.0.0
 - react-admin: >=3.0.0
 - react-admin-import-csv: >=1.0.0
 
 ```
-npm install --save @aws-amplify/ui-react aws-amplify react-admin react-admin-import-csv
+npm install --save @aws-amplify/ui-react@1.2.5 aws-amplify react-admin react-admin-import-csv
 ```
 
 ## Documentation
