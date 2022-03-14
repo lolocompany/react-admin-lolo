@@ -49,7 +49,7 @@ import { Layout } from './Layout';
 function App() {
   return (
     <LoloAdmin
-      apiUrl={process.env.REACT_APP_API_URL}
+      apiUrl="Https://dev.lolo.company/" + AppId
       title="My Admin"
       dashboard={() => <h1>Dashboard Panel!</h1>}
       layout={Layout}
