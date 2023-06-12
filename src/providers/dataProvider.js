@@ -151,11 +151,6 @@ export default apiUrl => {
         .then(res => {
           return { data: res.json };
         })
-        .catch(err => {
-          // Ugly hack for import overwrite
-          if (err.status === 404) return create(resource, params);
-          throw err;
-        });
     },
 
     /**
