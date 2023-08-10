@@ -17,25 +17,28 @@ const BulkActionButtons = props => (
 );
 
 const List = props => {
-  const { listSchema: schema } = useContext(ResourceContext);
+  const { listSchema, schema } = useContext(ResourceContext);
 
-  if (!Object.keys(schema).length) return null;
+  if (!Object.keys(listSchema).length) return null;
+
+  const filterSchema = JSON.parse(JSON.stringify(schema));
+  delete filterSchema.properties.accountId;
 
   return (
     <ra.List
       {...props}
       bulkActionButtons={props.hasEdit ? <BulkActionButtons /> : false}
-      filters={<Filter schema={schema} />}
+      filters={<Filter schema={filterSchema} />}
       actions={<ListActions />}
       empty={<ListEmpty />}
       sort={{ field: 'createdAt', order: 'ASC' }}
-      title={schema.title ? pluralize(schema.title) : undefined}
+      title={listSchema.title ? pluralize(listSchema.title) : undefined}
     >
       <ra.Datagrid
         rowClick={props.hasShow ? 'show' : props.hasEdit ? 'edit' : null}
         expand={props.expand || <ExpandPanel />}
       >
-        {Object.entries(schema.properties).map(toField)}
+        {Object.entries(listSchema.properties).map(toField)}
       </ra.Datagrid>
     </ra.List>
   );
