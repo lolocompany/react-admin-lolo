@@ -12,7 +12,7 @@ const ReferenceManyField = props => {
   const typeDashPlural = transform(typeCamelPlural, ['underscore', 'dasherize']);
 
   useEffect(() => {
-    dataProvider.sendRequest('/' + typeDashPlural).then(res => setItems(res.data[typeCamelPlural]));
+    dataProvider.sendRequest('/' + typeDashPlural + '?limit=0').then(res => setItems(res.data[typeCamelPlural]));
   }, [dataProvider]);
 
   props.schema.uniqueItems = true;
