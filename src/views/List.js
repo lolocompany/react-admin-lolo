@@ -26,13 +26,13 @@ const List = props => {
 
   return (
     <ra.List
-      {...props}
       bulkActionButtons={props.hasEdit ? <BulkActionButtons /> : false}
       filters={<Filter schema={filterSchema} />}
       actions={<ListActions />}
       empty={<ListEmpty />}
       sort={{ field: 'createdAt', order: 'ASC' }}
       title={listSchema.title ? pluralize(listSchema.title) : undefined}
+      {...props}
     >
       <ra.Datagrid
         rowClick={props.hasShow ? 'show' : props.hasEdit ? 'edit' : null}
