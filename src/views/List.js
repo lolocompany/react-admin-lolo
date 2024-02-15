@@ -6,6 +6,8 @@ import { keyToRef, TextField } from '../utils';
 import { ListActions, Filter } from '../components';
 import { ListEmpty } from './';
 
+const Pagination = <ra.Pagination rowsPerPageOptions={[10, 15, 25, 50, 100, 250, 500]} />
+
 const ExpandPanel = ({ id, record, resource }) => (
   <pre style={{ fontSize: '1.1rem' }}>{JSON.stringify(record, null, 2)}</pre>
 );
@@ -32,6 +34,8 @@ const List = props => {
       empty={<ListEmpty />}
       sort={{ field: 'createdAt', order: 'ASC' }}
       title={listSchema.title ? pluralize(listSchema.title) : undefined}
+      pagination={Pagination}
+      perPage={15}
       {...props}
     >
       <ra.Datagrid
