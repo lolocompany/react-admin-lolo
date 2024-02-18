@@ -38,12 +38,13 @@ const List = props => {
       perPage={15}
       {...props}
     >
-      <ra.Datagrid
+      {props.children ? props.children : (<ra.Datagrid
         rowClick={props.hasShow ? 'show' : props.hasEdit ? 'edit' : null}
         expand={props.expand || <ExpandPanel />}
       >
         {Object.entries(listSchema.properties).map(toField)}
       </ra.Datagrid>
+      )}
     </ra.List>
   );
 };
