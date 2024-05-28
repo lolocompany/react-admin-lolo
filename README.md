@@ -44,15 +44,12 @@ To generate base Layout, Menu, AppBar and Dashboard view out of the box, include
 
 import React from 'react';
 import { LoloAdmin, LoloResource } from '@lolocompany/react-admin-lolo';
-import { Layout } from './Layout';
 
 function App() {
   return (
     <LoloAdmin
       apiUrl={"https://dev.lolo.company/" + AppId}
-      title="My Admin"
-      dashboard={() => <h1>Dashboard Panel!</h1>}
-      layout={Layout}
+      title="My app"
     >
       <LoloResource name="directors" />
       <LoloResource name="movies" />
