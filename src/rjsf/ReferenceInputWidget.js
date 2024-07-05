@@ -50,7 +50,7 @@ function ReferenceInputWidget(props) {
           setLoading(false);
 
           // Ugly hack for resources without a name field (createById)
-          if (res.data.length && res.data.every(item => !item.name)) {
+          if (!res.data.length || (res.data.length && res.data.every(item => !item.name))) {
             setFindBy('id');
           }
 
