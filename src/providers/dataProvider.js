@@ -39,11 +39,16 @@ export default apiUrl => {
     });
   };
 
-  const buildQs = (filter = {}) =>
-    Object.entries(filter).reduce((memo, [k, v]) => {
+  const buildQs = (filter = {}) => Object.entries(filter).reduce((memo, [k, v]) => {
+    if (v && typeof v === 'object') {
+      for (const prop in v) {
+        memo[`q[${k}.${prop}]`] = v[prop];
+      }
+    } else {
       memo[`q[${k}]`] = v;
-      return memo;
-    }, {});
+    }
+    return memo;
+  }, {});
 
   const create = async (resource, params) => {
     const res = await fetchJson(`/${resource}`, {
