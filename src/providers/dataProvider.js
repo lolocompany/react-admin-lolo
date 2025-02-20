@@ -40,7 +40,7 @@ export default apiUrl => {
   };
 
   const buildQs = (filter = {}) => Object.entries(filter).reduce((memo, [k, v]) => {
-    if (v && typeof v === 'object') {
+    if (v && v.constructor === Object) {
       for (const prop in v) {
         memo[`q[${k}.${prop}]`] = v[prop];
       }
