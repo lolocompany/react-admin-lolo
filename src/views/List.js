@@ -19,12 +19,14 @@ const BulkActionButtons = props => (
 );
 
 const List = props => {
-  const { listSchema, schema } = useContext(ResourceContext);
+  const { listSchema, schema, fields = {} } = useContext(ResourceContext);
 
   if (!Object.keys(listSchema).length) return null;
 
   const filterSchema = JSON.parse(JSON.stringify(schema));
   delete filterSchema.properties.accountId;
+  const { uiSchema = {}, properties = {} } = listSchema;
+  const orderedPropertyKeys = getOrderedPropertyKeys(properties, uiSchema);
 
   return (
     <ra.List
@@ -38,23 +40,48 @@ const List = props => {
       perPage={15}
       {...props}
     >
-      {props.children ? props.children : (<ra.Datagrid
-        rowClick={props.hasShow ? 'show' : props.hasEdit ? 'edit' : null}
-        expand={props.expand || <ExpandPanel />}
-      >
-        {Object.entries(listSchema.properties).map(toField)}
-      </ra.Datagrid>
+      {props.children ? (
+        props.children
+      ) : (
+        <ra.Datagrid
+          rowClick={props.hasShow ? 'show' : props.hasEdit ? 'edit' : null}
+          expand={props.expand || <ExpandPanel />}
+        >
+          {orderedPropertyKeys.map(key =>
+            toField({
+              key,
+              fieldSchema: properties[key],
+              fieldUiSchema: uiSchema[key],
+              fields,
+            }),
+          )}
+        </ra.Datagrid>
       )}
     </ra.List>
   );
 };
 
-const toField = ([key, fieldSchema]) => {
+const toField = ({ key, fieldSchema, fieldUiSchema = {}, fields = {} }) => {
+  if (!fieldSchema || shouldHideField(fieldUiSchema)) return null;
+
   const fieldProps = {
     source: key,
     label: fieldSchema ? fieldSchema.title : '',
     key,
   };
+
+  const CustomField = resolveFieldComponent(fieldUiSchema, fields);
+  if (CustomField) {
+    const uiOptions = fieldUiSchema['ui:options'] || {};
+    return (
+      <CustomField
+        {...fieldProps}
+        {...uiOptions}
+        schema={fieldSchema}
+        uiSchema={fieldUiSchema}
+      />
+    );
+  }
 
   if (key.endsWith('Id')) return refField(fieldProps);
   if (key.endsWith('Ids')) return refManyField(fieldProps);
@@ -105,6 +132,43 @@ const enumField = (fieldProps, fieldSchema) => {
   const choices = _enum.map((id, i) => ({ id, name: enumNames[i] || id }));
 
   return <ra.SelectField {...fieldProps} choices={choices} translateChoice={false} />;
+};
+
+const getOrderedPropertyKeys = (properties = {}, uiSchema = {}) => {
+  const keys = Object.keys(properties);
+  const order = Array.isArray(uiSchema['ui:order']) ? uiSchema['ui:order'] : null;
+
+  if (!order) return keys;
+
+  const orderedKeys = [];
+  let remaining = [...keys];
+
+  order.forEach(item => {
+    if (item === '*') {
+      orderedKeys.push(...remaining);
+      remaining = [];
+      return;
+    }
+
+    if (!keys.includes(item) || orderedKeys.includes(item)) return;
+
+    orderedKeys.push(item);
+    remaining = remaining.filter(key => key !== item);
+  });
+
+  return orderedKeys.concat(remaining);
+};
+
+const shouldHideField = (fieldUiSchema = {}) => fieldUiSchema['ui:widget'] === 'hidden';
+
+const resolveFieldComponent = (fieldUiSchema = {}, fields = {}) => {
+  const field = fieldUiSchema['ui:field'];
+
+  if (!field) return null;
+  if (typeof field === 'string') return fields[field] || null;
+  if (typeof field === 'function') return field;
+
+  return null;
 };
 
 export default List;
